@@ -1,0 +1,73 @@
+{
+  "APPLICATION": "BASIC",
+
+  "CONJUNCTION": "e",
+  "DISJUNCTION": "ou",
+  "NEGATION": "não",
+
+  "FIELDS": {
+    "ID": "id",
+    "NAME": "name",
+    "PASSWORD": "password",
+    "EMAIL": "email",
+    "BIRTHDATE": "birthdate",
+    "ROLE": "permissão",
+    "IMAGE": "imagem",
+    "REFRESH_TOKEN": "refresh_token",
+    "RESET_PASSWORD": "redefinir senha",
+    "VERIFICATION_EMAIL": "Email de verificação",
+    "TOKEN": "token"
+  },
+
+  "ACTIONS": {
+    "CREATE": "inserido",
+    "READ": "lido",
+    "UPDATE": "alterado",
+    "DELETE": "deletado"
+  },
+
+  "FILE_NOT_EXIST_ERROR": "Arquivo não existe",
+  "MUST_BE_EQUAL_ERROR": "{{field}} e {{fieldConfirmation}} devem ser iguais",
+  "INVALID_PARAMETER_ERROR": "Parâmetro Inválido",
+  "MISSING_PARAMETER_ERROR": "Parâmetro Obrigatório",
+  "SERVER_ERROR": "Erro no servidor",
+  "UNAUTHORIZED_ERROR": "Não Autorizado",
+
+  "VERIFY_EMAIL": "Verifique seu e-mail e clique no link para confirmar sua conta",
+  "FORGET_PASSOWRD": "Verifique seu e-mail e clique no link para resetar a sua senha",
+
+  "EMAIL": {
+    "INTRO":"Olá, {{name}}!",
+    "RESET_PASSWORD": {
+      "TITLE": "Você Solicitou uma redefinição de senha",
+      "SUBJECT": "Não podemos simplesmente enviar a sua antiga senha. Um link unico foi gerado para você. Para criar uma nova senha, clique no link a seguir e siga as instruções. Se você não solicitou isso, por favor, ignore este e-mail",
+      "BUTTON": "Redefinir Senha"
+    },
+    "VERIFY_EMAIL": {
+      "TITLE": "Você foi registrado com sucesso.",
+      "SUBJECT": "Sua conta foi criada com sucesso, clique no link abaixo para ativa-la. Se você não solicitou isso, por favor, ignore este e-mail",
+      "BUTTON": "Ativar Conta"
+    }
+  },
+
+  "MSG_E000": "Usuário já cadastrado",
+  "MSG_E001": "Usuário inexistente",
+  "MSG_E002": "Usuário ou senha inválidos",
+  "MSG_E003": "Usuário não autorizado",
+  "MSG_E004": "Nenhum token foi fornecido",
+  "MSG_E005": "Token incorreto",
+  "MSG_E006": "ID inválido",
+  "MSG_E007": "CPF inválido",
+  "MSG_E008": "O campo {{field}} é inválido!",
+  "MSG_E009": "O campo {{field}} é necessário!",
+  "MSG_E010": "O campo {{field}} deve ter no mínimo {{minimun}} e no máximo {{maximum}} caracteres!",
+  "MSG_E011": "A senha está fraca, a senha deve conter 8 caracteres e no mínimo: um letra maiúscula, um letra minúscula, um simbolo especial e um número",
+
+  "MSG_A000": "As senhas devem ser diferentes!",
+  "MSG_A001": "O usuário deve estar logado",
+
+  "MSG_S001": "Sucesso!",
+  "MSG_S002": "Logado com sucesso!",
+  "MSG_S003": "Deslogado com sucesso!",
+  "MSG_S004": "Usuário {{action}} com sucesso"
+}
