@@ -34,7 +34,7 @@ import morganMiddleware from "@/configuration/morgan";
 
 import router from "./routes/index.routes";
 import { changeLocale } from "@middleware/changeLocale";
-import enviroment from "./configuration/enviroment";
+import enviroment, { redis } from "./configuration/enviroment";
 import Database from "./configuration/database";
 import { Enviroment, EnviromentValues } from "./types/enviroment.type";
 import { isSemicolonClassElement } from "typescript";
@@ -97,6 +97,10 @@ export const redisClient = new Redis(enviroment.redis.port, {
     username: enviroment.redis.username,
     password: enviroment.redis.password
 });
+
+(async () => {
+    console.log((await redisClient.ping()).toString() === "PONG" ? "🌎 Redis Server is Connected" : "❌ Redis Server is Not connected")
+})();
 
 if (enviroment.node_enviroment !== Enviroment.TEST) {
     httpServer.listen(enviroment.port, () => {
@@ -204,7 +208,7 @@ messageServer.on("connect", async (socket: any) => {
         else socket.join(room)
 
         const messages = messageStore.findMessagesForGroup(room);
-        callback(messages); 
+        callback(messages);
     });
 
 
@@ -213,7 +217,7 @@ messageServer.on("connect", async (socket: any) => {
             text,
             from: socket.userId,
             to: room,
-            createdAt: new Date() 
+            createdAt: new Date()
         };
 
         socket.to(room).to(socket.userId).emit("groupMessage", message);
