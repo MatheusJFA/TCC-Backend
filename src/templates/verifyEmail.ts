@@ -17,7 +17,6 @@ export const verifyEmail = (name: string, token: string) => {
         .green600 { color: #22C55E; }
       </style>
     </head>
-
     <body marginheight="0" topmargin="0" marginwidth="0" style="margin: 0px;" leftmargin="0">
       <table cellspacing="0" border="0" cellpadding="0" width="100%">
             <tr>
@@ -26,7 +25,6 @@ export const verifyEmail = (name: string, token: string) => {
               <tr>
                 <td style="height:80px;">&nbsp;</td>
               </tr>
-
               <tr>
                 <td style="height:20px;">&nbsp;</td>
               </tr>

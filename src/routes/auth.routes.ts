@@ -1,21 +1,37 @@
+import AuthController from "@/controller/auth.controller";
+import validateSchema from "@/middleware/validateFields";
 import { Router } from "express";
-import validate from "../middleware/validateFields";
-import validToken from "../middleware/validToken";
 
-import authSchema from "../validation/auth";
-
-import authController from "../controller/auth";
+import authSchema from "@validation/auth";
 
 const router = Router();
 
-router.post("/login", validate(authSchema.login), authController.login);
-router.post("/logout", validate(authSchema.logout), authController.logout);
-router.post("/me", authController.me);
-router.post("/refresh-token", validate(authSchema.refreshToken), authController.refreshToken);
-router.post("/forgot-password", validate(authSchema.forgotPassword), authController.forgetPassword);
-router.post("/getEmail", validate(authSchema.getEmail), authController.getEmail);
-router.post("/reset-password", validate(authSchema.resetPassword), authController.resetPassword);
-router.post("/send-verification-email", authController.sendVerificationEmail);
-router.post("/verify-email", validate(authSchema.verifyEmail), authController.verifyEmail);
+router.post("/login",
+    validateSchema(authSchema.loginSchema),
+    AuthController.login);
+
+router.post("/logout",
+    validateSchema(authSchema.logoutSchema),
+    AuthController.logout)
+
+router.post("/refresh-token",
+    validateSchema(authSchema.refreshTokenSchema),
+    AuthController.refreshToken)
+
+router.post("/send-verification-email",
+    validateSchema(authSchema.sendVerificationEmailSchema),
+    AuthController.sendVerificationEmail)
+
+router.post("/verify-email",
+    validateSchema(authSchema.verifyEmail),
+    AuthController.verifyEmail)
+
+router.post("/send-forgot-password-email",
+    validateSchema(authSchema.sendForgotPasswordEmailSchema),
+    AuthController.sendforgotPasswordEmail)
+
+router.post("/reset-password",
+    validateSchema(authSchema.resetPasswordSchema),
+    AuthController.resetPassword)
 
 export default router;

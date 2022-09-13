@@ -1,50 +1,44 @@
-import winston from 'winston'
+import { join } from 'path';
+import winstonDaily from 'winston-daily-rotate-file';
+import winston from 'winston';
+import { existsSync, mkdirSync } from 'fs';
 
-const levels = {
-  error: 0,
-  warn: 1,
-  info: 2,
-  http: 3,
-  debug: 4,
-}
-
-const level = () => {
-  const env = process.env.NODE_ENV || 'development'
-  const isDevelopment = env === 'development'
-  return isDevelopment ? 'debug' : 'warn'
-}
-
-const colors = {
-  error: 'red',
-  warn: 'yellow',
-  info: 'green',
-  http: 'magenta',
-  debug: 'white',
-}
-
-winston.addColors(colors)
-
-const format = winston.format.combine(
-  winston.format.timestamp({ format: 'DD-MM-YYYY HH:mm:ss' }),
-  winston.format.printf(
-    (info) => `${info.timestamp} ${info.level}: ${info.message}`,
-  ),
-)
-
-const transports = [
-  new winston.transports.Console(),
-  new winston.transports.File({
-    filename: 'logs/error.log',
-    level: 'error',
-  }),
-  new winston.transports.File({ filename: 'logs/all.log' }),
-]
+const logDirectory = join(__dirname, '..', '..', 'logs');
+if (!existsSync(logDirectory)) mkdirSync(logDirectory);
+  
+const logFormat = winston.format.printf(({ timestamp, level, message }) => `${timestamp} ${level}: ${message}`);
 
 const Logger = winston.createLogger({
-  level: level(),
-  levels,
-  format,
-  transports,
-})
+    format: winston.format.combine(
+      winston.format.timestamp({
+        format: 'YYYY-MM-DD HH:mm:ss',
+      }),
+      logFormat,
+    ),
+    transports: [
+      // debug log setting
+      new winstonDaily({
+        level: 'debug',
+        datePattern: 'YYYY-MM-DD',
+        dirname: logDirectory + '/debug', // log file /logs/debug/*.log in save
+        filename: `%DATE%.log`,
+        maxFiles: 30, 
+        json: false,
+        zippedArchive: true,
+      }),
+      // error log setting
+      new winstonDaily({
+        level: 'error',
+        datePattern: 'YYYY-MM-DD',
+        dirname: logDirectory + '/error', // log file /logs/error/*.log in save
+        filename: `%DATE%.log`,
+        maxFiles: 30, // 30 Days saved
+        handleExceptions: true,
+        json: false,
+        zippedArchive: true,
+      }),
+    ],
+  });
+  
 
 export default Logger;

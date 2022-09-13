@@ -1,11 +1,14 @@
-import { Request, Response, NextFunction } from "express";
-import i18next from "i18next";
+import Logger from "@/configuration/logger";
+import {Request, Response, NextFunction} from "express";
+import { changeLanguage } from "i18next";
 
-export default function changeLocale(request: Request, response: Response, next: NextFunction) {
-  const locale = request.headers["accept-language"] as string;
-  
-  if(locale)
-    i18next.changeLanguage(locale);
-  
-  next();
+export const changeLocale = async (request: Request, response: Response, next: NextFunction) => {
+    const language = request.headers["accept-language"] as string;
+
+    await changeLanguage(language || "pt").then(() => {
+        next();
+    }).catch((error) => {
+        Logger.error(`Couldn't change language ${error}`);
+        next(error)
+    });
 }

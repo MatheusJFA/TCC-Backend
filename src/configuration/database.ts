@@ -1,21 +1,19 @@
-import { ConnectionOptions } from "typeorm";
+import { Enviroment } from "@/types/enviroment.type";
+import { DataSource, DataSourceOptions } from "typeorm";
+import enviroment from "./enviroment";
 
-const connectionOptions: ConnectionOptions = {
-  name: 'default',
-  type: 'postgres',
-  host: 'localhost',
-  port: 5433,
-  username: 'postgres',
-  password: 'postgres',
-  database: 'base',
-  synchronize: true,
-  logging: true,
-  migrations: [`${__dirname}/../infrastructure/migrations/**/*{.ts,.js}`],
-  entities: [`${__dirname}/../entity/**/*{.ts,.js}`],
-  cli: {
-    "entitiesDir": __dirname + "../entity",
-    "migrationsDir": __dirname + "../infrastructure/migrations",
-  }
+const connectionOption: DataSourceOptions = {
+    type: "postgres",
+    host: enviroment.database.hostname,
+    port: enviroment.database.port,
+    username: enviroment.database.username,
+    password: enviroment.database.password,
+    database: enviroment.database.name,
+    synchronize: enviroment.node_enviroment === Enviroment.DEVELOPMENT,
+    logging: false,
+    entities: [`${__dirname}/../entity/**/*.entity{.js,.ts}`],
+    migrations: [`${__dirname}/../infrastructure/migration/**/*.{js,.ts}`],
 };
 
-export default connectionOptions;
+
+export default new DataSource(connectionOption);

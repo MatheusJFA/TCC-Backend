@@ -1,55 +1,78 @@
 import * as Yup from 'yup';
 import { t } from 'i18next';
+import { getEmailAndPassword, tokenVerification, validEmail, validPassword } from '@/utils/autenticator';
+import TokenService from '@/service/token.service';
 
-const login = Yup.object({
-  headers: Yup.object().shape({
-    authorization: Yup.string().required(t('MSG_E002')),
-  })
+const loginSchema = Yup.object().shape({
+    headers: Yup.object().shape({
+        authorization: Yup.string().required().test('login-test', () => t('ERROR.USER.INVALID_CREDENTIALS'), (value: any) => {
+            const [email, password] = getEmailAndPassword(value);
+            return validEmail(email) && validPassword(password);
+        }),
+    }).required(),
 });
 
-const logout = Yup.object().shape({
-  body: Yup.object().shape({
-    refreshToken: Yup.string().required(t("MSG_E009", { fields: t("FIELDS.REFRESH_TOKEN") }))
-  })
+
+const logoutSchema = Yup.object().shape({
+    headers: Yup.object().shape({
+        authorization: Yup.string().required()
+            .test('is-jwt', () => t('ERROR.TOKEN.INVALID'), (value: any) => {
+                return TokenService.verifyToken(value);
+            })
+    }).required(),
 });
 
-const getEmail = Yup.object().shape({
-  body: Yup.object().shape({
-    tokenID: Yup.string().required(t("MSG_E009", { fields: t("FIELDS.TOKEN") })),
-    type: Yup.string().required(t("MSG_E009", { fields: t("FIELDS.TOKEN") }))
-  })
+const refreshTokenSchema = Yup.object().shape({
+    headers: Yup.object().shape({
+        authorization: Yup.string()
+            .test('is-jwt', t("ERROR.TOKEN.INVALID"), (value: any) => {
+                return TokenService.verifyToken(value);
+            }).required(),
+    }).required(),
 });
 
-const refreshToken = Yup.object().shape({
-  body: Yup.object().shape({
-    refreshToken: Yup.string().required(t("MSG_E009", { fields: t("FIELDS.REFRESH_TOKEN") }))
-  })
+const sendForgotPasswordEmailSchema = Yup.object().shape({
+    headers: Yup.object().shape({
+        authorization: Yup.string()
+            .test('is-jwt', t("ERROR.TOKEN.INVALID"), (value: any) => {
+                return TokenService.verifyToken(value);
+            }).required(),
+    }).required(),
 });
 
-const resetPassword = Yup.object().shape({
-  headers: Yup.object().shape({
-    authorization: Yup.string().required(t('MSG_E002')),
-  })
+const resetPasswordSchema = Yup.object().shape({
+    body: Yup.object().shape({
+        token: Yup.string()
+            .test('is-jwt', t("ERROR.TOKEN.INVALID"), (value: any) => {
+                return TokenService.verifyToken(value);
+            }).required(),
+    }).required(),
+    headers: Yup.object().shape({
+        authorization: Yup.string().required(),
+    }).required(),
 });
 
-const forgotPassword = Yup.object().shape({
-  body: Yup.object().shape({
-    email: Yup.string().required(t("MSG_E009", { fields: t("FIELDS.REFRESH_TOKEN") })).email()
-  })
+const sendVerificationEmailSchema = Yup.object().shape({
+    body: Yup.object().shape({
+        email: Yup.string().email(t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.EMAIL") })).required(),
+    }).required(),
 });
 
 const verifyEmail = Yup.object().shape({
-  body: Yup.object().shape({
-    token: Yup.string().required(t("MSG_E009", { fields: t("FIELDS.TOKEN") }))
-  })
+    body: Yup.object().shape({
+        token: Yup.string().test('is-jwt', t("ERROR.TOKEN.INVALID"), (value: any) => {
+            return TokenService.verifyToken(value);
+
+        }).required(),
+    }).required(),
 });
 
 export default {
-  login,
-  logout,
-  getEmail,
-  resetPassword,
-  refreshToken,
-  forgotPassword,
-  verifyEmail
+    loginSchema,
+    logoutSchema,
+    refreshTokenSchema,
+    sendForgotPasswordEmailSchema,
+    resetPasswordSchema,
+    sendVerificationEmailSchema,
+    verifyEmail
 }

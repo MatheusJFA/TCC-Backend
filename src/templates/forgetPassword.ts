@@ -4,7 +4,6 @@ export const forgetPassword = (name: string, verifyToken: string) => {
   return `
   <!doctype html>
   <html lang="en-US">
-
   <head>
       <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
       <title>${t("EMAIL.RESET_PASSWORD.TITLE")}</title>
@@ -17,7 +16,6 @@ export const forgetPassword = (name: string, verifyToken: string) => {
         .green600 { color: #22C55E; }
       </style>
     </head>
-
     <body marginheight="0" topmargin="0" marginwidth="0" style="margin: 0px;" leftmargin="0">
         <!--100% body table-->
         <table cellspacing="0" border="0" cellpadding="0" width="100%">
@@ -28,7 +26,6 @@ export const forgetPassword = (name: string, verifyToken: string) => {
                         <tr>
                             <td style="height:80px;">&nbsp;</td>
                         </tr>
-
                         <tr>
                             <td style="height:20px;">&nbsp;</td>
                         </tr>

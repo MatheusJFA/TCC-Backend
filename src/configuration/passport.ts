@@ -1,26 +1,22 @@
-import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-import { t } from "i18next";
-import { TokenType } from "../enums/token";
-import User  from "../entity/user";
-import { getRepository } from "typeorm";
-import { JwtPayload } from "jsonwebtoken";
+import {Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import enviroment from './enviroment';
+import { JwtPayload } from 'jsonwebtoken';
+import userService from '@service/user.service';
+import { TokenType } from "@/types/token.type";
 
 const jwtOptions = {
-  secretOrKey: process.env.JWT_SECRET,
+  secretOrKey: enviroment.jwt.secret,
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 };
 
-const jwtVerify = async (payload: JwtPayload, done: any) => {
+const jwtVerify = async (payload: JwtPayload, done: Function) => {
   try {
-    if (payload.type !== TokenType.ACCESS_TOKEN) 
-      throw new Error(t("MSG_E005"));
+    const tokenType: TokenType = 'ACCESS_TOKEN'
+    if (payload.type !== tokenType) throw new Error('Invalid token type');
     
-    const repository = getRepository(User);
+    const userID = payload.sub!;
 
-    const user = await repository.findOne({ 
-      where: {id: payload.sub}
-    });
-    
+    const user = await userService.getUserByID(userID);
     if (!user) {
       return done(null, false);
     }
@@ -32,4 +28,4 @@ const jwtVerify = async (payload: JwtPayload, done: any) => {
 
 const jwtStrategy = new JwtStrategy(jwtOptions, jwtVerify);
 
-export default jwtStrategy;
+export default jwtStrategy
