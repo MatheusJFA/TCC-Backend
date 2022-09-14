@@ -4,7 +4,7 @@ import { correctUser, userWithInvalidParameters, userWithMissingParameters } fro
 import { clearAllDatabase } from "../fixtures/clearDatabase";
 import database from "@/configuration/database";
 import UserService from "@/service/user.service";
-import { v4 as uuid } from "uuid";
+import { use } from "passport";
 
 const ONE_MINUTE = 60 * 1000;
 
@@ -99,6 +99,9 @@ describe("Test all resources of User.controller", () => {
                         image: "../assets/image/default-avatar.png",
                         name: "teste",
                         role: "USER",
+                        height: 1.89,
+                        weight: 100,
+                        occupation: "USER",
                         sex: "OTHER",
                     });
                 })
@@ -141,6 +144,9 @@ describe("Test all resources of User.controller", () => {
                         name: user.name,
                         role: user.role,
                         sex: user.sex,
+                        height: user.height,
+                        weight: user.weight,
+                        occupation: user.occupation,
                     });
                 });
         });
@@ -157,7 +163,9 @@ describe("Test all resources of User.controller", () => {
                         name: "testonildo",
                         email: "teste@gmail.com",
                         birthdate: "2001-01-01",
-                        sex: "OTHER"
+                        sex: "OTHER",
+                        height: 1.80,
+                        weight: 100,
                     }
                 })
                 .expect("Content-Type", /json/)
@@ -178,7 +186,9 @@ describe("Test all resources of User.controller", () => {
                         name: "testonildo",
                         email: "teste@gmail.com",
                         birthdate: "2001-01-01",
-                        sex: "OTHER"
+                        sex: "OTHER",
+                        height: 1.80,
+                        weight: 100,
                     }
                 })
                 .expect("Content-Type", /json/)

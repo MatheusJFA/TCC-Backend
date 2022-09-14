@@ -34,16 +34,18 @@ import morganMiddleware from "@/configuration/morgan";
 
 import router from "./routes/index.routes";
 import { changeLocale } from "@middleware/changeLocale";
-import enviroment, { redis } from "./configuration/enviroment";
+import enviroment from "./configuration/enviroment";
 import Database from "./configuration/database";
-import { Enviroment, EnviromentValues } from "./types/enviroment.type";
-import { isSemicolonClassElement } from "typescript";
+import { Enviroment } from "./types/enviroment.type";
 
 (async () => {
     if (!Database.isInitialized)
         await Database.initialize()
             .then(() => console.log("🌎 Connected to database"))
-            .catch(() => console.log("❌ Could not connect to the database"))
+            .catch((error) => {
+                console.log("❌ Could not connect to the database")
+                console.log(`error: ${error}`)
+            })
 })(); // Conecta ao banco de dados 
 
 
@@ -108,152 +110,154 @@ if (enviroment.node_enviroment !== Enviroment.TEST) {
     });
 }
 
-const messageServer = new Server(httpServer, {
-    cors: {
-        origin: enviroment.url.frontend
-    }, adapter: createAdapter({
-        pubClient: redisClient,
-        subClient: redisClient.duplicate()
-    })
-});
+if (enviroment.node_enviroment !== Enviroment.TEST) {
 
-const sessionStore = new SessionStore(redisClient);
-const messageStore = new MessageStore(redisClient)
+    const messageServer = new Server(httpServer, {
+        cors: {
+            origin: enviroment.url.frontend
+        }, adapter: createAdapter({
+            pubClient: redisClient,
+            subClient: redisClient.duplicate()
+        })
+    });
 
-messageServer.use(async (socket: any, next) => {
-    const sessionId = socket.handshake.auth.sessionId;
+    const sessionStore = new SessionStore(redisClient);
+    const messageStore = new MessageStore(redisClient)
 
-    if (sessionId) {
-        const session = await sessionStore.findSession(sessionId);
+    messageServer.use(async (socket: any, next) => {
+        const sessionId = socket.handshake.auth.sessionId;
 
-        if (session) {
-            socket.id = session.userId;
-            socket.sessionId = sessionId;
-            socket.email = session.email;
-            return next();
+        if (sessionId) {
+            const session = await sessionStore.findSession(sessionId);
+
+            if (session) {
+                socket.id = session.userId;
+                socket.sessionId = sessionId;
+                socket.email = session.email;
+                return next();
+            }
+
+            const email = socket.handshake.auth.email;
+
+            if (!email) return next(new Error(t("ERROR.PARAMETERS.INVALID_GENERIC")));
+
+            socket.sessionId = crypto.randomBytes(8).toString("hex");
+            socket.userId = crypto.randomBytes(8).toString("hex");
+            next();
+        }
+    });
+
+    messageServer.on("connect", async (socket: any) => {
+        if (enviroment.node_enviroment !== Enviroment.PRODUCTION) {
+            socket.onAny((event: string, ...args: any) => { console.log({ event, args }) });
         }
 
-        const email = socket.handshake.auth.email;
+        // Save session
+        sessionStore.saveSession(socket.sessionId, {
+            userId: socket.userId,
+            email: socket.email,
+            connected: "true"
+        });
 
-        if (!email) return next(new Error(t("ERROR.PARAMETERS.INVALID_GENERIC")));
+        //emit session details
+        socket.emit("session", {
+            sessionId: socket.sessionId,
+            userId: socket.userId
+        });
 
-        socket.sessionId = crypto.randomBytes(8).toString("hex");
-        socket.userId = crypto.randomBytes(8).toString("hex");
-        next();
-    }
-});
+        // Join the "userId" room
+        socket.join(socket.userId);
 
-messageServer.on("connect", async (socket: any) => {
-    if (enviroment.node_enviroment !== Enviroment.PRODUCTION) {
-        socket.onAny((event: string, ...args: any) => { console.log({ event, args }) });
-    }
+        //Fetch all existing users
+        const users: any = [];
 
-    // Save session
-    sessionStore.saveSession(socket.sessionId, {
-        userId: socket.userId,
-        email: socket.email,
-        connected: "true"
-    });
+        const [messages, sessions] = await Promise.all([
+            messageStore.findMessagesForUser(socket.userId),
+            sessionStore.findAllSessions()
+        ]);
 
-    //emit session details
-    socket.emit("session", {
-        sessionId: socket.sessionId,
-        userId: socket.userId
-    });
+        const messagesPerUser = new Map();
+        messages.forEach((message) => {
+            const { from, to } = message;
+            const otherUser = socket.userId === from ? to : from;
+            if (messagesPerUser.has(otherUser))
+                messagesPerUser.get(otherUser).push(message);
+            else
+                messagesPerUser.set(otherUser, [message]);
+        });
 
-    // Join the "userId" room
-    socket.join(socket.userId);
+        sessions.forEach((session) => {
+            users.push({
+                userId: session.userId,
+                email: session.email,
+                connected: session.connected,
+                messages: messagesPerUser.get(session.userId) || [],
+            });
+        });
 
-    //Fetch all existing users
-    const users: any = [];
+        socket.emit("users", users);
 
-    const [messages, sessions] = await Promise.all([
-        messageStore.findMessagesForUser(socket.userId),
-        sessionStore.findAllSessions()
-    ]);
+        socket.broadcast.emit("userConnected", {
+            userId: socket.userId,
+            email: socket.email,
+            connected: true,
+            messages: [],
+        })
 
-    const messagesPerUser = new Map();
-    messages.forEach((message) => {
-        const { from, to } = message;
-        const otherUser = socket.userId === from ? to : from;
-        if (messagesPerUser.has(otherUser))
-            messagesPerUser.get(otherUser).push(message);
-        else
-            messagesPerUser.set(otherUser, [message]);
-    });
+        socket.on("joinGroup", async ({ room, socketId }, callback: Function) => {
+            const allSockets = await messageServer.in(room).fetchSockets();
 
-    sessions.forEach((session) => {
-        users.push({
-            userId: session.userId,
-            email: session.email,
-            connected: session.connected,
-            messages: messagesPerUser.get(session.userId) || [],
+
+            if (allSockets.includes(socket.id)) socket.id = socketId;
+            else socket.join(room)
+
+            const messages = messageStore.findMessagesForGroup(room);
+            callback(messages);
+        });
+
+
+        socket.on("groupMessage", ({ text, room }) => {
+            const message = {
+                text,
+                from: socket.userId,
+                to: room,
+                createdAt: new Date()
+            };
+
+            socket.to(room).to(socket.userId).emit("groupMessage", message);
+            messageStore.saveGroupMessage(message);
+        });
+
+        socket.on("privateMessage", ({ text, to }) => {
+            const message = {
+                text,
+                from: socket.userId,
+                to,
+                createdAt: new Date()
+            };
+
+            socket.to(to).to(socket.userId).emit("privateMessage", message);
+            messageStore.savePrivateMessage(message);
+        });
+
+        socket.on("userDisconnected", async () => {
+            const matchingSockets = await messageServer.in(socket.userId).allSockets();
+
+            const isDisconnected = matchingSockets.size === 0;
+
+            if (isDisconnected) {
+                socket.broadcast.emit("userDisconnected", socket.userId);
+
+                sessionStore.saveSession(socket.sessionId, {
+                    userId: socket.userId,
+                    email: socket.email,
+                    connected: "false"
+                })
+            }
         });
     });
 
-    socket.emit("users", users);
-
-    socket.broadcast.emit("userConnected", {
-        userId: socket.userId,
-        email: socket.email,
-        connected: true,
-        messages: [],
-    })
-
-    socket.on("joinGroup", async ({ room, socketId }, callback: Function) => {
-        const allSockets = await messageServer.in(room).fetchSockets();
-
-
-        if (allSockets.includes(socket.id)) socket.id = socketId;
-        else socket.join(room)
-
-        const messages = messageStore.findMessagesForGroup(room);
-        callback(messages);
-    });
-
-
-    socket.on("groupMessage", ({ text, room }) => {
-        const message = {
-            text,
-            from: socket.userId,
-            to: room,
-            createdAt: new Date()
-        };
-
-        socket.to(room).to(socket.userId).emit("groupMessage", message);
-        messageStore.saveGroupMessage(message);
-    });
-
-    socket.on("privateMessage", ({ text, to }) => {
-        const message = {
-            text,
-            from: socket.userId,
-            to,
-            createdAt: new Date()
-        };
-
-        socket.to(to).to(socket.userId).emit("privateMessage", message);
-        messageStore.savePrivateMessage(message);
-    });
-
-    socket.on("userDisconnected", async () => {
-        const matchingSockets = await messageServer.in(socket.userId).allSockets();
-
-        const isDisconnected = matchingSockets.size === 0;
-
-        if (isDisconnected) {
-            socket.broadcast.emit("userDisconnected", socket.userId);
-
-            sessionStore.saveSession(socket.sessionId, {
-                userId: socket.userId,
-                email: socket.email,
-                connected: "false"
-            })
-        }
-    });
-});
-
-setupWorker(messageServer);
-
+    setupWorker(messageServer);
+}
 
 export default application;

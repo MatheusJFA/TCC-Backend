@@ -5,7 +5,6 @@ import database from "@/configuration/database";
 import UserService from "@/service/user.service";
 import { IUser } from "@/entity/user.entity";
 import { Token } from "@/types/token.type";
-import TokenService from "@/service/token.service";
 
 const ONE_MINUTE = 60 * 1000;
 
@@ -17,10 +16,14 @@ let USER = {
     email: "user@gmail.com",
     password: "User12345@",
     birthdate: new Date("2000-01-01"),
+    height: 1.89,
+    weight: 100,
     sex: "OTHER",
     role: "USER",
+    occupation: "USER",
     image: "../assets/image/default-avatar.png",
-    isEmailVerified: false
+    isEmailVerified: false,
+    certification: undefined
 } as IUser;
 
 let ADMINISTRATOR = {
@@ -28,9 +31,13 @@ let ADMINISTRATOR = {
     email: "admin@gmail.com",
     password: "Admin12345@",
     birthdate: new Date("2000-01-01"),
+    height: 1.89,
+    weight: 100,
     sex: "OTHER",
     role: "USER",
+    occupation: "USER",
     image: "../assets/image/default-avatar.png",
+    certification: undefined,
     isEmailVerified: false
 } as IUser;
 
@@ -73,7 +80,7 @@ describe("Test all resources of Auth.Controller", () => {
                 });
         });
 
-        test("Should return a 200 status code if a valid email and password is sent", async () => {
+        test("Should return a 201 status code if a valid email and password is sent", async () => {
             await Request(application)
                 .post("/auth/login")
                 .set({ authorization: `Basic dXNlckBnbWFpbC5jb206VXNlcjEyMzQ1QA==` })
@@ -90,6 +97,9 @@ describe("Test all resources of Auth.Controller", () => {
                         email: USER.email,
                         birthdate: USER.birthdate.toISOString(),
                         sex: USER.sex,
+                        height: USER.height.toString(),
+                        weight: USER.weight.toString(),
+                        occupation: USER.occupation,
                         role: USER.role,
                         image: USER.image,
                     });

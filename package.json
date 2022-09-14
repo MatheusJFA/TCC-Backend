@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.ts",
   "scripts": {
-    "serve": "ts-node -r tsconfig-paths/register --transpile-only src/server.ts",
+    "start": "ts-node -r tsconfig-paths/register --transpile-only src/server.ts",
     "dev": "ts-node-dev -r tsconfig-paths/register --inspect --transpile-only --ignore-watch node_modules src/server.ts",
     "test": "cross-env NODE_ENVIROMENT=TEST jest --noStackTrace --forceExit --runInBand src/tests ",
     "test:clearCache": "jest --clearCache",
@@ -21,7 +21,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.0.1",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
@@ -32,7 +31,7 @@
     "i18next": "^21.8.10",
     "i18next-fs-backend": "^1.1.4",
     "i18next-http-middleware": "^3.2.1",
-    "ioredis": "^4.22.0",
+    "ioredis": "^5.2.3",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",

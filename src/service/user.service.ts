@@ -70,8 +70,12 @@ const UserService = Database.getRepository(User).extend({
                 data.password,
                 data.birthdate,
                 data.sex,
+                data.height,
+                data.weight,
                 data.role,
-                data.image);
+                data.occupation,
+                data.image,
+                data.certification);
 
             await user.hashPassword(data.password);
 

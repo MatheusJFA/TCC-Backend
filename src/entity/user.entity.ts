@@ -1,3 +1,4 @@
+import { Occupation, OccupationValues } from "@/types/occupation.type";
 import { RoleValues } from "@/types/role.type";
 import { SexValues } from "@/types/sex.type";
 
@@ -13,7 +14,11 @@ export interface IUser {
     password: string
     birthdate: Date,
     sex: string,
+    height: number,
+    weight: number,
     role: string,
+    occupation: string,
+    certification?: string,
     image?: string,
     isEmailVerified: boolean
 }
@@ -41,6 +46,18 @@ export default class User extends Base implements IUser {
     @Column("enum", { enum: RoleValues })
     role: string;
 
+    @Column("enum", { enum: OccupationValues })
+    occupation: string;
+
+    @Column()
+    certification?: string;
+
+    @Column("decimal")
+    height: number;
+
+    @Column("decimal")
+    weight: number;
+
     @Column()
     image?: string;
 
@@ -53,8 +70,12 @@ export default class User extends Base implements IUser {
         password: string,
         birthdate: Date,
         sex: string = "OTHER",
+        height: number,
+        weight: number,
         role: string = "USER",
-        image: string = "../assets/image/default-avatar.png"
+        occupation: string = "USER",
+        image: string = "../assets/image/default-avatar.png",
+        certification: string | undefined = undefined
     ) {
         super();
         this.name = name;
@@ -62,7 +83,12 @@ export default class User extends Base implements IUser {
         this.password = password;
         this.birthdate = birthdate;
         this.sex = sex;
+        this.height = height;
+        this.weight = weight;
         this.role = role;
+        this.occupation = occupation;
+        if (this.occupation === Occupation.USER) this.certification = "";
+        else this.certification = certification!;
         this.image = image;
         this.isEmailVerified = false;
     }
@@ -100,10 +126,14 @@ export default class User extends Base implements IUser {
         email: string;
         birthdate: Date;
         sex: string;
+        height: number,
+        weight: number,
+        occupation: string,
+        certification: string | undefined,
         role: string;
         image: string | undefined;
     } => {
-        const { id, name, email, birthdate, sex, role, image } = this;
+        const { id, name, email, birthdate, sex, height, weight, role, occupation, certification, image } = this;
 
         const user = {
             id,
@@ -111,7 +141,11 @@ export default class User extends Base implements IUser {
             email,
             birthdate: new Date(birthdate),
             sex,
+            height,
+            weight,
             role,
+            occupation,
+            certification: certification || undefined,
             image
         };
 

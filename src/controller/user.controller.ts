@@ -9,12 +9,12 @@ import { t } from "i18next";
 class UserController {
     createUser = LogAsyncError(async (request: Request, response: Response) => {
         try {
-            const { name, email, birthdate, sex } = request.body.user;
+            const { name, email, birthdate, sex, height, weight, occupation, certification } = request.body.user;
             const password = getPassword(request.headers!.authorization!);
 
             const image = request.file?.filename || "../assets/image/default-avatar.png";
 
-            const user = await UserService.createUser({ name, email, birthdate, password, sex, role: "USER", image } as IUser);
+            const user = await UserService.createUser({ name, email, birthdate, password, sex, role: "USER", height, weight, occupation: "USER", certification, image } as IUser);
             return response
                 .status(httpStatus.CREATED)
                 .json({ user: user.toJSON() });
@@ -64,7 +64,7 @@ class UserController {
     updateUser = LogAsyncError(async (request: Request, response: Response) => {
         try {
             const id: string = request.params.id;
-            const { name, email, birthdate, sex } = request.body.user;
+            const { name, email, birthdate, sex, height, weight, occupation, certification } = request.body.user;
 
             const image = request.file?.filename || "../assets/image/default-avatar.png";
 
@@ -76,7 +76,7 @@ class UserController {
                 return response.status(httpStatus.NOT_FOUND).json({ message: t("ERROR.USER.NOT_FOUND") });
             }
 
-            const updatedUser = await UserService.updateUser(id, { name, email, birthdate, sex, image } as IUser)
+            const updatedUser = await UserService.updateUser(id, { name, email, birthdate, sex, image, height, weight, occupation, certification } as IUser)
 
             return response
                 .status(httpStatus.OK)

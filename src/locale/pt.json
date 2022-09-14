@@ -47,7 +47,11 @@
             "BIRTHDATE": "Data de nascimento",
             "SEX": "Sexo",
             "ROLE": "Cargo",
-            "IMAGE": "Imagem"
+            "HEIGHT": "Altura",
+            "WEIGHT": "Peso",
+            "OCCUPATION": "Ocupação",
+            "IMAGE": "Imagem",
+            "CERTIFICATION": "Certificação" 
         },
         "TOKEN": {
             "TOKEN": "Token",

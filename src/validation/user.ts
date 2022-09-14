@@ -1,3 +1,4 @@
+import { Occupation, OccupationValues } from "@/types/occupation.type";
 import { Role, RoleValues } from "@/types/role.type";
 import { SexValues } from "@/types/sex.type";
 import { getPassword, validPassword } from "@/utils/autenticator";
@@ -11,7 +12,11 @@ const createUserSchema = Yup.object().shape({
             email: Yup.string().email(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.EMAIL") })).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.EMAIL") })),
             birthdate: Yup.date().max(new Date()).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.BIRTHDATE") })),
             sex: Yup.string().oneOf(SexValues).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.SEX") })),
+            height: Yup.number().min(0.50).max(2.60).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.HEIGHT") })),
+            weight: Yup.number().min(5.00).max(600.00).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.WEIGHT") })),
             role: Yup.string().default(Role.USER).oneOf(RoleValues).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.ROLE") })),
+            occupation: Yup.string().default(Occupation.USER).oneOf(OccupationValues).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.OCCUPATION") })),
+            certification: Yup.string().optional(),
             image: Yup.string().optional()
         }).required()
     }),
@@ -39,9 +44,12 @@ const updateUserSchema = Yup.object().shape({
             name: Yup.string().required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.NAME") })),
             email: Yup.string().email(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.EMAIL") })).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.EMAIL") })),
             birthdate: Yup.date().max(new Date()).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.BIRTHDATE") })),
-            sex: Yup.string().oneOf(SexValues).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.SEX") })),
-            role: Yup.string().default(Role.USER).oneOf(RoleValues).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.ROLE") })),
-            image: Yup.string().optional().url(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.IMAGE") }))
+            height: Yup.number().min(0.50).max(2.60).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.HEIGHT") })),
+            weight: Yup.number().min(5.00).max(600.00).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.WEIGHT") })),
+            role: Yup.string().default(Role.USER).oneOf(RoleValues).optional(),
+            occupation: Yup.string().default(Occupation.USER).oneOf(OccupationValues).optional(),
+            certification: Yup.string().optional(),
+            image: Yup.string().optional()
         }),
     }),
 });

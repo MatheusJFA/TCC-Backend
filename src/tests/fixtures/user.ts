@@ -4,6 +4,10 @@ export const correctUser = {
     birthdate: "2000-01-01",
     role: "USER",
     sex: "OTHER",
+    height: 1.89,
+    weight: 100,
+    occupation: "USER",
+    certification: ""
 };
 
 export const userWithMissingParameters = {
@@ -11,6 +15,10 @@ export const userWithMissingParameters = {
     email: "testonildes@gmail.com",
     role: "USER",
     sex: "OTHER",
+    height: 1.89,
+    weight: 100,
+    occupation: "USER",
+    certification: ""
 };
 
 export const userWithInvalidParameters = {
@@ -19,4 +27,8 @@ export const userWithInvalidParameters = {
     birthdate: "2000-01-01",
     role: "USER",
     sex: "OTHER",
+    height: 1.89,
+    weight: 100,
+    occupation: "USER",
+    certification: ""
 };
