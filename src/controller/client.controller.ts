@@ -1,23 +1,23 @@
-import { IUser } from "@/entity/user.entity";
-import UserService from "@service/user.service";
+import { IClient } from "@/entity/client.entity";
+import ClientService from "@/service/client.service";
 import { getPassword, validEmail, validPassword } from "@/utils/autenticator";
 import { LogAsyncError } from "@/utils/logAsyncError";
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 import { t } from "i18next";
 
-class UserController {
-    createUser = LogAsyncError(async (request: Request, response: Response) => {
+class ClientController {
+    createClient = LogAsyncError(async (request: Request, response: Response) => {
         try {
-            const { name, email, birthdate, sex, height, weight, occupation, certification } = request.body.user;
+            const { name, email, birthdate, sex, height, weight, occupation, certification } = request.body.client;
             const password = getPassword(request.headers!.authorization!);
 
             const image = request.file?.filename || "../assets/image/default-avatar.png";
 
-            const user = await UserService.createUser({ name, email, birthdate, password, sex, role: "USER", height, weight, occupation: "USER", certification, image } as IUser);
+            const client = await ClientService.createClient({ name, email, birthdate, password, sex, role: "USER", height, weight, image } as IClient);
             return response
                 .status(httpStatus.CREATED)
-                .json({ user: user.toJSON() });
+                .json({ client: client.toJSON() });
         } catch (error: any) {
             return response
                 .status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -26,20 +26,20 @@ class UserController {
     });
 
 
-    getUser = LogAsyncError(async (request: Request, response: Response) => {
+    getClient = LogAsyncError(async (request: Request, response: Response) => {
         try {
             const id = request.params.id as string;
 
-            let user: any;
+            let client: any;
 
             try {
-                user = await UserService.getUserByID(id);
+                client = await ClientService.getClientByID(id);
             } catch (error) {
                 return response.status(httpStatus.NOT_FOUND).json({ message: t("ERROR.USER.NOT_FOUND") });
             }
             return response
                 .status(httpStatus.OK)
-                .json({ user: user.toJSON() });
+                .json({ client: client.toJSON() });
         } catch (error: any) {
             return response
                 .status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -47,13 +47,13 @@ class UserController {
         }
     });
 
-    getUsers = LogAsyncError(async (request: Request, response: Response) => {
+    getClients = LogAsyncError(async (request: Request, response: Response) => {
         try {
             const paginate = request.body.pagination;
-            const users = await UserService.getUsers(paginate);
+            const clients = await ClientService.getClients(paginate);
             return response
                 .status(httpStatus.OK)
-                .json(users);
+                .json(clients);
         } catch (error: any) {
             return response
                 .status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -61,26 +61,26 @@ class UserController {
         }
     });
 
-    updateUser = LogAsyncError(async (request: Request, response: Response) => {
+    updateClient = LogAsyncError(async (request: Request, response: Response) => {
         try {
             const id: string = request.params.id;
-            const { name, email, birthdate, sex, height, weight, occupation, certification } = request.body.user;
+            const { name, email, birthdate, sex, height, weight } = request.body.client;
 
             const image = request.file?.filename || "../assets/image/default-avatar.png";
 
-            let user: any;
+            let client: any;
 
             try {
-                user = await UserService.getUserByID(id);
+                client = await ClientService.getClientByID(id);
             } catch (error) {
                 return response.status(httpStatus.NOT_FOUND).json({ message: t("ERROR.USER.NOT_FOUND") });
             }
 
-            const updatedUser = await UserService.updateUser(id, { name, email, birthdate, sex, image, height, weight, occupation, certification } as IUser)
+            const updatedClient = await ClientService.updateClient(id, { name, email, birthdate, sex, image, height, weight  } as IClient)
 
             return response
                 .status(httpStatus.OK)
-                .json({ user: updatedUser.toJSON() })
+                .json({ client: updatedClient.toJSON() })
         } catch (error: any) {
             return response
                 .status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -88,19 +88,19 @@ class UserController {
         }
     });
 
-    deleteUser = LogAsyncError(async (request: Request, response: Response) => {
+    deleteClient = LogAsyncError(async (request: Request, response: Response) => {
         try {
             const id = request.params.id;
-            let user: any;
+            let client: any;
 
             try {
-                user = await UserService.getUserByID(id);
+                client = await ClientService.getClientByID(id);
             } catch (error) {
-                if (!user) return response.status(httpStatus.NOT_FOUND).json({ message: t("ERROR.USER.NOT_FOUND") });
+                if (!client) return response.status(httpStatus.NOT_FOUND).json({ message: t("ERROR.USER.NOT_FOUND") });
             }
 
-            user.invalidate()
-            await user.save();
+            client.invalidate()
+            await client.save();
             return response
                 .status(httpStatus.OK)
                 .json({ message: t("SUCCESS.MESSAGE", { resource: t("RESOURCES.USER"), action: t("ACTION.DELETE") }) });
@@ -116,16 +116,15 @@ class UserController {
             const id = request.params.id;
             const role = request.body.role;
 
-
-            let user: any;
+            let client: any;
 
             try {
-                user = await UserService.getUserByID(id);
+                client = await ClientService.getClientByID(id);
             } catch (error) {
                 return response.status(httpStatus.NOT_FOUND).json({ message: t("ERROR.USER.NOT_FOUND") });
             }
 
-            user.updateUser({ role });
+            client.updateClient({ role });
             return response
                 .status(httpStatus.CREATED)
                 .json({ message: t("SUCCESS.OK") })
@@ -138,4 +137,4 @@ class UserController {
 
 }
 
-export default new UserController();
+export default new ClientController();

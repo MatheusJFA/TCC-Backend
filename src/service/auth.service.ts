@@ -1,17 +1,20 @@
 import Database from "@/configuration/database";
 import Token from "@/entity/token.entity";
-import User from "@/entity/user.entity";
+import Client from "@/entity/client.entity";
 import { getEmailAndPassword } from "@/utils/autenticator";
 import { t } from "i18next";
 import TokenService from "./token.service";
-import UserService from "./user.service";
+import ClientService from "./client.service";
+import HelperService from "./helper.service";
+import Helper from "@/entity/helper.entity";
+import User from "@/entity/user.entity";
 
 const AuthenticationService = {
-    login: async function (authorization: string): Promise<User> {
+    login: async function (authorization: string): Promise<Client> {
         try {
             const [email, password] = getEmailAndPassword(authorization);
 
-            const user = await UserService.getUserByEmail(email);
+            const user = await ClientService.getClientByEmail(email) || await HelperService.getHelperByEmail(email);
 
             if (!user) throw new Error(t("ERROR.USER.INVALID_CREDENTIALS"))
 
@@ -26,7 +29,7 @@ const AuthenticationService = {
 
     logout: async function (jwt: string): Promise<void> {
         try {
-            if(jwt.startsWith("Bearer ")) jwt = jwt.split(" ")[1];
+            if (jwt.startsWith("Bearer ")) jwt = jwt.split(" ")[1];
             const token = await TokenService.getTokenByJWT(jwt, "REFRESH_TOKEN");
 
             if (!token) throw new Error(t("ERROR.TOKEN.NOT_FOUND"));
@@ -41,7 +44,7 @@ const AuthenticationService = {
     refreshToken: async function (token: string): Promise<{ accessToken: string; refreshToken: string; }> {
         try {
             const refreshToken = await TokenService.getTokenByJWT(token, "REFRESH_TOKEN");
-            const user = await UserService.getUserByID(refreshToken.user.id);
+            const user = await ClientService.getClientByID(refreshToken.user.id) || await HelperService.getHelperByID(refreshToken.user.id);
 
             if (!user) throw new Error(t("ERROR.USER.NOT_FOUND"));
 
@@ -55,12 +58,16 @@ const AuthenticationService = {
     resetPassword: async function (token: string, password: string): Promise<void> {
         try {
             const jwt: Token | undefined = await TokenService.getTokenByJWT(token, "RESET_PASSWORD");
-            if (!jwt) throw new Error(t("ERROR.TOKEN.NOT_FOUND"));
+            if (!jwt)
+                throw new Error(t("ERROR.TOKEN.NOT_FOUND"));
 
             const user: User = jwt.user;
 
             user.hashPassword(password);
-            await UserService.save(user);
+
+            if (user instanceof Client) ClientService.save(user);
+            else if (user instanceof Helper) HelperService.save(user);
+            else throw Error(t("ERROR.USER.INVALID_CREDENTIALS"))
 
             jwt.invalidate();
             await TokenService.deleteToken(jwt);
@@ -77,7 +84,13 @@ const AuthenticationService = {
             const user: User = jwt.user;
 
             user.verifyEmail();
-            await UserService.save(user);
+
+            const clientType = await ClientService.getClientByID(jwt.user.id);
+            if (clientType) ClientService.save(user);
+
+            const helperType = await HelperService.getHelperByID(jwt.user.id);
+            if (helperType) HelperService.save(user)
+
 
             jwt.invalidate();
             await TokenService.deleteToken(jwt);

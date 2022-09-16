@@ -33,4 +33,8 @@ export default class Base extends BaseEntity implements IBase {
         this.deletedAt = null;
         this.version = 0;
     }
+
+    invalidate = (): void => {
+        this.deletedAt = new Date();
+    }
 }

@@ -2,12 +2,14 @@ import enviroment from "@/configuration/enviroment";
 import { TokenType } from "@/types/token.type";
 import Token, { IToken } from "@/entity/token.entity";
 import { t } from "i18next";
-import User from "@/entity/user.entity";
+import Client from "@/entity/client.entity";
 import { IsNull } from "typeorm";
 import { sign, verify } from "jsonwebtoken";
 import Database from "@/configuration/database";
 import Logger from "@/configuration/logger";
-import UserService from "./user.service";
+import ClientService from "./client.service";
+import Helper from "@/entity/helper.entity";
+import HelperService from "./helper.service";
 
 const TokenService = Database.getRepository(Token).extend({
     MINUTE: 60 * 1000, //In milliseconds
@@ -18,7 +20,7 @@ const TokenService = Database.getRepository(Token).extend({
             if (!jwt) return false;
 
             if (jwt.startsWith("Bearer ")) jwt = jwt.split(" ")[1];
-            
+
             let validToken = false;
 
             verify(jwt, enviroment.jwt.secret, function (error: any) {
@@ -58,8 +60,16 @@ const TokenService = Database.getRepository(Token).extend({
     saveToken: async function (data: IToken) {
         try {
             const token: Token = new Token(data.jwt, data.type, data.user, data.expires);
-            data.user.addToken(token);
-            return await UserService.save(data.user);
+            const user = data.user;
+
+            user.addToken(token);
+
+            if (user instanceof Client)
+                return await ClientService.save(data.user);
+            else if (user instanceof Helper)
+                return await HelperService.save(data.user);
+            else
+                throw new Error("ERROR.USER.INVALID_CREDENTIALS")
         } catch (error: any) {
             throw error;
         }
@@ -67,10 +77,8 @@ const TokenService = Database.getRepository(Token).extend({
 
     getTokenByJWT: async function (jwt: string, tokenType: TokenType): Promise<Token> {
         try {
-            const token = await this.findOne({
-                where: { jwt, type: tokenType, deletedAt: IsNull() },
-                relations: ["user"]
-            });
+            
+            const token = await this.findOne({ where: { jwt, type: tokenType, deletedAt: IsNull() }, relations: ["user"] });
 
             if (this.invalidToken(token)) throw new Error(t("ERROR.TOKEN.NOT_FOUND"));
 
@@ -103,7 +111,8 @@ const TokenService = Database.getRepository(Token).extend({
         }
     },
 
-    generateAuthenticationTokens: async function (user: User): Promise<{ accessToken: string, refreshToken: string }> {
+    generateAuthenticationTokens: async function (user: Client | Helper): Promise<{ accessToken: string, refreshToken: string }> {
+
         try {
             const userAccessToken = user.tokens.find((token: Token) => token.type === "ACCESS_TOKEN");
             const userRefreshToken = user.tokens.find((token: Token) => token.type === "REFRESH_TOKEN");
@@ -122,7 +131,7 @@ const TokenService = Database.getRepository(Token).extend({
         }
     },
 
-    generateVerifyEmailToken: async function (user: User): Promise<Token> {
+    generateVerifyEmailToken: async function (user: Client | Helper): Promise<Token> {
         try {
             const expires = new Date(new Date().getTime() + (enviroment.jwt.verify_email * this.MINUTE));
             const verifyEmailToken = this.generateTokens(user.id, expires, "VERIFY_EMAIL");
@@ -133,7 +142,7 @@ const TokenService = Database.getRepository(Token).extend({
     },
 
 
-    generateResetPasswordToken: async function (user: User): Promise<Token> {
+    generateResetPasswordToken: async function (user: Client): Promise<Token> {
         try {
             const expires = new Date(new Date().getTime() + (enviroment.jwt.reset_password * this.MINUTE));
             const resetPasswordToken = this.generateTokens(user.id, expires, "RESET_PASSWORD");

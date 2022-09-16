@@ -1,7 +1,7 @@
 export const Role = {
     VISITOR: "VISITOR",
     USER: "USER",
-    EMPLOYEE: "EMPLOYEE",
+    HELPER: "HELPER",
     MODERATOR: "MODERATOR",
     ADMINISTRATOR: "ADMINISTRATOR",
 }

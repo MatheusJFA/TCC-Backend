@@ -1,10 +1,9 @@
 import Request from "supertest";
 import application from "@/server"
-import { correctUser, userWithInvalidParameters, userWithMissingParameters } from "../fixtures/user";
+import { correctClient, clientWithInvalidParameters , clientWithMissingParameters } from "../fixtures/clients";
 import { clearAllDatabase } from "../fixtures/clearDatabase";
 import database from "@/configuration/database";
-import UserService from "@/service/user.service";
-import { use } from "passport";
+import ClientService from "@/service/client.service";
 
 const ONE_MINUTE = 60 * 1000;
 
@@ -28,15 +27,15 @@ afterAll(async () => {
         .catch((error: any) => console.log(error));
 });
 
-describe("Test all resources of User.controller", () => {
-    describe("Test POST /users", () => {
-        test("should return a 400 status code if user is missing some parameters", async () => {
+describe("Test all resources of Client.controller", () => {
+    describe("Test POST /clients", () => {
+        test("should return a 400 status code if client is missing some parameters", async () => {
             await Request(application)
-                .post("/user")
+                .post("/client")
                 .set({ authorization: `Basic cGFzc3dvcmQxMjNQQA` })
                 .send({
-                    user: {
-                        ...userWithMissingParameters
+                    client: {
+                        ...clientWithMissingParameters
                     }
                 })
                 .then(response => {
@@ -46,13 +45,13 @@ describe("Test all resources of User.controller", () => {
                 });
         });
 
-        test("should return a 400 status code if user email is invalid", async () => {
+        test("should return a 400 status code if client email is invalid", async () => {
             await Request(application)
-                .post("/user")
+                .post("/client")
                 .set({ authorization: `Basic cGFzc3dvcmQxMjNQQA` })
                 .send({
-                    user: {
-                        ...userWithInvalidParameters,
+                    client: {
+                        ...clientWithInvalidParameters,
                     }
                 })
                 .expect(400)
@@ -65,11 +64,11 @@ describe("Test all resources of User.controller", () => {
 
         test("should return a 400 status code if the password is weak", async () => {
             await Request(application)
-                .post("/user")
+                .post("/client")
                 .set({ authorization: `Bearer cGFzc3dvcmQ` })
                 .send({
-                    user: {
-                        ...correctUser
+                    client: {
+                        ...correctClient
                     }
                 })
                 .expect(400)
@@ -80,28 +79,27 @@ describe("Test all resources of User.controller", () => {
                 })
         });
 
-        test("should return a 201 status code and a user", async () => {
+        test("should return a 201 status code and a client", async () => {
             await Request(application)
-                .post("/user")
+                .post("/client")
                 .set({ authorization: `Bearer cGFzc3dvcmQxMjNQQA` })
                 .send({
-                    user: {
-                        ...correctUser
+                    client: {
+                        ...correctClient
                     }
                 })
                 .expect(201)
                 .expect("Content-Type", /json/)
                 .then(response => {
-                    expect(response.body.user).toMatchObject({
+                    expect(response.body.client).toMatchObject({
                         id: expect.stringMatching(/[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/),
                         birthdate: "2000-01-01T00:00:00.000Z",
-                        email: "teste@gmail.com",
+                        email: "client-correct@gmail.com",
                         image: "../assets/image/default-avatar.png",
-                        name: "teste",
+                        name: "testonildo",
                         role: "USER",
                         height: 1.89,
                         weight: 100,
-                        occupation: "USER",
                         sex: "OTHER",
                     });
                 })
@@ -109,12 +107,12 @@ describe("Test all resources of User.controller", () => {
     });
 
 
-    describe("Test /GET users", () => {
-        test("Should return a 404 status code if a user was not found", async () => {
+    describe("Test /GET clients", () => {
+        test("Should return a 404 status code if a client was not found", async () => {
             const id = "0ca2125c-b3a3-43d8-a75c-b0339b3a79cd";
 
             await Request(application)
-                .get(`/user/${id}`)
+                .get(`/client/${id}`)
                 .expect(404)
                 .expect("Content-Type", /json/)
                 .then(response => {
@@ -123,45 +121,44 @@ describe("Test all resources of User.controller", () => {
                 });
         });
 
-        test("Should return a 200 status code if a user was found", async () => {
-            const allUsers = await UserService.getUsers();
-            const { users, total } = allUsers;
+        test("Should return a 200 status code if a client was found", async () => {
+            const allClients = await ClientService.getClients();
+            const { clients, total } = allClients;
 
-            let user = users[0];
+            let client = clients[0];
 
             await Request(application)
-                .get(`/user/${user.id}`)
+                .get(`/client/${client.id}`)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .then(response => {
                     expect(total).toBeGreaterThan(0);
-                    expect(response.body).toHaveProperty("user");
-                    expect(response.body.user).toMatchObject({
-                        id: user.id,
-                        birthdate: user.birthdate.toISOString(),
-                        email: user.email,
-                        image: user.image,
-                        name: user.name,
-                        role: user.role,
-                        sex: user.sex,
-                        height: user.height,
-                        weight: user.weight,
-                        occupation: user.occupation,
+                    expect(response.body).toHaveProperty("client");
+                    expect(response.body.client).toMatchObject({
+                        id: client.id,
+                        birthdate: client.birthdate.toISOString(),
+                        email: client.email,
+                        image: client.image,
+                        name: client.name,
+                        role: client.role,
+                        sex: client.sex,
+                        height: client.height,
+                        weight: client.weight,
                     });
                 });
         });
     });
 
-    describe("Test /PUT user", () => {
-        test("Should return a 404 status error if no user was found", async () => {
+    describe("Test /PUT client", () => {
+        test("Should return a 404 status error if no client was found", async () => {
             const id = "0ca2125c-b3a3-43d8-a75c-b0339b3a79cd";
 
             await Request(application)
-                .put(`/user/${id}`)
+                .put(`/client/${id}`)
                 .send({
-                    user: {
+                    client: {
                         name: "testonildo",
-                        email: "teste@gmail.com",
+                        email: "client-correct@gmail.com",
                         birthdate: "2001-01-01",
                         sex: "OTHER",
                         height: 1.80,
@@ -176,15 +173,15 @@ describe("Test all resources of User.controller", () => {
                 });
         });
 
-        test("Should return a 200 status code if user updated", async () => {
-            const user = await UserService.getUserByEmail("teste@gmail.com");
+        test("Should return a 200 status code if client updated", async () => {
+            const client = await ClientService.getClientByEmail("client-correct@gmail.com");
 
             await Request(application)
-                .put(`/user/${user.id}`)
+                .put(`/client/${client.id}`)
                 .send({
-                    user: {
+                    client: {
                         name: "testonildo",
-                        email: "teste@gmail.com",
+                        email: "client-correct@gmail.com",
                         birthdate: "2001-01-01",
                         sex: "OTHER",
                         height: 1.80,
@@ -194,25 +191,25 @@ describe("Test all resources of User.controller", () => {
                 .expect("Content-Type", /json/)
                 .expect(200)
                 .then(response => {
-                    expect(response.body).toHaveProperty("user");
-                    expect(response.body.user).toMatchObject({
-                        id: user.id,
+                    expect(response.body).toHaveProperty("client");
+                    expect(response.body.client).toMatchObject({
+                        id: client.id,
                         birthdate: "2001-01-01T00:00:00.000Z",
-                        email: user.email,
-                        image: user.image,
+                        email: client.email,
+                        image: client.image,
                         name: "testonildo",
-                        role: user.role,
+                        role: client.role,
                     });
                 });
         });
     });
 
-    describe("Test /DELETE user", () => {
-        test("Should return a 404 status code if no user with that id was found", async () => {
+    describe("Test /DELETE client", () => {
+        test("Should return a 404 status code if no client with that id was found", async () => {
             const id = "0ca2125c-b3a3-43d8-a75c-b0339b3a79cd";
 
             await Request(application)
-                .delete(`/user/${id}`)
+                .delete(`/client/${id}`)
                 .expect("Content-Type", /json/)
                 .expect(404)
                 .then(response => {
@@ -222,11 +219,11 @@ describe("Test all resources of User.controller", () => {
 
         })
 
-        test("Should return a 200 status code if the user was deleted", async () => {
-            const user = await UserService.getUserByEmail("teste@gmail.com");
+        test("Should return a 200 status code if the client was deleted", async () => {
+            const client = await ClientService.getClientByEmail("client-correct@gmail.com");
 
             await Request(application)
-                .delete(`/user/${user.id}`)
+                .delete(`/client/${client.id}`)
                 .expect("Content-Type", /json/)
                 .expect(200)
                 .then(response => {

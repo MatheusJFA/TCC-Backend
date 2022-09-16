@@ -1,9 +1,9 @@
 import Request from "supertest";
 import application from "@/server"
-import { clearAllDatabase, clearTokenDatabase } from "../fixtures/clearDatabase";
+import { clearAllDatabase } from "../fixtures/clearDatabase";
 import database from "@/configuration/database";
-import UserService from "@/service/user.service";
-import { IUser } from "@/entity/user.entity";
+import ClientService from "@/service/client.service";
+import { IClient } from "@/entity/client.entity";
 import { Token } from "@/types/token.type";
 
 const ONE_MINUTE = 60 * 1000;
@@ -14,17 +14,15 @@ jest.useFakeTimers()
 let USER = {
     name: "user",
     email: "user@gmail.com",
-    password: "User12345@",
+    password: "Client12345@",
     birthdate: new Date("2000-01-01"),
     height: 1.89,
     weight: 100,
     sex: "OTHER",
     role: "USER",
-    occupation: "USER",
     image: "../assets/image/default-avatar.png",
     isEmailVerified: false,
-    certification: undefined
-} as IUser;
+} as IClient;
 
 let ADMINISTRATOR = {
     name: "admin",
@@ -35,11 +33,9 @@ let ADMINISTRATOR = {
     weight: 100,
     sex: "OTHER",
     role: "USER",
-    occupation: "USER",
     image: "../assets/image/default-avatar.png",
-    certification: undefined,
     isEmailVerified: false
-} as IUser;
+} as IClient;
 
 beforeAll(async () => {
     if (!database.isInitialized)
@@ -47,9 +43,9 @@ beforeAll(async () => {
             .then(async () => {
                 console.log("🌎 Database initialized");
                 try {
-                    await UserService.createUser(USER);
-                    await UserService.createUser(ADMINISTRATOR);
-                    console.log("👶 Users created");
+                    await ClientService.createClient(USER);
+                    await ClientService.createClient(ADMINISTRATOR);
+                    console.log("👶 Clients created");
                 } catch (error) {
                     console.log("❌ Couldn't create users", error);
                 }
@@ -99,7 +95,6 @@ describe("Test all resources of Auth.Controller", () => {
                         sex: USER.sex,
                         height: USER.height.toString(),
                         weight: USER.weight.toString(),
-                        occupation: USER.occupation,
                         role: USER.role,
                         image: USER.image,
                     });
@@ -122,7 +117,7 @@ describe("Test all resources of Auth.Controller", () => {
         });
 
         test("Should return a 200 status code if a valid token is sent", async () => {
-            const user = await UserService.getUserByEmail(USER.email);
+            const user = await ClientService.getClientByEmail(USER.email);
             let token = user.tokens.find(token => token.type === Token.REFRESH_TOKEN)?.jwt;
             
             await Request(application)
@@ -135,35 +130,5 @@ describe("Test all resources of Auth.Controller", () => {
                 });
         });
     });
-
-    describe("Test POST /auth/logout", () => {
-        test("Should return a 400 status code if an invalid token is sent", async () => {
-            const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-
-            await Request(application)
-                .post("/auth/logout")
-                .set({ authorization: `Bearer ${token}` })
-                .expect(400)
-                .then(response => {
-                    expect(response.body).toHaveProperty("message");
-                    expect(response.body.message).toBe("O token fornecido é inválido.")
-                });
-        });
-
-        test("Should return a 200 status code if a valid token is sent", async () => {
-            const user = await UserService.getUserByEmail(USER.email);
-            let token = user.tokens.find(token => token.type === Token.REFRESH_TOKEN)?.jwt;
-            
-            await Request(application)
-                .post("/auth/logout")
-                .set({ authorization: `Bearer ${token}` })
-                .expect(200)
-                .then(response => {
-                    expect(response.body).toHaveProperty("message");
-                    expect(response.body.message).toBe("Você foi deslogado com sucesso.")
-                });
-        });
-    });
-
     
 });
