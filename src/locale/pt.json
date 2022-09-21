@@ -16,7 +16,14 @@
             "INVALID_EMAIL": "E-mail inserido é inválido."
         },
 
-        
+        "CLIENT": {
+            "NOT_FOUND": "Cliente não foi encontrado."
+        },
+
+        "HELPER": {
+            "NOT_FOUND": "Auxiliar não foi encontrado."
+        },
+
         "TOKEN": {
             "INVALID": "O token fornecido é inválido.",
             "NOT_FOUND": "O token solicitado não foi encontrado."

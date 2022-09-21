@@ -5,6 +5,7 @@ import { Router } from "express";
 
 import clientSchema from "@/validation/client";
 import validateSchema from "@middleware/validateFields";
+import { paginationSchema } from "@/validation/pagination"; "@/validation/pagination";
 
 const router = Router();
 
@@ -19,6 +20,7 @@ router.get("/:id",
 
 router.get("/",
     minimunRole("MODERATOR"),
+    validateSchema(paginationSchema),
     ClientController.getClients);
 
 router.delete("/:id",

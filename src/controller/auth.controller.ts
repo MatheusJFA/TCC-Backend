@@ -18,18 +18,9 @@ class AuthenticationController {
         try {
             const authorization: string = request.headers!.authorization!;
 
-            let user: Client | Helper;
-
-            try {
-                user = await AuthenticationService.login(authorization);
-            } catch (error: any) {
-                return response
-                    .status(httpStatus.BAD_REQUEST)
-                    .json(error.message);
-            }
+            let user: Client | Helper = await AuthenticationService.login(authorization);
 
             const tokens = await TokenService.generateAuthenticationTokens(user);
-
             return response.status(httpStatus.CREATED).json({ user: user.toJSON(), tokens, message: t("SUCCESS.LOGIN") });
         } catch (error) {
             return response.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: t("ERROR.HTTP.SERVER_ERROR") });

@@ -6,7 +6,6 @@ import bcrypt from "bcrypt";
 
 import { Column, Entity, ManyToMany, OneToMany } from "typeorm";
 import Base from "./base.entity";
-import Token from "./token.entity";
 
 export interface IUser {
     name: string,

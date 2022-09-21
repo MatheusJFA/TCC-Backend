@@ -3,6 +3,7 @@ import { t } from "i18next";
 import { IPageable } from "@/interfaces/IPageable";
 import { paginate } from "@/helpers/paginate";
 import Database from "@/configuration/database";
+import ClientService from "./client.service";
 
 const HelperService = Database.getRepository(Helper).extend({
     invalidHelper: (helper?: Helper): boolean => {
@@ -17,12 +18,15 @@ const HelperService = Database.getRepository(Helper).extend({
             throw error;
         }
     },
+    
+    getHelper: async function (email: string): Promise<Helper> {
+        return await this.findOne({ where: { email }, relations: ['tokens'] });
+    },
 
     getHelperByEmail: async function (email: string): Promise<Helper> {
         try {
             const helper = await this.findOne({ where: { email }, relations: ['tokens'] });
-
-            if (!helper || this.invalidHelper(helper)) throw new Error(t("ERROR.USER.NOT_FOUND"));
+            if (!helper || this.invalidHelper(helper)) throw new Error(t("ERROR.HELPER.NOT_FOUND"));
             return helper!;
         } catch (error) {
             throw error;
@@ -32,8 +36,18 @@ const HelperService = Database.getRepository(Helper).extend({
     getHelperByID: async function (id: string): Promise<Helper> {
         try {
             const helper = await this.findOne({ where: { id }, relations: ['tokens'] });
-            if (!helper || this.invalidHelper(helper)) throw new Error(t("ERROR.USER.NOT_FOUND"));
+            if (!helper || this.invalidHelper(helper)) throw new Error(t("ERROR.HELPER.NOT_FOUND"));
             return helper!;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    getClients: async function (id: string): Promise<Helper> {
+        try {
+            const helper = await this.findOne({ where: { id }, relations: ["clients"] });
+            if (!helper || this.invalidHelper(helper)) throw new Error(t("ERROR.HELPER.NOT_FOUND"));
+            return helper.getClients();
         } catch (error) {
             throw error;
         }
@@ -43,9 +57,26 @@ const HelperService = Database.getRepository(Helper).extend({
     addCertification: async function (id: string, title: string, image: string, date: Date): Promise<void> {
         try {
             const helper = await this.getHelperByID(id);
-            if (!helper || this.invalidHelper(helper)) throw new Error(t("ERROR.USER.NOT_FOUND"));
+            if (!helper || this.invalidHelper(helper)) throw new Error(t("ERROR.HELPER.NOT_FOUND"));
 
             helper.addCertification(title, image, date);
+
+            return helper;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+
+    addClient: async function (id: string, clientId: string): Promise<void> {
+        try {
+            const helper = await this.getHelperByID(id);
+            const client = await ClientService.getClientByID(clientId);
+
+            if (!helper || this.invalidHelper(helper)) throw new Error(t("ERROR.HELPER.NOT_FOUND"));
+            if (!client || ClientService.invalidClient(client)) throw new Error(t("ERROR.CLIENT.NOT_FOUND"));
+
+            helper.addClient(client);
 
             return helper;
         } catch (error) {
@@ -74,7 +105,7 @@ const HelperService = Database.getRepository(Helper).extend({
         try {
             const helperExists = await this.helperExists(data.email);
 
-            if (helperExists) throw new Error(t("ERROR.USER.ALREADY_EXISTS"));
+            if (helperExists) throw new Error(t("ERROR.HELPER.ALREADY_EXISTS"));
 
             const helper = new Helper(
                 data.name,
@@ -107,7 +138,7 @@ const HelperService = Database.getRepository(Helper).extend({
     deleteHelper: async function (id: string): Promise<Helper> {
         try {
             const helper = await this.getHelperByID(id);
-            if (this.invalidHelper(helper) || !helper) throw new Error(t("ERROR.USER.NOT_FOUND"));
+            if (this.invalidHelper(helper) || !helper) throw new Error(t("ERROR.HELPER.NOT_FOUND"));
 
             helper.invalidate();
             return await this.save(helper);

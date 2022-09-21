@@ -12,7 +12,9 @@ export const minimunRole = (role: Role) => {
 
         const token = await TokenService.getTokenByJWT(authorization, "ACCESS_TOKEN");
 
-        if (!minimunRoleRequired(token.user.role as Role, role)) 
+        const user = token.client || token.helper;
+
+        if (!minimunRoleRequired(user!.role as Role, role)) 
             return response.status(httpStatus.UNAUTHORIZED).json({ message: t("ERROR.HTTP.UNAUTHORIZED") });
     
         next();

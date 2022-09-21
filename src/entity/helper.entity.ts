@@ -15,7 +15,7 @@ export interface IHelper extends IUser {
 
 @Entity("helpers")
 export default class Helper extends User implements IHelper {
-    @OneToMany(() => Token, token => token.user, { eager: true, cascade: true })
+    @OneToMany(() => Token, token => token.helper, { eager: true, cascade: true })
     tokens: Token[];
 
     @Column("enum", { enum: OccupationValues })
@@ -46,21 +46,40 @@ export default class Helper extends User implements IHelper {
     }
 
     addToken = (token: Token): void => {
-        if (!this.tokens) 
+        if (!this.tokens)
             this.tokens = new Array<Token>();
 
         this.tokens.push(token);
     }
 
     addClient = (user: Client): void => {
-        if (!this.clients) 
+        if (!this.clients)
             this.clients = new Array<Client>();
 
         this.clients.push(user);
     }
 
+    getClients = (): {
+        name: string, 
+        email: string, 
+        birthdate: Date, 
+        sex: string,
+        image: string | undefined
+    }[] => {
+        if (!this.clients)
+            return [];
+        else
+            return this.clients.map(client => ({
+                name: client.name,
+                email: client.email,
+                birthdate: client.birthdate,
+                sex: client.sex,
+                image: client.image,
+            }));
+    }
+
     addCertification = (title: string, image: string, date: Date): void => {
-        if (!this.certifications) 
+        if (!this.certifications)
             this.certifications = new Array<Certification>();
 
         this.certifications.push(new Certification(title, image, date));

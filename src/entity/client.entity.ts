@@ -13,7 +13,7 @@ export default class Client extends User implements IClient {
     @ManyToMany(() => Helper, helper => helper.clients)
     helpers: Helper[];
     
-    @OneToMany(() => Token, token => token.user, { eager: true, cascade: true })
+    @OneToMany(() => Token, token => token.client, { eager: true, cascade: true })
     tokens: Token[];
 
     @Column("decimal")
@@ -84,4 +84,5 @@ export default class Client extends User implements IClient {
 
         return user;
     }
+
 }

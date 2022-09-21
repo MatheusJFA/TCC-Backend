@@ -10,18 +10,27 @@ import Helper from "@/entity/helper.entity";
 import User from "@/entity/user.entity";
 
 const AuthenticationService = {
-    login: async function (authorization: string): Promise<Client> {
+    login: async function (authorization: string): Promise<Client | Helper> {
         try {
             const [email, password] = getEmailAndPassword(authorization);
 
-            const user = await ClientService.getClientByEmail(email) || await HelperService.getHelperByEmail(email);
+            let user: Client | Helper = await this.getUser(email);
 
             if (!user) throw new Error(t("ERROR.USER.INVALID_CREDENTIALS"))
 
-            const isValidPassword = user.comparePassword(password);
+            const isValidPassword = await user.comparePassword(password);
 
-            if (!isValidPassword) throw new Error(t("ERROR.USER.INVALID_CREDENTIALS"))
+            if (!isValidPassword) throw new Error(t("ERROR.USER.INVALID_CREDENTIALS"));
+
             return user;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    getUser: async function (email: string): Promise<Client | Helper> {
+        try {
+            return await ClientService.getClient(email) || await HelperService.getHelper(email);
         } catch (error) {
             throw error;
         }
@@ -35,7 +44,7 @@ const AuthenticationService = {
             if (!token) throw new Error(t("ERROR.TOKEN.NOT_FOUND"));
 
             token.invalidate();
-            await TokenService.saveToken({ jwt: token.jwt, type: "REFRESH_TOKEN", user: token.user, expires: token.expires });
+            await TokenService.saveToken({ jwt: token.jwt, type: "REFRESH_TOKEN", client: token.client!, helper: token.helper, expires: token.expires });
         } catch (error) {
             throw error;
         }
@@ -44,7 +53,7 @@ const AuthenticationService = {
     refreshToken: async function (token: string): Promise<{ accessToken: string; refreshToken: string; }> {
         try {
             const refreshToken = await TokenService.getTokenByJWT(token, "REFRESH_TOKEN");
-            const user = await ClientService.getClientByID(refreshToken.user.id) || await HelperService.getHelperByID(refreshToken.user.id);
+            const user = await ClientService.getClientByID(refreshToken.client!.id) || await HelperService.getHelperByID(refreshToken.helper!.id);
 
             if (!user) throw new Error(t("ERROR.USER.NOT_FOUND"));
 
@@ -61,9 +70,9 @@ const AuthenticationService = {
             if (!jwt)
                 throw new Error(t("ERROR.TOKEN.NOT_FOUND"));
 
-            const user: User = jwt.user;
+            const user = jwt.client || jwt.helper;
 
-            user.hashPassword(password);
+            user!.hashPassword(password);
 
             if (user instanceof Client) ClientService.save(user);
             else if (user instanceof Helper) HelperService.save(user);
@@ -81,15 +90,15 @@ const AuthenticationService = {
             const jwt: Token | undefined = await TokenService.getTokenByJWT(token, "VERIFY_EMAIL");
             if (!jwt) throw new Error(t("ERROR.TOKEN.NOT_FOUND"));
 
-            const user: User = jwt.user;
+            const user = jwt.client || jwt.helper;
 
-            user.verifyEmail();
+            user!.verifyEmail();
 
-            const clientType = await ClientService.getClientByID(jwt.user.id);
-            if (clientType) ClientService.save(user);
+            const clientType = await ClientService.getClientByID(jwt.client!.id);
+            if (clientType) ClientService.save(user!);
 
-            const helperType = await HelperService.getHelperByID(jwt.user.id);
-            if (helperType) HelperService.save(user)
+            const helperType = await HelperService.getHelperByID(jwt.helper!.id);
+            if (helperType) HelperService.save(user!)
 
 
             jwt.invalidate();

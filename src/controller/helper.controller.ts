@@ -21,8 +21,7 @@ class HelperController {
             return response
                 .status(httpStatus.CREATED)
                 .json({ helper: helper.toJSON() });
-        } catch (error: any) {  
-            console.log({problemasCriacao: error})
+        } catch (error: any) {
             return response
                 .status(httpStatus.INTERNAL_SERVER_ERROR)
                 .json({ message: error.message });
@@ -66,13 +65,25 @@ class HelperController {
         }
     });
 
+    getClientsFromHelper = LogAsyncError(async (request: Request, response: Response) => {
+        try {
+            const id = request.params.id;
+            const clients = await HelperService.getClients(id)
+            return clients;
+        } catch (error: any) {
+            return response
+                .status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json({ message: error.message });
+        }
+    });
+
     addCertification = LogAsyncError(async (request: Request, response: Response) => {
 
         try {
             const id = request.params.id as string;
             const { title, image, date } = request.body.certification;
 
-            HelperService.addCertification(id, title, image, date);
+            await HelperService.addCertification(id, title, image, date);
 
             return response.status(httpStatus.OK).send();
         } catch (error: any) {
@@ -81,6 +92,22 @@ class HelperController {
                 .json({ message: error.message });
         }
     });
+
+    addClient = LogAsyncError(async (request: Request, response: Response) => {
+        try {
+
+            const id = request.params.id as string;
+            const clientId = request.body;
+
+            await HelperService.addClient(id, clientId);
+
+            return response.status(httpStatus.OK).send();
+        } catch (error: any) {
+            return response
+                .status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json({ message: error.message });
+        }
+    })
 
     updateHelper = LogAsyncError(async (request: Request, response: Response) => {
         try {

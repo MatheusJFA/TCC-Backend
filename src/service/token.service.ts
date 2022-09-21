@@ -59,15 +59,15 @@ const TokenService = Database.getRepository(Token).extend({
 
     saveToken: async function (data: IToken) {
         try {
-            const token: Token = new Token(data.jwt, data.type, data.user, data.expires);
-            const user = data.user;
+            const token: Token = new Token(data.jwt, data.type, data.expires, data.client!, data.helper!);
+            const user = data.client || data.helper;
 
-            user.addToken(token);
+            user?.addToken(token);
 
             if (user instanceof Client)
-                return await ClientService.save(data.user);
+                return await ClientService.save(data.client!);
             else if (user instanceof Helper)
-                return await HelperService.save(data.user);
+                return await HelperService.save(data.helper!);
             else
                 throw new Error("ERROR.USER.INVALID_CREDENTIALS")
         } catch (error: any) {
@@ -77,8 +77,8 @@ const TokenService = Database.getRepository(Token).extend({
 
     getTokenByJWT: async function (jwt: string, tokenType: TokenType): Promise<Token> {
         try {
-            
-            const token = await this.findOne({ where: { jwt, type: tokenType, deletedAt: IsNull() }, relations: ["user"] });
+
+            let token = await this.findOne({ where: { jwt, type: tokenType, deletedAt: IsNull() }, relations: ["client", "helper"] });
 
             if (this.invalidToken(token)) throw new Error(t("ERROR.TOKEN.NOT_FOUND"));
 
@@ -112,8 +112,8 @@ const TokenService = Database.getRepository(Token).extend({
     },
 
     generateAuthenticationTokens: async function (user: Client | Helper): Promise<{ accessToken: string, refreshToken: string }> {
-
         try {
+
             const userAccessToken = user.tokens.find((token: Token) => token.type === "ACCESS_TOKEN");
             const userRefreshToken = user.tokens.find((token: Token) => token.type === "REFRESH_TOKEN");
 
@@ -123,10 +123,17 @@ const TokenService = Database.getRepository(Token).extend({
             const accessTokenExpires = Token.setExpirationTime(enviroment.jwt.access * this.MINUTE);
             const accessToken = !this.invalidToken(userAccessToken) ? userAccessToken : this.generateTokens(user.id, accessTokenExpires, "ACCESS_TOKEN");
 
-            await this.saveToken({ jwt: refreshToken, expires: refreshTokenExpires, user, type: "REFRESH_TOKEN" });
+            let client: Client | undefined;
+            let helper: Helper | undefined;
+
+            if (user instanceof Client) client = user;
+            else helper = user;
+
+            await this.saveToken({ jwt: refreshToken, expires: refreshTokenExpires, client, helper, type: "REFRESH_TOKEN" } as IToken);
 
             return { accessToken, refreshToken }
         } catch (error: any) {
+            console.log({ error })
             throw error;
         }
     },

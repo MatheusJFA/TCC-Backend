@@ -68,6 +68,16 @@ const addCertification = Yup.object().shape({
     })
 });
 
+const addClient = Yup.object().shape({
+    params: Yup.object().shape({
+        id: Yup.string().uuid().required(),
+    }),
+
+    body: Yup.object().shape({
+        clientId: Yup.string().uuid().required()
+    })
+});
+
 
 const deleteHelperSchema = Yup.object().shape({
     params: Yup.object().shape({
@@ -89,6 +99,7 @@ export default {
     getHelperSchema,
     updateHelperSchema,
     addCertification,
+    addClient,
     deleteHelperSchema,
     changeRoleSchema
 }

@@ -1,5 +1,6 @@
 import { TokenValues } from "@/types/token.type";
 import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
+import { EmitHelperUniqueNameCallback } from "typescript";
 import Base from "./base.entity";
 import Client from "./client.entity";
 import Helper from "./helper.entity";
@@ -8,8 +9,9 @@ import User from "./user.entity";
 export interface IToken {
     jwt: string,
     type: string,
-    user: Client | Helper,
     expires: Date,
+    client?: Client,
+    helper?: Helper,
 }
 
 @Entity("tokens")
@@ -17,8 +19,11 @@ export default class Token extends Base implements IToken {
     @Column()
     jwt: string;
 
-    @ManyToOne(() => Client || Helper, user => user.id )
-    user: Client | Helper;
+    @ManyToOne(() => Client, client => client.id)
+    client?: Client;
+
+    @ManyToOne(() =>  Helper, helper => helper.id)
+    helper?: Helper;
 
     @Column("enum", { enum: TokenValues })
     type: string;
@@ -29,14 +34,25 @@ export default class Token extends Base implements IToken {
     constructor(
         jwt: string,
         type: string,
-        user: Client | Helper,
         expires: Date,
+        client: Client,
+        helper: Helper,
     ) {
         super();
         this.jwt = jwt;
         this.type = type;
-        this.user = user;
         this.expires = expires;
+
+
+        if (this.client) {
+            this.client = client;
+            this.helper = undefined;
+        }
+
+        if (this.helper) {
+            this.helper = helper;
+            this.client = undefined;
+        }
     }
 
     static setExpirationTime = (addedTime: number): Date => {

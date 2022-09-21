@@ -133,7 +133,7 @@ describe("Test all resources of Client.controller", () => {
                 .expect("Content-Type", /json/)
                 .then(response => {
                     expect(total).toBeGreaterThan(0);
-                    expect(response.body).toHaveProperty("client");
+                expect(response.body).toHaveProperty("client");
                     expect(response.body.client).toMatchObject({
                         id: client.id,
                         birthdate: client.birthdate.toISOString(),

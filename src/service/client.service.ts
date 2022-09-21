@@ -19,6 +19,10 @@ const ClientService = Database.getRepository(Client).extend({
         }
     },
 
+    getClient: async function (email: string): Promise<Client> {
+        return await this.findOne({ where: { email }, relations: ["tokens"] })
+    },
+
     getClientByEmail: async function (email: string): Promise<Client> {
         try {
             const client = await this.findOne({ where: { email }, relations: ['tokens'] });

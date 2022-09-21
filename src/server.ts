@@ -99,12 +99,13 @@ export const redisClient = new Redis(enviroment.redis.port, {
     password: enviroment.redis.password
 });
 
-(async () => {
-    console.log((await redisClient.ping()).toString() === "PONG" ? "🌎 Redis Server is Connected" : "❌ Redis Server is Not connected")
-})();
 
 if (enviroment.node_enviroment !== Enviroment.TEST) {
     const httpServer = http.createServer(application);
+
+    (async () => {
+        console.log((await redisClient.ping()).toString() === "PONG" ? "🌎 Redis Server is Connected" : "❌ Redis Server is Not connected")
+    })();
 
     try {
         const messageServer = new Server(httpServer, {

@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { t } from 'i18next';
-import { getEmailAndPassword, tokenVerification, validEmail, validPassword } from '@/utils/autenticator';
+import { getEmailAndPassword, validEmail, validPassword } from '@/utils/autenticator';
 import TokenService from '@/service/token.service';
 
 const loginSchema = Yup.object().shape({
