@@ -10,8 +10,7 @@ export interface IToken {
     jwt: string,
     type: string,
     expires: Date,
-    client?: Client,
-    helper?: Helper,
+    user: User,
 }
 
 @Entity("tokens")
@@ -19,11 +18,8 @@ export default class Token extends Base implements IToken {
     @Column()
     jwt: string;
 
-    @ManyToOne(() => Client, client => client.id)
-    client?: Client;
-
-    @ManyToOne(() =>  Helper, helper => helper.id)
-    helper?: Helper;
+    @ManyToOne(() => User, user => user.tokens)
+    user: User;
 
     @Column("enum", { enum: TokenValues })
     type: string;
@@ -35,24 +31,13 @@ export default class Token extends Base implements IToken {
         jwt: string,
         type: string,
         expires: Date,
-        client: Client,
-        helper: Helper,
+        user: User,
     ) {
         super();
         this.jwt = jwt;
         this.type = type;
         this.expires = expires;
-
-
-        if (this.client) {
-            this.client = client;
-            this.helper = undefined;
-        }
-
-        if (this.helper) {
-            this.helper = helper;
-            this.client = undefined;
-        }
+        this.user = user;
     }
 
     static setExpirationTime = (addedTime: number): Date => {

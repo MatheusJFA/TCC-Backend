@@ -1,22 +1,23 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
 import Client from "./client.entity";
 
 import { OccupationValues } from "@/types/occupation.type";
 import User, { IUser } from "./user.entity";
 import Certification from "./certification.entity";
-import Token from "./token.entity";
 
 
-export interface IHelper extends IUser {
+export interface IHelper {
+    user: User,
     occupation: string,
     certifications: Certification[],
     clients: Client[],
 }
 
 @Entity("helpers")
-export default class Helper extends User implements IHelper {
-    @OneToMany(() => Token, token => token.helper, { eager: true, cascade: true })
-    tokens: Token[];
+export default class Helper implements IHelper {
+    @PrimaryColumn()
+    @OneToOne(() => User, user => user.id)
+    user: User;
 
     @Column("enum", { enum: OccupationValues })
     occupation: string;
@@ -29,27 +30,14 @@ export default class Helper extends User implements IHelper {
     clients: Client[];
 
     constructor(
-        name: string,
-        email: string,
-        password: string,
-        birthdate: Date,
-        role: string,
-        occupation: string,
-        sex: string,
-        image?: string) {
-        super(name, email, password, birthdate, sex, role, image);
+        user: User,
+        occupation: string) {
+        this.user = user;
         this.occupation = occupation;
     }
 
     updateHelper = (helper: Partial<Omit<IHelper, "password">>) => {
         Object.assign(this, helper);
-    }
-
-    addToken = (token: Token): void => {
-        if (!this.tokens)
-            this.tokens = new Array<Token>();
-
-        this.tokens.push(token);
     }
 
     addClient = (user: Client): void => {
@@ -59,69 +47,31 @@ export default class Helper extends User implements IHelper {
         this.clients.push(user);
     }
 
-    getClients = (): {
-        name: string, 
-        email: string, 
-        birthdate: Date, 
-        sex: string,
-        image: string | undefined
-    }[] => {
+
+    removeClient = (clientId: string): void => {
+        if (!this.clients) this.clients = new Array<Client>();
+
+        this.clients = this.clients.filter(client => client.userId !== clientId);
+    }
+
+    getClients = (): { id: string }[] => {
         if (!this.clients)
             return [];
         else
             return this.clients.map(client => ({
-                name: client.name,
-                email: client.email,
-                birthdate: client.birthdate,
-                sex: client.sex,
-                image: client.image,
+                id: client.user.id,
             }));
     }
 
-    addCertification = (title: string, image: string, date: Date): void => {
-        if (!this.certifications)
-            this.certifications = new Array<Certification>();
+    addCertification = (certification: Certification): void => {
+        if (!this.certifications) this.certifications = new Array<Certification>();
 
-        this.certifications.push(new Certification(title, image, date));
+        this.certifications.push(new Certification(certification.title, certification.image, certification.date));
     }
 
-    toJSON = (): {
-        name: string;
-        email: string;
-        birthdate: Date;
-        role: string;
-        occupation: string;
-        sex: string;
-        certifications: string[];
-        clients: string[];
-        image?: string;
-    } => {
-        const {
-            id,
-            name,
-            email,
-            birthdate,
-            role,
-            occupation,
-            sex,
-            certifications,
-            clients,
-            image } = this;
+    removeCertification = (certificationId: string): void => {
+        if (!this.certifications) this.certifications = new Array<Certification>();
 
-        const helper = {
-            id,
-            name,
-            email,
-            birthdate: new Date(birthdate),
-            role,
-            occupation,
-            sex,
-            certifications: certifications?.map(certification => certification.title) || null,
-            clients: clients?.map(client => client.name) || null,
-            image,
-        }
-
-        return helper;
+        this.certifications = this.certifications.filter(certification => certification.id !== certificationId);
     }
-
 }

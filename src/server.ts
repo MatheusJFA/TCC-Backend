@@ -55,8 +55,6 @@ application.use(express.urlencoded({ extended: true }));
 application.use(changeLocale); // Troca o locale da aplicação caso seja necessário
 application.use(morganMiddleware); // Gera logs da aplicação
 
-const WORKERS_COUNT = 5;
-
 (async () => {
     await i18next
         .use(i18next_backend)

@@ -1,20 +1,22 @@
-import { Column, Entity, ManyToMany, OneToMany } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
 import Helper from "./helper.entity";
 import Token from "./token.entity";
 import User, { IUser } from "./user.entity";
 
-export interface IClient extends IUser{
+export interface IClient {
+    user: User,
     height: number,
     weight: number,
 }
 
 @Entity("clients")
-export default class Client extends User implements IClient {
+export default class Client implements IClient {
+    @PrimaryColumn()
+    @OneToOne(() => User, user => user.id)
+    user: User;
+
     @ManyToMany(() => Helper, helper => helper.clients)
     helpers: Helper[];
-    
-    @OneToMany(() => Token, token => token.client, { eager: true, cascade: true })
-    tokens: Token[];
 
     @Column("decimal")
     height: number;
@@ -23,66 +25,29 @@ export default class Client extends User implements IClient {
     weight: number;
 
     constructor(
-        name: string,
-        email: string,
-        password: string,
-        birthdate: Date,
-        sex: string = "OTHER",
+        user: User,
         height: number,
         weight: number,
-        role: string = "USER",
-        image: string = "../assets/image/default-avatar.png",
     ) {
-        super(name, email, password, birthdate, sex, role, image);
+        this.user = user;
         this.height = height;
         this.weight = weight;
     }
-    
-    addToken = (token: Token): void => {
-        if (!this.tokens)
-            this.tokens = new Array<Token>();
-
-        this.tokens.push(token);
-    }
 
     addHelper = (helper: Helper): void => {
-        if(!this.helpers) {
-            this.helpers = new Array<Helper>();
-        }
+        if (!this.helpers) this.helpers = new Array<Helper>();
 
         this.helpers.push(helper);
     }
 
+    removeHelper = (helper: Helper): void => {
+        if (!this.helpers) this.helpers = new Array<Helper>();
+
+        this.helpers = this.helpers.filter(h => h.user.id !== helper.user.id);
+    }
+
+
     updateClient = (client: Partial<Omit<IClient, "password">>) => {
         Object.assign(this, client);
     }
-
-    toJSON = (): {
-        id: string;
-        name: string;
-        email: string;
-        birthdate: Date;
-        sex: string;
-        height: number,
-        weight: number,
-        role: string;
-        image: string | undefined;
-    } => {
-        const { id, name, email, birthdate, sex, height, weight, role, image } = this;
-
-        const user = {
-            id,
-            name,
-            email,
-            birthdate: new Date(birthdate),
-            sex,
-            height,
-            weight,
-            role,
-            image
-        };
-
-        return user;
-    }
-
 }

@@ -1,33 +1,30 @@
-import Helper, { IHelper } from "@/entity/helper.entity"
 import { t } from "i18next";
-import { IPageable } from "@/interfaces/IPageable";
-import { paginate } from "@/helpers/paginate";
 import Database from "@/configuration/database";
-import ClientService from "./client.service";
+import Helper, { IHelper } from "@/entity/helper.entity";
+import User from "@/entity/user.entity";
+import Client from "@/entity/client.entity";
 
-const HelperService = Database.getRepository(Helper).extend({
-    invalidHelper: (helper?: Helper): boolean => {
-        return !helper || helper.deletedAt !== null;
-    },
-
-    helperExists: async function (email?: string, id?: string): Promise<boolean> {
+const TokenService = Database.getRepository(Helper).extend({
+    addHelper: async function (user: User, helper: IHelper) {
         try {
-            const helper = await this.findOne({ where: [{ email }, { id }] });
-            return !!helper;
+            const newHelper = new Helper(user, helper.occupation);
+
+            if (helper.certifications) helper.certifications.map(c => newHelper.addCertification(c));
+
+            if (helper.clients) helper.clients.map(c => newHelper.addClient(c));
+
+            await this.save(helper);
+            return helper;
         } catch (error) {
             throw error;
         }
     },
-    
-    getHelper: async function (email: string): Promise<Helper> {
-        return await this.findOne({ where: { email }, relations: ['tokens'] });
-    },
 
     getHelperByEmail: async function (email: string): Promise<Helper> {
         try {
-            const helper = await this.findOne({ where: { email }, relations: ['tokens'] });
-            if (!helper || this.invalidHelper(helper)) throw new Error(t("ERROR.HELPER.NOT_FOUND"));
-            return helper!;
+            const user = await this.findOne({ where: { email }, relations: ['user'] });
+            if (!user || this.invalidHelper(user)) throw new Error(t("ERROR.USER.NOT_FOUND"));
+            return user!;
         } catch (error) {
             throw error;
         }
@@ -35,118 +32,33 @@ const HelperService = Database.getRepository(Helper).extend({
 
     getHelperByID: async function (id: string): Promise<Helper> {
         try {
-            const helper = await this.findOne({ where: { id }, relations: ['tokens'] });
-            if (!helper || this.invalidHelper(helper)) throw new Error(t("ERROR.HELPER.NOT_FOUND"));
-            return helper!;
+            const user = await this.findOne({ where: { id }, relations: ['user'] });
+            if (!user || this.invalidHelper(user)) throw new Error(t("ERROR.USER.NOT_FOUND"));
+            return user!;
         } catch (error) {
             throw error;
         }
     },
 
-    getClients: async function (id: string): Promise<Helper> {
+    addClient: async function (helperId: string, client: Client) {
         try {
-            const helper = await this.findOne({ where: { id }, relations: ["clients"] });
-            if (!helper || this.invalidHelper(helper)) throw new Error(t("ERROR.HELPER.NOT_FOUND"));
-            return helper.getClients();
-        } catch (error) {
-            throw error;
-        }
-    },
-
-
-    addCertification: async function (id: string, title: string, image: string, date: Date): Promise<void> {
-        try {
-            const helper = await this.getHelperByID(id);
-            if (!helper || this.invalidHelper(helper)) throw new Error(t("ERROR.HELPER.NOT_FOUND"));
-
-            helper.addCertification(title, image, date);
-
-            return helper;
-        } catch (error) {
-            throw error;
-        }
-    },
-
-
-    addClient: async function (id: string, clientId: string): Promise<void> {
-        try {
-            const helper = await this.getHelperByID(id);
-            const client = await ClientService.getClientByID(clientId);
-
-            if (!helper || this.invalidHelper(helper)) throw new Error(t("ERROR.HELPER.NOT_FOUND"));
-            if (!client || ClientService.invalidClient(client)) throw new Error(t("ERROR.CLIENT.NOT_FOUND"));
+            const helper = await this.getHelperByID(helperId);
 
             helper.addClient(client);
-
-            return helper;
         } catch (error) {
             throw error;
         }
     },
 
-    getHelpers: async function (pagination?: IPageable<Helper>): Promise<{ helpers: Helper[]; total: number; }> {
+    removeClient: async function (helperId: string, client: Client) {
         try {
-            const pageSchema = paginate(pagination)
-            const [helpers, total] = await this.findAndCount({
-                take: pageSchema.limit,
-                skip: ((pageSchema.page - 1) * pageSchema.limit),
-                order: {
-                    [pageSchema.sort.field]: pageSchema.sort.order
-                }
-            });
+            const helper = await this.getHelperByID(helperId);
 
-            return { helpers: helpers.map((helper: Helper) => helper.toJSON()), total };
+            helper.removeClient(client);
         } catch (error) {
             throw error;
         }
-    },
-
-    createHelper: async function (data: IHelper): Promise<Helper> {
-        try {
-            const helperExists = await this.helperExists(data.email);
-
-            if (helperExists) throw new Error(t("ERROR.HELPER.ALREADY_EXISTS"));
-
-            const helper = new Helper(
-                data.name,
-                data.email,
-                data.password,
-                data.birthdate,
-                data.role,
-                data.occupation,
-                data.sex,
-                data.image);
-
-            await helper.hashPassword(data.password);
-
-            return await this.save(helper);
-        } catch (error) {
-            throw error;
-        }
-    },
-
-    updateHelper: async function (id: string, data: IHelper): Promise<Helper> {
-        try {
-            const helper: Helper = await this.getHelperByID(id);
-            helper.updateHelper(data);
-            return await this.save(helper);
-        } catch (error) {
-            throw error;
-        }
-    },
-
-    deleteHelper: async function (id: string): Promise<Helper> {
-        try {
-            const helper = await this.getHelperByID(id);
-            if (this.invalidHelper(helper) || !helper) throw new Error(t("ERROR.HELPER.NOT_FOUND"));
-
-            helper.invalidate();
-            return await this.save(helper);
-        } catch (error) {
-            throw error;
-        }
-    },
-
+    }
 });
 
-export default HelperService;
+export default TokenService;

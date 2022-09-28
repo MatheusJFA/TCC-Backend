@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 
 import { Column, Entity, ManyToMany, OneToMany } from "typeorm";
 import Base from "./base.entity";
+import Token from "./token.entity";
 
 export interface IUser {
     name: string,
@@ -18,6 +19,7 @@ export interface IUser {
     isEmailVerified: boolean
 }
 
+@Entity("users")
 export default class User extends Base implements IUser {
     @Column()
     name: string;
@@ -43,6 +45,9 @@ export default class User extends Base implements IUser {
     @Column()
     isEmailVerified: boolean;
 
+    @OneToMany(() => Token, token => token.user, { eager: true, cascade: true })
+    tokens: Token[];
+
     constructor(
         name: string,
         email: string,
@@ -63,6 +68,13 @@ export default class User extends Base implements IUser {
         this.isEmailVerified = false;
     }
 
+    addToken = (token: Token): void => {
+        if (!this.tokens)
+            this.tokens = new Array<Token>();
+
+        this.tokens.push(token);
+    }
+
     comparePassword = async (password: string): Promise<boolean> => {
         return await bcrypt.compare(password, this.password)
     }
@@ -79,4 +91,28 @@ export default class User extends Base implements IUser {
         this.isEmailVerified = true;
     }
 
+
+    toJSON = (): {
+        name: string;
+        email: string;
+        birthdate: Date;
+        role: string;
+        sex: string;
+        image?: string;
+    } => {
+
+        const { id, name, email, birthdate, role, sex, image } = this;
+
+        const user = {
+            id,
+            name,
+            email,
+            birthdate: new Date(birthdate),
+            role,
+            sex,
+            image,
+        }
+
+        return user;
+    }
 }

@@ -13,6 +13,7 @@ const validateSchema = (schema: AnySchema) => async (request: Request, response:
       query: request.query,
       headers: request.headers,
     }, { abortEarly: false })
+      .then(() => { next(); })
       .catch((error: any) => {
         Logger.error(error.message);
         return response
@@ -20,9 +21,10 @@ const validateSchema = (schema: AnySchema) => async (request: Request, response:
           .json({ message: error.message || t("ERROR.PARAMETERS.INVALID_GENERIC") });
       });
 
-    next();
 
   } catch (error: any) {
+    console.log({ errorValidateSchema: error });
+
     return response
       .status(httpStatus.BAD_REQUEST)
       .json({ message: error.message });
