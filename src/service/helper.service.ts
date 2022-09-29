@@ -40,7 +40,7 @@ const TokenService = Database.getRepository(Helper).extend({
         }
     },
 
-    addClient: async function (helperId: string, client: Client) {
+    addClient: async function (helperId: string, client: Client):  Promise<void> {
         try {
             const helper = await this.getHelperByID(helperId);
 
@@ -50,7 +50,7 @@ const TokenService = Database.getRepository(Helper).extend({
         }
     },
 
-    removeClient: async function (helperId: string, client: Client) {
+    removeClient: async function (helperId: string, client: Client): Promise<void> {
         try {
             const helper = await this.getHelperByID(helperId);
 
