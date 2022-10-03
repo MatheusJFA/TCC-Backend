@@ -1,10 +1,11 @@
-import Database from "@/configuration/database";
+import ApiError from "@/utils/apiError";
 import Token from "@/entity/token.entity";
 import { getEmailAndPassword } from "@/utils/autenticator";
 import { t } from "i18next";
 import TokenService from "./token.service";
 import User from "@/entity/user.entity";
 import UserService from "./user.service";
+import httpStatus from "http-status";
 
 const AuthenticationService = {
     login: async function (authorization: string): Promise<User> {
@@ -30,7 +31,7 @@ const AuthenticationService = {
             if (jwt.startsWith("Bearer ")) jwt = jwt.split(" ")[1];
             const token = await TokenService.getTokenByJWT(jwt, "REFRESH_TOKEN");
 
-            if (!token) throw new Error(t("ERROR.TOKEN.NOT_FOUND"));
+            if (!token) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
             token.invalidate();
             await TokenService.saveToken({ jwt: token.jwt, type: "REFRESH_TOKEN", user: token.user, expires: token.expires });
@@ -56,8 +57,8 @@ const AuthenticationService = {
     resetPassword: async function (token: string, password: string): Promise<void> {
         try {
             const jwt: Token | undefined = await TokenService.getTokenByJWT(token, "RESET_PASSWORD");
-            if (!jwt)
-                throw new Error(t("ERROR.TOKEN.NOT_FOUND"));
+            
+            if (!jwt) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
             const user = jwt.user;
 
@@ -75,7 +76,8 @@ const AuthenticationService = {
     verifyEmail: async function (token: string): Promise<void> {
         try {
             const jwt: Token | undefined = await TokenService.getTokenByJWT(token, "VERIFY_EMAIL");
-            if (!jwt) throw new Error(t("ERROR.TOKEN.NOT_FOUND"));
+            
+            if (!jwt) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
             const user = jwt.user;
 

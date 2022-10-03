@@ -1,15 +1,15 @@
 import enviroment from "@/configuration/enviroment";
 import { TokenType } from "@/types/token.type";
 import Token, { IToken } from "@/entity/token.entity";
+import ApiError from "@/utils/apiError";
 import { t } from "i18next";
-import Client from "@/entity/client.entity";
 import { IsNull } from "typeorm";
 import { sign, verify } from "jsonwebtoken";
 import Database from "@/configuration/database";
 import Logger from "@/configuration/logger";
-import Helper from "@/entity/helper.entity";
 import UserService from "./user.service";
 import User from "@/entity/user.entity";
+import httpStatus from "http-status";
 
 const TokenService = Database.getRepository(Token).extend({
     MINUTE: 60 * 1000, //In milliseconds
@@ -75,7 +75,7 @@ const TokenService = Database.getRepository(Token).extend({
 
             let token = await this.findOne({ where: { jwt, type: tokenType, deletedAt: IsNull() }, relations: ["user"] });
 
-            if (this.invalidToken(token)) throw new Error(t("ERROR.TOKEN.NOT_FOUND"));
+            if (this.invalidToken(token)) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
             return token!;
         } catch (error: any) {
@@ -89,7 +89,7 @@ const TokenService = Database.getRepository(Token).extend({
                 where: { id, type: tokenType, deletedAt: IsNull() },
             });
 
-            if (this.invalidToken(token)) throw new Error(t("ERROR.TOKEN.NOT_FOUND"));
+            if (this.invalidToken(token)) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
             return token!;
         } catch (error: any) {

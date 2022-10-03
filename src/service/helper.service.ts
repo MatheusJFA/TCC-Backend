@@ -1,20 +1,23 @@
 import { t } from "i18next";
+import ApiError from "@/utils/apiError";
 import Database from "@/configuration/database";
 import Helper, { IHelper } from "@/entity/helper.entity";
 import User from "@/entity/user.entity";
 import Client from "@/entity/client.entity";
+import Certification from "@/entity/certification.entity";
+import { Occupation } from "@/types/occupation.type";
+import httpStatus from "http-status";
 
-const TokenService = Database.getRepository(Helper).extend({
-    addHelper: async function (user: User, helper: IHelper) {
+const HelperService = Database.getRepository(Helper).extend({
+    createHelper: async function (user: User, certifications: Certification[], occupation: Occupation, clients: Client[]) {
         try {
-            const newHelper = new Helper(user, helper.occupation);
+            const newHelper = new Helper(user, occupation);
 
-            if (helper.certifications) helper.certifications.map(c => newHelper.addCertification(c));
+            if (certifications) certifications.map(c => newHelper.addCertification(c));
 
-            if (helper.clients) helper.clients.map(c => newHelper.addClient(c));
+            if (clients) clients.map(c => newHelper.addClient(c));
 
-            await this.save(helper);
-            return helper;
+            return await this.save(newHelper);
         } catch (error) {
             throw error;
         }
@@ -23,7 +26,7 @@ const TokenService = Database.getRepository(Helper).extend({
     getHelperByEmail: async function (email: string): Promise<Helper> {
         try {
             const user = await this.findOne({ where: { email }, relations: ['user'] });
-            if (!user || this.invalidHelper(user)) throw new Error(t("ERROR.USER.NOT_FOUND"));
+            if (!user || this.invalidHelper(user)) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
             return user!;
         } catch (error) {
             throw error;
@@ -33,14 +36,14 @@ const TokenService = Database.getRepository(Helper).extend({
     getHelperByID: async function (id: string): Promise<Helper> {
         try {
             const user = await this.findOne({ where: { id }, relations: ['user'] });
-            if (!user || this.invalidHelper(user)) throw new Error(t("ERROR.USER.NOT_FOUND"));
+            if (!user || this.invalidHelper(user)) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
             return user!;
         } catch (error) {
             throw error;
         }
     },
 
-    addClient: async function (helperId: string, client: Client):  Promise<void> {
+    addClient: async function (helperId: string, client: Client): Promise<void> {
         try {
             const helper = await this.getHelperByID(helperId);
 
@@ -61,4 +64,4 @@ const TokenService = Database.getRepository(Helper).extend({
     }
 });
 
-export default TokenService;
+export default HelperService;

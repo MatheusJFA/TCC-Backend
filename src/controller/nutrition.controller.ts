@@ -8,7 +8,6 @@ import httpStatus from "http-status";
 import { t } from "i18next";
 
 class NutritionController {
-    URL_BASE = "https://wger.de/api/v2/";
 
 }
 

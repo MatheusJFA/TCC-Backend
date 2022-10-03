@@ -13,90 +13,62 @@ import EmailService from "@/service/email.service";
 
 class AuthenticationController {
     login = LogAsyncError(async (request: Request, response: Response) => {
-        try {
-            const authorization: string = request.headers!.authorization!;
+        const authorization: string = request.headers!.authorization!;
 
-            let user: User = await AuthenticationService.login(authorization);
+        let user: User = await AuthenticationService.login(authorization);
 
-            const tokens = await TokenService.generateAuthenticationTokens(user);
-            return response.status(httpStatus.CREATED).json({ user: user.toJSON(), tokens, message: t("SUCCESS.LOGIN") });
-        } catch (error) {
-            return response.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: t("ERROR.HTTP.SERVER_ERROR") });
-        }
+        const tokens = await TokenService.generateAuthenticationTokens(user);
+        return response.status(httpStatus.CREATED).json({ user: user.toJSON(), tokens, message: t("SUCCESS.LOGIN") });
     });
 
     logout = LogAsyncError(async (request: Request, response: Response) => {
-        try {
-            await AuthenticationService.logout(request.headers!.authorization!);
-            return response.status(httpStatus.OK).json({ message: t("SUCCESS.LOGOUT") });
-        } catch (error) {
-            return response.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: t("ERROR.HTTP.SERVER_ERROR") });
-        }
+        await AuthenticationService.logout(request.headers!.authorization!);
+        return response.status(httpStatus.OK).json({ message: t("SUCCESS.LOGOUT") });
     });
 
     refreshToken = LogAsyncError(async (request: Request, response: Response) => {
-        try {
-            const authorization = request.headers!.authorization!
-            const tokens = await AuthenticationService.refreshToken(authorization);
-            return response.status(httpStatus.CREATED).json({ tokens });
-        } catch (error) {
-            return response.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: t("ERROR.HTTP.SERVER_ERROR") });
-        }
+        const authorization = request.headers!.authorization!
+        const tokens = await AuthenticationService.refreshToken(authorization);
+        return response.status(httpStatus.CREATED).json({ tokens });
     });
 
     sendforgotPasswordEmail = LogAsyncError(async (request: Request, response: Response) => {
-        try {
-            const email: string = request.body.email;
+        const email: string = request.body.email;
 
-            const user: User = await UserService.getUserByEmail(email);
+        const user: User = await UserService.getUserByEmail(email);
 
-            const jwt: Token = await TokenService.generateResetPasswordToken(user);
+        const jwt: Token = await TokenService.generateResetPasswordToken(user);
 
-            EmailService.sendForgotPasswordEmail(user.name, user.email, jwt.jwt);
-            return response.status(httpStatus.NO_CONTENT).json({ message: t("SUCCESS.OK") });
-        } catch (error) {
-            return response.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: t("ERROR.HTTP.SERVER_ERROR") });
-        }
+        EmailService.sendForgotPasswordEmail(user.name, user.email, jwt.jwt);
+        return response.status(httpStatus.NO_CONTENT).json({ message: t("SUCCESS.OK") });
     });
 
     resetPassword = LogAsyncError(async (request: Request, response: Response) => {
-        try {
-            const jwt: string = request.body.jwt;
+        const jwt: string = request.body.jwt;
 
-            const authorization: string = request.headers!.authorization!;
-            const password: string = getPassword(authorization);
+        const authorization: string = request.headers!.authorization!;
+        const password: string = getPassword(authorization);
 
-            if (!validPassword(password)) return response.status(httpStatus.BAD_REQUEST).json({ message: t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.PASSWORD") }) })
+        if (!validPassword(password)) return response.status(httpStatus.BAD_REQUEST).json({ message: t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.PASSWORD") }) })
 
-            await AuthenticationService.resetPassword(jwt, password);
-            response.status(httpStatus.CREATED).json({ message: t("SUCCESS.OK") });
-        } catch (error) {
-            return response.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: t("ERROR.HTTP.SERVER_ERROR") });
-        }
+        await AuthenticationService.resetPassword(jwt, password);
+        response.status(httpStatus.CREATED).json({ message: t("SUCCESS.OK") });
     });
 
     sendVerificationEmail = LogAsyncError(async (request: Request, response: Response) => {
-        try {
-            const email: string = request.body.email;
+        const email: string = request.body.email;
 
-            const user: User = await UserService.getUserByEmail(email);
-            const jwt: Token = await TokenService.generateVerifyEmailToken(user);
+        const user: User = await UserService.getUserByEmail(email);
+        const jwt: Token = await TokenService.generateVerifyEmailToken(user);
 
-            EmailService.sendVerificationEmail(user.name, user.email, jwt.jwt);
-            return response.status(httpStatus.NO_CONTENT).json({ message: t("SUCCESS.OK") });
-        } catch (error) {
-            return response.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: t("ERROR.HTTP.SERVER_ERROR") });
-        }
+        EmailService.sendVerificationEmail(user.name, user.email, jwt.jwt);
+        return response.status(httpStatus.NO_CONTENT).json({ message: t("SUCCESS.OK") });
     });
 
     verifyEmail = LogAsyncError(async (request: Request, response: Response) => {
-        try {
-            const token: string = request.body.token;
-            await AuthenticationService.verifyEmail(token);
-            response.status(httpStatus.NO_CONTENT).json({ message: t("SUCCESS.OK") });
-        } catch (error) {
-            return response.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: t("ERROR.HTTP.SERVER_ERROR") });
-        }
+        const token: string = request.body.token;
+        await AuthenticationService.verifyEmail(token);
+        response.status(httpStatus.NO_CONTENT).json({ message: t("SUCCESS.OK") });
     });
 }
 

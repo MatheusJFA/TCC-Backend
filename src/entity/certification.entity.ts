@@ -11,8 +11,7 @@ export interface ICertification {
 @Entity("certifications")
 export default class Certification extends Base implements ICertification {
     @ManyToOne(() => Helper, helper => helper.certifications)
-    @JoinTable()
-    helper: Helper
+    helper: Helper;
 
     @Column()
     image: string;

@@ -4,7 +4,7 @@ import { SexValues } from "@/types/sex.type";
 
 import bcrypt from "bcrypt";
 
-import { Column, Entity, ManyToMany, OneToMany } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
 import Base from "./base.entity";
 import Token from "./token.entity";
 

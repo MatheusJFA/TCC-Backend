@@ -1,5 +1,6 @@
-import Helper from "@/entity/helper.entity";
+import Helper, { IHelper } from "@/entity/helper.entity";
 import User, { IUser } from "@/entity/user.entity";
+import HelperService from "@/service/helper.service";
 import UserService from "@/service/user.service";
 import { getPassword, validEmail, validPassword } from "@/utils/autenticator";
 import { LogAsyncError } from "@/utils/logAsyncError";
@@ -9,27 +10,31 @@ import { t } from "i18next";
 
 class HelperController {
     createHelper = LogAsyncError(async (request: Request, response: Response) => {
-        try {
-            const { email, certification, occupation } = request.body.user;
-            let user: User;
-            let helper: Helper;
+            const { email, certifications, clients, occupation } = request.body.user;
+            let user: User = await UserService.getUserByEmail(email);
+            let helper = await HelperService.createHelper(user, certifications, clients, occupation);
 
-            try {
-                user = await UserService.getUserByEmail(email);
-                // helper = await HelperService.
-            } catch (error) {
-                return response.status(httpStatus.NOT_FOUND).json({ message: t("ERROR.USER.NOT_FOUND") });
-            }
-            
             return response
                 .status(httpStatus.CREATED)
-                .json({ user: user.toJSON() });
-        } catch (error: any) {
-            return response
-                .status(httpStatus.INTERNAL_SERVER_ERROR)
-                .json({ message: error.message });
-        }
+                .json({ user: helper.user.toJSON() });
     });
+
+    addClient = LogAsyncError(async (request: Request, response: Response) => {
+
+    });
+
+    removeClient = LogAsyncError(async (request: Request, response: Response) => {
+  
+    });
+
+    addCertification = LogAsyncError(async (request: Request, response: Response) => {
+    
+    });
+
+    removeCertification = LogAsyncError(async (request: Request, response: Response) => {
+    });
+
+
 }
 
 export default new HelperController();
