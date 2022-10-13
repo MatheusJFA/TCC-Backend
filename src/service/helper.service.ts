@@ -43,21 +43,37 @@ const HelperService = Database.getRepository(Helper).extend({
         }
     },
 
-    addClient: async function (helperId: string, client: Client): Promise<void> {
+    addClient: async function (helper: Helper, client: Client): Promise<void> {
         try {
-            const helper = await this.getHelperByID(helperId);
-
             helper.addClient(client);
+            await this.save(helper);
         } catch (error) {
             throw error;
         }
     },
 
-    removeClient: async function (helperId: string, client: Client): Promise<void> {
+    removeClient: async function (helper: Helper, clientId: string): Promise<void> {
         try {
-            const helper = await this.getHelperByID(helperId);
+            helper.removeClient(clientId);
+            await this.save(helper);
+        } catch (error) {
+            throw error;
+        }
+    },
 
-            helper.removeClient(client);
+    addCertification: async function (helper: Helper, certification: Certification): Promise<void> {
+        try {
+            helper.addCertification(certification)
+            await this.save(helper);
+        } catch (error) {
+            throw error;
+        }
+    },
+    
+    removeCertification: async function (helper: Helper, certificationId: string): Promise<void> {
+        try {
+            helper.removeCertification(certificationId)
+            await this.save(helper);
         } catch (error) {
             throw error;
         }

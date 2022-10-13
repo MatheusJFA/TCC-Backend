@@ -1,7 +1,6 @@
 import User, { IUser } from "@/entity/user.entity";
 import UserService from "@/service/user.service";
-import ApiError from "@/utils/apiError";
-import { getPassword, validEmail, validPassword } from "@/utils/autenticator";
+import { getPassword } from "@/utils/autenticator";
 import { LogAsyncError } from "@/utils/logAsyncError";
 import { Request, Response } from "express";
 import httpStatus from "http-status";
@@ -24,11 +23,7 @@ class UserController {
 
     getUser = LogAsyncError(async (request: Request, response: Response) => {
             const id = request.params.id as string;
-
             let user: User = await UserService.getUserByID(id);
-
-            if (!user) response.status(httpStatus.NOT_FOUND).json({ message: t("ERROR.USER.NOT_FOUND") });
-
             return response
                 .status(httpStatus.OK)
                 .json({ user: user.toJSON() });

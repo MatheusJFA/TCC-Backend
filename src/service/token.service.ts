@@ -108,7 +108,6 @@ const TokenService = Database.getRepository(Token).extend({
 
     generateAuthenticationTokens: async function (user: User): Promise<{ accessToken: string, refreshToken: string }> {
         try {
-
             const userAccessToken = user.tokens.find((token: Token) => token.type === "ACCESS_TOKEN");
             const userRefreshToken = user.tokens.find((token: Token) => token.type === "REFRESH_TOKEN");
 

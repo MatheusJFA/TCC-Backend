@@ -93,6 +93,7 @@ export default class User extends Base implements IUser {
 
 
     toJSON = (): {
+        id: string;
         name: string;
         email: string;
         birthdate: Date;

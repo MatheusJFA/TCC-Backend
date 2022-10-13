@@ -7,9 +7,11 @@ import Helper from "@/entity/helper.entity";
 import httpStatus from "http-status";
 
 const ClientService = Database.getRepository(Client).extend({
-    createClient: async function (user: User, client: IClient) {
+    createClient: async function (user: User, height: number, weight: number, helpers: Helper[]) {
         try {
-            const newClient = new Client(user, client.height, client.weight);
+            const newClient = new Client(user, height, weight);
+
+            if (helpers) helpers.map(h => newClient.addHelper(h));
 
             return await this.save(newClient);
         } catch (error) {
@@ -37,11 +39,8 @@ const ClientService = Database.getRepository(Client).extend({
         }
     },
 
-    addHelper: async function (id: string, helper: Helper): Promise<void> {
+    addHelper: async function (client: Client, helper: Helper): Promise<void> {
         try {
-            const client: Client = await this.getClientByID(id);
-            if (!client) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
-
             client.addHelper(helper);
             await this.save(client);
         } catch (error) {
@@ -49,19 +48,27 @@ const ClientService = Database.getRepository(Client).extend({
         }
     },
 
-    removeHelper: async function (id: string, helper: Helper): Promise<void> {
+    removeHelper: async function (client: Client, helper: Helper): Promise<void> {
         try {
-            const client: Client = await this.getClientByID(id);
-            if (!client) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
-
             client.removeHelper(helper);
             await this.save(client);
         } catch (error) {
             throw error;
         }
+    },
+
+    updateClient: async function (client: Client, height, weight): Promise<void> {
+        try {
+            if (height !== client.height)
+                client.height = height;
+            if (weight !== client.weight)
+                client.weight = weight;
+
+            await this.save(client);
+        } catch (error) {
+            throw error;
+        }
     }
-
-
 });
 
 export default ClientService;

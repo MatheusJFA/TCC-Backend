@@ -56,9 +56,14 @@
             "ROLE": "Cargo",
             "HEIGHT": "Altura",
             "WEIGHT": "Peso",
+            "CLIENT": "Cliente",
+            "CLIENTS": "Clientes",
+            "HELPER": "Auxiliar",
+            "HELPERS": "Auxiliares",
             "OCCUPATION": "Ocupação",
             "IMAGE": "Imagem",
-            "CERTIFICATION": "Certificação" 
+            "CERTIFICATION": "Certificação",
+            "CERTIFICATIONS": "Certificações"
         },
         "TOKEN": {
             "TOKEN": "Token",
@@ -77,6 +82,17 @@
     "RESOURCES": {
         "USER": "Usuário",
         "TOKEN": "Token"
+    },
+
+    "BMI": {
+        "SEVERE_THINNESS": "MAGREZA SEVERA",
+        "MODERATE_THINNESS": "MAGREZA MODERADA",            
+        "MILD_THINNESS": "MAGREZA SUAVE",
+        "NORMAL": "NORMAL",
+        "OVERWEIGHT": "SOBREPESO",
+        "OBESE_CLASS_I": "OBESO CLASSE I",
+        "OBESE_CLASS_II": "OBESO CLASSE II",
+        "OBESE_CLASS_III": "OBESO CLASSE III"
     },
 
     "EMAIL": {

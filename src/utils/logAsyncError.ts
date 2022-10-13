@@ -6,15 +6,9 @@ export const LogAsyncError = (fn: Function) => (request: Request, response: Resp
   Promise.resolve(fn(request, response, next))
     .catch((error) => {
       Logger.error({ message: error.message, stack: error.message });
-      next(error);
 
-      if (error instanceof ApiError)
-        return response
-          .status(error.statusCode)
-          .json({ message: error.message });
-      else
-        return response
-          .status(error.statusCode)
-          .json({ message: error.message });
+      return response
+        .status(error.statusCode)
+        .json({ message: error.message });
     });
 }

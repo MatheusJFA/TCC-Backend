@@ -203,7 +203,6 @@ if (enviroment.node_enviroment !== Enviroment.TEST) {
             socket.on("joinGroup", async ({ room, socketId }, callback: Function) => {
                 const allSockets = await messageServer.in(room).fetchSockets();
 
-
                 if (allSockets.includes(socket.id)) socket.id = socketId;
                 else socket.join(room)
 
