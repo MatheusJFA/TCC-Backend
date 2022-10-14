@@ -306,6 +306,20 @@ describe("Test all the functionalities on client entity", () => {
         });
     });
 
+    test("test Maximun muscular potential", async () => {
+        expect(male.MMPCalculation()).toStrictEqual({
+            "maximun": 91,
+            "minimun": 87,
+        })
+        expect(female.MMPCalculation()).toStrictEqual({
+            "maximun": 62,
+            "minimun": 58,
+        })
+        expect(other.MMPCalculation()).toStrictEqual({
+            "maximun": 84,
+            "minimun": 80,
+        })
+    });
 
     test("test Macronutrients low carb calculation ", async () => {
         expect(male.MNC_LowCarb()).toStrictEqual({
@@ -360,5 +374,23 @@ describe("Test all the functionalities on client entity", () => {
                 "proteins_maintaince": 164,
             }
         });
+    });
+
+    test("test Boer Lean Body mass calculation", () => {
+        expect(male.LBM_BoerFormula()).toStrictEqual(73.998);
+        expect(female.LBM_BoerFormula()).toStrictEqual(39.97999999999999);
+        expect(other.LBM_BoerFormula()).toStrictEqual([53.158, 54.22099999999999]);
+    });
+
+    test("test James Lean Body mass calculation", () => {
+        expect(male.LBM_JamesFormula()).toStrictEqual(75.99382716049385);
+        expect(female.LBM_JamesFormula()).toStrictEqual(39.046875);
+        expect(other.LBM_JamesFormula()).toStrictEqual([48.64435092380148, 52.7210602584229]);
+    });
+
+    test("test Hume Lean Body mass calculation", () => {
+        expect(male.LBM_HumeFormula()).toStrictEqual(69.04271);
+        expect(female.LBM_HumeFormula()).toStrictEqual(38.39200000000001);
+        expect(other.LBM_HumeFormula()).toStrictEqual([50.843450000000004, 52.231280000000005]);
     });
 });
