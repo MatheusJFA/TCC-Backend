@@ -45,7 +45,7 @@ export default class Client extends User implements IClient {
 
 
     BULKING = 500;
-    CUTTING = -500;
+    CUTTING = 500;
 
     PROTEINS_CALORIES = 4;
     FATS_CALORIES = 9;

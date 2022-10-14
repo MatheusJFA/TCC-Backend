@@ -72,10 +72,9 @@ export default class SessionStorage implements ISessionStore {
         });
 
         return this.redisClient
-            .multi(commands)
-            .exec()
-            .then(results => {
-                return results.map(([error, sessions]) => error ? undefined : sessions.map((session: ISession) => {
+            .exec(commands)
+            .then((results) => {
+                return results!.map(([error, sessions]) => error ? undefined : (sessions as any).map((session: ISession) => {
                     return {
                         userId: session[0],
                         email: session[1],

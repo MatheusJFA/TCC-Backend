@@ -203,50 +203,50 @@ describe("Test all the functionalities on client entity", () => {
         expect(male.MNC_NormalCarb()).toStrictEqual({
             diet: {
                 "carbs_bulking": 228,
-                "carbs_cutting": 228,
+                "carbs_cutting": 141,
                 "carbs_maintaince": 184,
                 "fats_bulking": 102,
-                "fats_cutting": 102,
+                "fats_cutting": 63,
                 "fats_maintaince": 82,
                 "proteins_bulking": 196,
-                "proteins_cutting": 196,
+                "proteins_cutting": 121,
                 "proteins_maintaince": 158,
             }
         });
         expect(female.MNC_NormalCarb()).toStrictEqual({
             diet: {
                 "carbs_bulking": 151,
-                "carbs_cutting": 151,
+                "carbs_cutting": 63,
                 "carbs_maintaince": 107,
                 "fats_bulking": 67,
-                "fats_cutting": 67,
+                "fats_cutting": 28,
                 "fats_maintaince": 48,
                 "proteins_bulking": 129,
-                "proteins_cutting": 129,
+                "proteins_cutting": 54,
                 "proteins_maintaince": 92,
             }
         });
         expect(other.MNC_NormalCarb()).toStrictEqual({
             female: {
                 "carbs_bulking": 173,
-                "carbs_cutting": 173,
+                "carbs_cutting": 86,
                 "carbs_maintaince": 129,
                 "fats_bulking": 77,
-                "fats_cutting": 77,
+                "fats_cutting": 38,
                 "fats_maintaince": 58,
                 "proteins_bulking": 148,
-                "proteins_cutting": 148,
+                "proteins_cutting": 73,
                 "proteins_maintaince": 111
             },
             male: {
                 "carbs_bulking": 188,
-                "carbs_cutting": 188,
+                "carbs_cutting": 100,
                 "carbs_maintaince": 144,
                 "fats_bulking": 84,
-                "fats_cutting": 84,
+                "fats_cutting": 45,
                 "fats_maintaince": 64,
                 "proteins_bulking": 161,
-                "proteins_cutting": 161,
+                "proteins_cutting": 86,
                 "proteins_maintaince": 123
             }
         });
@@ -257,50 +257,50 @@ describe("Test all the functionalities on client entity", () => {
         expect(male.MNC_HighCarb()).toStrictEqual({
             diet: {
                 "carbs_bulking": 326,
-                "carbs_cutting": 326,
+                "carbs_cutting": 201,
                 "carbs_maintaince": 263,
                 "fats_bulking": 58,
-                "fats_cutting": 58,
+                "fats_cutting": 36,
                 "fats_maintaince": 47,
                 "proteins_bulking": 196,
-                "proteins_cutting": 196,
+                "proteins_cutting": 121,
                 "proteins_maintaince": 158,
             }
         });
         expect(female.MNC_HighCarb()).toStrictEqual({
             diet: {
                 "carbs_bulking": 215,
-                "carbs_cutting": 215,
+                "carbs_cutting": 90,
                 "carbs_maintaince": 153,
                 "fats_bulking": 39,
-                "fats_cutting": 39,
+                "fats_cutting": 16,
                 "fats_maintaince": 28,
                 "proteins_bulking": 129,
-                "proteins_cutting": 129,
+                "proteins_cutting": 54,
                 "proteins_maintaince": 92,
             }
         });
         expect(other.MNC_HighCarb()).toStrictEqual({
             female: {
                 "carbs_bulking": 247,
-                "carbs_cutting": 247,
+                "carbs_cutting": 122,
                 "carbs_maintaince": 184,
                 "fats_bulking": 44,
-                "fats_cutting": 44,
+                "fats_cutting": 22,
                 "fats_maintaince": 33,
                 "proteins_bulking": 148,
-                "proteins_cutting": 148,
+                "proteins_cutting": 73,
                 "proteins_maintaince": 111
             },
             male: {
                 "carbs_bulking": 268,
-                "carbs_cutting": 268,
+                "carbs_cutting": 143,
                 "carbs_maintaince": 205,
                 "fats_bulking": 48,
-                "fats_cutting": 48,
+                "fats_cutting": 26,
                 "fats_maintaince": 37,
                 "proteins_bulking": 161,
-                "proteins_cutting": 161,
+                "proteins_cutting": 86,
                 "proteins_maintaince": 123
             }
         });
@@ -311,13 +311,13 @@ describe("Test all the functionalities on client entity", () => {
         expect(male.MNC_LowCarb()).toStrictEqual({
             diet: {
                 "carbs_bulking": 131,
-                "carbs_cutting": 131,
+                "carbs_cutting": 81,
                 "carbs_maintaince": 106,
                 "fats_bulking": 116,
-                "fats_cutting": 116,
+                "fats_cutting": 72,
                 "fats_maintaince": 94,
                 "proteins_bulking": 261,
-                "proteins_cutting": 261,
+                "proteins_cutting": 161,
                 "proteins_maintaince": 211,
             }
         });
@@ -326,37 +326,37 @@ describe("Test all the functionalities on client entity", () => {
         expect(male.MNC_LowCarb()).toStrictEqual({
             diet: {
                 "carbs_bulking": 131,
-                "carbs_cutting": 131,
+                "carbs_cutting": 81,
                 "carbs_maintaince": 106,
                 "fats_bulking": 116,
-                "fats_cutting": 116,
+                "fats_cutting": 72,
                 "fats_maintaince": 94,
                 "proteins_bulking": 261,
-                "proteins_cutting": 261,
+                "proteins_cutting": 161,
                 "proteins_maintaince": 211,
             }
         });
         expect(other.MNC_LowCarb()).toStrictEqual({
             female: {
                 "carbs_bulking": 99,
-                "carbs_cutting": 99,
+                "carbs_cutting": 49,
                 "carbs_maintaince": 74,
                 "fats_bulking": 88,
-                "fats_cutting": 88,
+                "fats_cutting": 44,
                 "fats_maintaince": 66,
                 "proteins_bulking": 198,
-                "proteins_cutting": 198,
+                "proteins_cutting": 98,
                 "proteins_maintaince": 148,
             },
             male: {
                 "carbs_bulking": 107,
-                "carbs_cutting": 107,
+                "carbs_cutting": 57,
                 "carbs_maintaince": 82,
                 "fats_bulking": 95,
-                "fats_cutting": 95,
+                "fats_cutting": 51,
                 "fats_maintaince": 73,
                 "proteins_bulking": 214,
-                "proteins_cutting": 214,
+                "proteins_cutting": 114,
                 "proteins_maintaince": 164,
             }
         });
