@@ -8,20 +8,13 @@ import Certification from "./certification.entity";
 
 export interface IHelper {
     id: string,
-    user: User,
     occupation: string,
     certifications: Certification[],
     clients: Client[],
 }
 
 @Entity("helpers")
-export default class Helper implements IHelper {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
-
-    @OneToOne(() => User, user => user.id)
-    user: User;
-
+export default class Helper extends User implements IHelper {
     @Column("enum", { enum: OccupationValues })
     occupation: string;
 
@@ -33,9 +26,15 @@ export default class Helper implements IHelper {
     clients: Client[];
 
     constructor(
-        user: User,
-        occupation: string) {
-        this.user = user;
+        name: string,
+        email: string,
+        password: string,
+        birthdate: Date,
+        sex: string,
+        role: string,
+        occupation: string,
+        image?: string) {
+        super(name, email, password, birthdate, sex, role, image);
         this.occupation = occupation;
     }
 
@@ -51,7 +50,7 @@ export default class Helper implements IHelper {
 
     removeClient = (clientId: string): void => {
         if (!this.clients) this.clients = new Array<Client>();
-        this.clients = this.clients.filter(client => client.user.id !== clientId);
+        this.clients = this.clients.filter(client => client.id !== clientId);
     }
 
     getClients = (): { id: string }[] => {
@@ -59,7 +58,7 @@ export default class Helper implements IHelper {
             return [];
         else
             return this.clients.map(client => ({
-                id: client.user.id,
+                id: client.id,
             }));
     }
 
@@ -85,19 +84,19 @@ export default class Helper implements IHelper {
         sex: string;
         image?: string;
     } => {
-        const { user, certifications, clients, occupation } = this;
+        const { id, name, email, birthdate, role, sex, image, certifications, clients, occupation } = this;
 
         const helper = {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            birthdate: new Date(user.birthdate),
+            id: id,
+            name: name,
+            email: email,
+            birthdate: new Date(birthdate),
             occupation,
             certifications: certifications?.map(certification => certification.title) || null,
-            clients: clients?.map(client => client.user.name) || null,
-            role: user.role,
-            sex: user.sex,
-            image: user.image,
+            clients: clients?.map(client => client.name) || null,
+            role: role,
+            sex: sex,
+            image: image,
         }
 
         return helper;

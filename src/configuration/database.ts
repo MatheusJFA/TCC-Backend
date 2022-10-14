@@ -11,8 +11,8 @@ const connectionOption: DataSourceOptions = {
     database: enviroment.database.name,
     synchronize: enviroment.node_enviroment === Enviroment.DEVELOPMENT,
     logging: false,
-    entities: [`${__dirname}/../entity/**/*.entity{.js,.ts}`],
-    migrations: [`${__dirname}/../infrastructure/migration/**/*.{js,.ts}`],
+    entities: [`${__dirname}/../entity/**/*.entity.{js,ts}`],
+    migrations: [`${__dirname}/../infrastructure/migration/**/*.{js,ts}`],
 };
 
 

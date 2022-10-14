@@ -11,7 +11,7 @@ import httpStatus from "http-status";
 const HelperService = Database.getRepository(Helper).extend({
     createHelper: async function (user: User, certifications: Certification[], occupation: Occupation, clients: Client[]) {
         try {
-            const newHelper = new Helper(user, occupation);
+            const newHelper = new Helper(user.name, user.email, user.password, user.birthdate, user.sex, user.role, occupation);
 
             if (certifications) certifications.map(c => newHelper.addCertification(c));
 

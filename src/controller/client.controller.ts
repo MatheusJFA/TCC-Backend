@@ -29,6 +29,15 @@ class ClientController {
             .json({ user: client.toJSON() });
     });
 
+    getClients = LogAsyncError(async (request: Request, response: Response) => {
+        const paginate = request.body.pagination;
+        const clients = await ClientService.getClients(paginate);
+        
+        return response
+            .status(httpStatus.OK)
+            .json(clients);
+    });
+
     addHelper = LogAsyncError(async (request: Request, response: Response) => {
         const { clientId, helperId } = request.body;
 

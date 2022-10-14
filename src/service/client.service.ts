@@ -1,15 +1,18 @@
 import { t } from "i18next";
 import Database from "@/configuration/database";
-import Client, { IClient } from "@/entity/client.entity";
+import Client from "@/entity/client.entity";
 import User from "@/entity/user.entity";
 import ApiError from "@/utils/apiError";
 import Helper from "@/entity/helper.entity";
 import httpStatus from "http-status";
+import { paginate } from "@/helpers/paginate";
+import { IPageable } from "@/interfaces/IPageable";
 
 const ClientService = Database.getRepository(Client).extend({
     createClient: async function (user: User, height: number, weight: number, helpers: Helper[]) {
         try {
-            const newClient = new Client(user, height, weight);
+
+            const newClient = new Client(user.name, user.email, user.password, user.birthdate, user.sex, user.role, height, weight);
 
             if (helpers) helpers.map(h => newClient.addHelper(h));
 
@@ -34,6 +37,24 @@ const ClientService = Database.getRepository(Client).extend({
             const client = await this.findOne({ where: { id }, relations: ['user'] });
             if (!client) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
             return client!;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    getClients: async function (pagination?: IPageable<Client>): Promise<{ clients: Client[]; total: number; }> {
+         try {
+            const pageSchema = paginate(pagination)
+
+            const [clients, total] = await this.findAndCount({
+                take: pageSchema.limit,
+                skip: ((pageSchema.page - 1) * pageSchema.limit),
+                order: {
+                    [pageSchema.sort.field]: pageSchema.sort.order
+                }
+            });
+
+            return { clients, total };
         } catch (error) {
             throw error;
         }
