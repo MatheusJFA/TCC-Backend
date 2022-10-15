@@ -60,8 +60,8 @@ application.use(morganMiddleware); // Gera logs da aplicação
         .use(i18next_backend)
         .use(i18next_middleware.LanguageDetector)
         .init({
-            fallbackLng: "pt",
-            preload: ["pt"],
+            fallbackLng: "en",
+            preload: ["en"],
             backend: {
                 loadPath: path.join(__dirname, "locale/{{lng}}.json")
             }

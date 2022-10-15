@@ -65,6 +65,13 @@ class AuthenticationController {
         return response.status(httpStatus.NO_CONTENT).json({ message: t("SUCCESS.OK") });
     });
 
+    sendContact = LogAsyncError(async (request: Request, response: Response) => {
+        const {name, email, message} = request.body;
+
+        EmailService.sendContactEmail(name, email, message);
+        return response.status(httpStatus.NO_CONTENT).json({ message: t("SUCCESS.OK") })
+    });
+
     verifyEmail = LogAsyncError(async (request: Request, response: Response) => {
         const token: string = request.body.token;
         await AuthenticationService.verifyEmail(token);

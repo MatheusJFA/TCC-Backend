@@ -41,7 +41,7 @@ describe("Test all resources of User.controller", () => {
                 .then(response => {
                     expect(response.status).toBe(400);
                     expect(response.body).toHaveProperty("message");
-                    expect(response.body.message).toBe("Data de nascimento é inválido(a).");
+                    expect(response.body.message).toBe("Birthdate is invalid.");
                 });
         });
 
@@ -58,7 +58,7 @@ describe("Test all resources of User.controller", () => {
                 .expect("Content-Type", /json/)
                 .then(response => {
                     expect(response.body).toHaveProperty("message");
-                    expect(response.body.message).toBe("E-mail é inválido(a).");
+                    expect(response.body.message).toBe("E-mail is invalid.");
                 })
         });
 
@@ -75,7 +75,7 @@ describe("Test all resources of User.controller", () => {
                 .expect("Content-Type", /json/)
                 .then(response => {
                     expect(response.body).toHaveProperty("message");
-                    expect(response.body.message).toBe("Senha é inválido(a).");
+                    expect(response.body.message).toBe("Password is invalid.");
                 })
         });
 
@@ -116,7 +116,7 @@ describe("Test all resources of User.controller", () => {
                 .expect("Content-Type", /json/)
                 .then(response => {
                     expect(response.body).toHaveProperty("message");
-                    expect(response.body.message).toBe("Usuário não foi encontrado.");
+                    expect(response.body.message).toBe("User was not found.");
                 });
         });
 
@@ -164,7 +164,7 @@ describe("Test all resources of User.controller", () => {
                 .expect(404)
                 .then(response => {
                     expect(response.body).toHaveProperty("message");
-                    expect(response.body.message).toBe("Usuário não foi encontrado.");
+                    expect(response.body.message).toBe("User was not found.");
                 });
         });
 
@@ -207,7 +207,7 @@ describe("Test all resources of User.controller", () => {
                 .expect(404)
                 .then(response => {
                     expect(response.body).toHaveProperty("message");
-                    expect(response.body.message).toBe("Usuário não foi encontrado.");
+                    expect(response.body.message).toBe("User was not found.");
                 });
 
         })
@@ -221,7 +221,7 @@ describe("Test all resources of User.controller", () => {
                 .expect(200)
                 .then(response => {
                     expect(response.body).toHaveProperty("message");
-                    expect(response.body.message).toBe("O Usuário foi deletado com sucesso.");
+                    expect(response.body.message).toBe("The user was Deleted successfully.");
                 });
 
         })

@@ -48,9 +48,9 @@ afterAll(async () => {
 
 describe("Test all the functionalities on client entity", () => {
     test("Test BMI Equation", async () => {
-        expect(male.calculateBMI()).toStrictEqual({ value: 29.394473838918284, text: "SOBREPESO" });
+    expect(male.calculateBMI()).toStrictEqual({ value: 29.394473838918284, text: "OVERWEIGHT" });
         expect(female.calculateBMI()).toStrictEqual({ value: 19.531249999999996, text: "NORMAL" });
-        expect(other.calculateBMI()).toStrictEqual({ value: 18.41565028378215, text: "MAGREZA SUAVE" });
+        expect(other.calculateBMI()).toStrictEqual({ value: 18.41565028378215, text: "MILD THINNESS" });
     });
 
     test("test IBW D.R.Miller Formula ", async () => {

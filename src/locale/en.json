@@ -1,0 +1,112 @@
+{
+    "ERROR": {
+        "HTTP": {
+            "SERVER_ERROR": "There was a problem with our server, try again later.",
+            "UNAUTHORIZED": "You are not allowed to perform this action.",
+            "FORBIDDEN": "You are prohibited to perform this action.",
+            "NOT_FOUND": "The feature you requested was not found.",
+            "BAD_REQUEST": "The request is incorrect."
+        },
+        
+        "USER": {
+            "NOT_FOUND": "User was not found.",
+            "ALREADY_EXISTS": "The user already exists.",
+            "INVALID_CREDENTIALS": "Invalid credentials.",
+            "INVALID_PASSWORD": "Password inserted is invalid.",
+            "INVALID_EMAIL": "E-mail inserted is invalid."
+        },
+
+        "CLIENT": {
+            "NOT_FOUND": "Customer has not been found."
+        },
+
+        "HELPER": {
+            "NOT_FOUND": "Assistant was not found."
+        },
+
+        "TOKEN": {
+            "INVALID": "The token supplied is invalid.",
+            "NOT_FOUND": "The requested token has not been found."
+        },
+
+        "PARAMETERS": {
+            "INVALID_GENERIC": "One or more parameters are invalid.",
+            "INVALID": "{{parameter}} is invalid.",
+            "MISSING_GENERIC": "One or more required parameters are absent.",
+            "MISSING": "{{parameter}} is required."
+        }
+    },
+    
+    "SUCCESS": {
+        "OK": "Ok",
+        "MESSAGE": "The {{resource}} was {{action}} successfully.",
+        "LOGIN": "You were logged in successfully.",
+        "LOGOUT": "You have been successfully lifted."
+    },
+    
+    "FIELD": {
+        "ID": "ID",
+        "USER": {
+            "NAME": "Name",
+            "EMAIL": "E-mail",
+            "PASSWORD": "Password",
+            "CONFIRM_PASSWORD": "confirm password",
+            "BIRTHDATE": "Birthdate",
+            "SEX": "Sex",
+            "ROLLER": "Cargo",
+            "HEIGHT": "Height",
+            "WEIGHT": "Weight",
+            "CLIENT": "Customer",
+            "CLIENTS": "Customers",
+            "HELPER": "Auxiliary",
+            "HELPERS": "Auxiliaries",
+            "OCCUPATION": "Occupation",
+            "IMAGE": "Image",
+            "CERTIFICATION": "Certification",
+            "CERTIFICATIONS": "Certifications"
+        },
+        "TOKEN": {
+            "TOKEN": "token",
+            "TYPE": "Type",
+            "EXPIRES": "Expire",
+            "BLACKLIST": "Black List"
+        }
+    },
+    
+    "ACTION": {
+        "CREATE": "Created",
+        "UPDATE": "Updated",
+        "DELETE": "Deleted"
+    },
+    
+    "RESOURCES": {
+        "USER": "user",
+        "TOKEN": "token"
+    },
+
+    "BMI": {
+        "SEVERE_THINNESS": "SEVERE THINNESS",
+        "MODERATE_THINNESS": "MODERATE THINNESS",
+        "MILD_THINNESS": "MILD THINNESS",
+        "NORMAL": "NORMAL",
+        "OVERWEIGHT": "OVERWEIGHT",
+        "OBESE_CLASS_I": "OBESE CLASS I",
+        "OBESE_CLASS_II": "OBESE CLASS II",
+        "OBESE_CLASS_III": "OBESE CLASS III"
+    },
+
+    "EMAIL": {
+        "INTRO": "Hello, {{name}}!",
+        "RESET_PASSWORD": {
+            "TITLE": "You requested a password redefinition",
+            "SUBJECT": "We can't simply send your old password. An exclusive link has been generated to you. To create a new password, click the following link and follow the instructions. If you haven't requested that, ignore this and email." ,
+            "BUTTON": "Redefine the password"
+        },
+        "VERIFY_EMAIL": {
+            "TITLE": "You were successfully registered.",
+            "SUBJECT": "Your account was created successfully, click on the link below to activate it. If you didn't ask for it, ignore this and email.",
+            "BUTTON": "Enable Account"
+        },
+        "CONTACT_EMAIL": "Healthier - {{name}} sent a message"
+    }
+}

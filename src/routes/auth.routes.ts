@@ -26,6 +26,10 @@ router.post("/verify-email",
     validateSchema(authSchema.verifyEmail),
     AuthController.verifyEmail)
 
+router.post("/send-Contact",
+    validateSchema(authSchema.sendContactSchema),
+    AuthController.sendContact);
+
 router.post("/send-forgot-password-email",
     validateSchema(authSchema.sendForgotPasswordEmailSchema),
     AuthController.sendforgotPasswordEmail)

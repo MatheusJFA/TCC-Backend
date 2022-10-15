@@ -52,6 +52,15 @@ const resetPasswordSchema = Yup.object().shape({
     }).required(),
 });
 
+const sendContactSchema = Yup.object().shape({
+    body: Yup.object().shape({
+        email: Yup.string().email(t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.EMAIL") })).required(),
+        name: Yup.string().required(t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.NAME") })),
+        message: Yup.string().required()
+    }).required(),
+
+});
+
 const sendVerificationEmailSchema = Yup.object().shape({
     body: Yup.object().shape({
         email: Yup.string().email(t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.EMAIL") })).required(),
@@ -73,6 +82,7 @@ export default {
     refreshTokenSchema,
     sendForgotPasswordEmailSchema,
     resetPasswordSchema,
+    sendContactSchema,
     sendVerificationEmailSchema,
     verifyEmail
 }

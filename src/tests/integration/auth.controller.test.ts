@@ -56,7 +56,7 @@ describe("Test all resources of Auth.Controller", () => {
                 .expect(400)
                 .then(response => {
                     expect(response.body).toHaveProperty("message");
-                    expect(response.body.message).toBe("Credenciais inválidas.")
+                    expect(response.body.message).toBe("Invalid credentials.")
                 });
         });
 
@@ -94,7 +94,7 @@ describe("Test all resources of Auth.Controller", () => {
                 .expect(400)
                 .then(response => {
                     expect(response.body).toHaveProperty("message");
-                    expect(response.body.message).toBe("O token fornecido é inválido.")
+                    expect(response.body.message).toBe("The token supplied is invalid.")
                 });
         });
 
@@ -108,7 +108,7 @@ describe("Test all resources of Auth.Controller", () => {
                 .expect(200)
                 .then(response => {
                     expect(response.body).toHaveProperty("message");
-                    expect(response.body.message).toBe("Você foi deslogado com sucesso.")
+                    expect(response.body.message).toBe("You have been successfully lifted.")
                 });
         });
     });

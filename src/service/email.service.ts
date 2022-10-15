@@ -35,7 +35,7 @@ class EmailService {
   };
 
   public sendForgotPasswordEmail = (name: string, to: string, token: string) => {
-    const subject = t("FIELDS.RESET_PASSWORD");
+    const subject = t("EMAIL.RESET_PASSWORD.TITLE");
     const link = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
 
     const attachments = [{
@@ -48,7 +48,7 @@ class EmailService {
   }
 
   public sendVerificationEmail = (name: string, to: string, token: string) => {
-    const subject = t("FIELDS.VERIFICATION_EMAIL");
+    const subject = t("EMAIL.VERIFY_EMAIL.TITLE");
     const link = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
 
     const attachments = [{
@@ -60,6 +60,14 @@ class EmailService {
     this.sendEmail(to, subject, "", verifyEmail(name, link), attachments);
   }
 
+  public sendContactEmail = (name: string, email:string, message: string) => {
+    let contactInfo = `${name} < ${email} >` 
+    const subject = t("EMAIL.CONTACT_EMAIL", { name: contactInfo });
+
+    const to = enviroment.smtp.email as string;
+
+    this.sendEmail(to, subject, message);
+  }
 }
 
 export default new EmailService();

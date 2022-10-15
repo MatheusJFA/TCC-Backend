@@ -13,7 +13,7 @@ export const BMI = {
 
 
 export const getBMIName = (bmi: number): string => {
-    if (bmi < 16) return t("BMI.MILD_THINNESS");
+    if (bmi < 16) return t("BMI.SEVERE_THINNESS");
     else if (bmi > 16 && bmi < 18) return t("BMI.MODERATE_THINNESS");
     else if (bmi > 17 && bmi < 18.5) return t("BMI.MILD_THINNESS");
     else if (bmi > 18.5 && bmi < 25) return t("BMI.NORMAL");
