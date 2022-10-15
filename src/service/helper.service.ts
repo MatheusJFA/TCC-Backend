@@ -11,7 +11,7 @@ import { IPageable } from "@/interfaces/IPageable";
 import { IUser } from "@/entity/user.entity";
 
 const HelperService = Database.getRepository(Helper).extend({
-    createHelper: async function (name: string, email: string, password: string, birthdate: Date, sex: string, role: string, certifications: Certification[], occupation: Occupation, clients: Client[], image: string) {
+    createHelper: async function (name: string, email: string, password: string, birthdate: Date, sex: string, role: string, certifications: Certification[], occupation: string, clients: Client[], image: string) {
         try {
             const newHelper = new Helper(name, email, password, birthdate, sex, role, occupation, image);
 
