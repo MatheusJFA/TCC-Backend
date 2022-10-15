@@ -9,15 +9,15 @@ import enviroment from "@/configuration/enviroment";
 class EmailService {
   private imagePath = path.join(__dirname, '..', 'assets', 'images');
 
-  private transport = nodemailer.createTransport({
+
+    private transport = nodemailer.createTransport({
     service: enviroment.smtp.host,
+    host: 'smtp.gmail.com',
+    secure: false,
     auth: {
       user: enviroment.smtp.email,
-      pass: enviroment.smtp.password
+      pass: enviroment.smtp.secret
     },
-    tls: {
-      rejectUnauthorized: false
-    }
   });
 
   public initialize = async () => {
@@ -60,8 +60,8 @@ class EmailService {
     this.sendEmail(to, subject, "", verifyEmail(name, link), attachments);
   }
 
-  public sendContactEmail = (name: string, email:string, message: string) => {
-    let contactInfo = `${name} < ${email} >` 
+  public sendContactEmail = (name: string, email: string, message: string) => {
+    let contactInfo = `${name} - ${email}`
     const subject = t("EMAIL.CONTACT_EMAIL", { name: contactInfo });
 
     const to = enviroment.smtp.email as string;

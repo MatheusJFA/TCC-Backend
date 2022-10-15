@@ -40,7 +40,7 @@ import { Enviroment } from "./types/enviroment.type";
 (async () => {
     if (!Database.isInitialized)
         await Database.initialize()
-            .then(() => console.log("🌎 Connected to database"))
+            .then(() => console.log("🌍 Connected to database"))
             .catch((error) => {
                 console.log("❌ Could not connect to the database")
                 console.log(`error: ${error}`)
@@ -71,10 +71,9 @@ application.use(morganMiddleware); // Gera logs da aplicação
 })(); // Configurações do i18next
 
 application.use(i18next_middleware.handle(i18next)); // Permitir a internacionalização do projeto
-application.use(router); // Rotas da aplicação
 
 const corsOptions = {
-    origin: process.env.FRONTEND_URL,
+    origin: enviroment.url.frontend,
     methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
     preflightContinue: true,
     optionsSuccessStatus: 204,
@@ -85,6 +84,8 @@ application.use(cors(corsOptions)); // Bloquear outras URLs de acessar o site
 application.use(hpp()); // Proteger contra o ataque de HTTP Parameter Polution   
 application.use(helmet()); // Proteção contra ataques enviados nos headers
 application.use(compression()); // Comprime o tamanho do response
+
+application.use(router); // Rotas da aplicação
 
 application.use(passport.initialize());
 passport.use("jwt", jwtStrategy);
@@ -99,13 +100,17 @@ export const redisClient = new Redis(enviroment.redis.port, {
 
 
 if (enviroment.node_enviroment !== Enviroment.TEST) {
-    const httpServer = http.createServer(application);
-
-    (async () => {
-        console.log((await redisClient.ping()).toString() === "PONG" ? "🌎 Redis Server is Connected" : "❌ Redis Server is Not connected")
-    })();
-
     try {
+        const httpServer = http.createServer(application);
+
+        (async () => {
+            console.log((await redisClient.ping()).toString() === "PONG" ? "🌎 Redis Server is Connected" : "❌ Redis Server is Not connected")
+        })();
+
+        httpServer.listen(enviroment.port, () => {
+            console.log("🌏 Server is listening on port: " + enviroment.port)
+        });
+
         const messageServer = new Server(httpServer, {
             cors: {
                 origin: enviroment.url.frontend

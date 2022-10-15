@@ -8,8 +8,8 @@ const enviromentSchema = Yup.object().shape({
     NODE_ENVIROMENT: Yup.string().required(),
     PORT: Yup.number().required(),
 
-    FRONTEND_URL: Yup.string().url({allowLocal: true}).required(),
-    BACKEND_URL: Yup.string().url({allowLocal: true}).required(),
+    FRONTEND_URL: Yup.string().required(),
+    BACKEND_URL: Yup.string().required(),
 
     DB_HOST: Yup.string().required(),
     DB_PORT: Yup.number().required(),
@@ -28,10 +28,11 @@ const enviromentSchema = Yup.object().shape({
     JWT_RESET_PASSWORD_EXPIRATION_TIME: Yup.number().required().default(10),
     JWT_VERIFY_EMAIL_EXPIRATION_TIME: Yup.number().required().default(10),
 
-    STMP_HOST: Yup.string(),
-    STMP_EMAIL: Yup.string(),
-    STMP_PASSWORD: Yup.string(),
-    STMP_FROM: Yup.string(),
+    SMTP_HOST: Yup.string(),
+    SMTP_EMAIL: Yup.string(),
+    SMTP_PASSWORD: Yup.string(),
+    SMTP_SECRET: Yup.string(),
+    SMTP_FROM: Yup.string(),
 }).unknown();
 
 const enviroment = enviromentSchema.validateSync(process.env);
@@ -69,10 +70,11 @@ export = {
     },
 
     smtp: {
-        host: enviroment.STMP_HOST,
-        email: enviroment.STMP_EMAIL,
-        password: enviroment.STMP_PASSWORD,
-        from: enviroment.STMP_FROM,
+        host: enviroment.SMTP_HOST,
+        email: enviroment.SMTP_EMAIL,
+        password: enviroment.SMTP_PASSWORD,
+        secret: enviroment.SMTP_SECRET,
+        from: enviroment.SMTP_FROM,
     },
 };
 
