@@ -7,20 +7,6 @@ import httpStatus from "http-status";
 import { t } from "i18next";
 
 class UserController {
-    createUser = LogAsyncError(async (request: Request, response: Response) => {
-            const { name, email, birthdate, sex } = request.body.user;
-            const password = getPassword(request.headers!.authorization!);
-
-            const image = request.file?.filename || "../assets/image/default-avatar.png";
-
-            const user = await UserService.createUser({ name, email, birthdate, password, sex, role: "USER", image } as IUser);
-
-            return response
-                .status(httpStatus.CREATED)
-                .json({ user: user.toJSON() });
-    });
-
-
     getUser = LogAsyncError(async (request: Request, response: Response) => {
             const id = request.params.id as string;
             let user: User = await UserService.getUserByID(id);

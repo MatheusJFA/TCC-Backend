@@ -4,7 +4,7 @@ import { SexValues } from "@/types/sex.type";
 
 import bcrypt from "bcrypt";
 
-import { Column, Entity, OneToMany } from "typeorm";
+import { Column, Entity, OneToMany, TableInheritance } from "typeorm";
 import Base from "./base.entity";
 import Token from "./token.entity";
 
@@ -20,7 +20,8 @@ export interface IUser {
 }
 
 @Entity("users")
-export default class User extends Base implements IUser {
+@TableInheritance({column: {type: 'varchar', name: 'type'}})
+export default abstract class User extends Base implements IUser {
     @Column()
     name: string;
 

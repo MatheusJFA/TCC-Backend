@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import httpStatus from "http-status";
 import Logger from "../configuration/logger";
 import ApiError from "./apiError";
 
@@ -8,7 +9,7 @@ export const LogAsyncError = (fn: Function) => (request: Request, response: Resp
       Logger.error({ message: error.message, stack: error.message });
 
       return response
-        .status(error.statusCode)
+        .status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR)
         .json({ message: error.message });
     });
 }

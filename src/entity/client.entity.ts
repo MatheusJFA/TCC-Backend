@@ -1,7 +1,7 @@
 import { getBMRValues, getBMRWeeklyValues } from "@/types/activity.type";
 import { getBMIName } from "@/types/bmi.type";
 import { Sex } from "@/types/sex.type";
-import { Column, Entity, ManyToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { ChildEntity, Column, Entity, ManyToMany } from "typeorm";
 import Helper from "./helper.entity";
 import User from "./user.entity";
 
@@ -11,7 +11,7 @@ export interface IClient {
     weight: number,
 }
 
-@Entity("clients")
+@ChildEntity()
 export default class Client extends User implements IClient {
     @ManyToMany(() => Helper, helper => helper.clients)
     helpers: Helper[];
@@ -63,6 +63,11 @@ export default class Client extends User implements IClient {
 
     updateClient = (client: Partial<Omit<IClient, "password">>) => {
         Object.assign(this, client);
+    }
+
+    updateHeightAndWeight = (height: number, weight: number): void => {
+        this.weight = weight;
+        this.height = height;
     }
 
     //Ìndice de Massa corporal

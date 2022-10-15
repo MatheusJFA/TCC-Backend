@@ -2,20 +2,24 @@ import { t } from "i18next";
 import ApiError from "@/utils/apiError";
 import Database from "@/configuration/database";
 import Helper, { IHelper } from "@/entity/helper.entity";
-import User from "@/entity/user.entity";
 import Client from "@/entity/client.entity";
 import Certification from "@/entity/certification.entity";
 import { Occupation } from "@/types/occupation.type";
 import httpStatus from "http-status";
+import { paginate } from "@/helpers/paginate";
+import { IPageable } from "@/interfaces/IPageable";
+import { IUser } from "@/entity/user.entity";
 
 const HelperService = Database.getRepository(Helper).extend({
-    createHelper: async function (user: User, certifications: Certification[], occupation: Occupation, clients: Client[]) {
+    createHelper: async function (name: string, email: string, password: string, birthdate: Date, sex: string, role: string, certifications: Certification[], occupation: Occupation, clients: Client[], image: string) {
         try {
-            const newHelper = new Helper(user.name, user.email, user.password, user.birthdate, user.sex, user.role, occupation);
+            const newHelper = new Helper(name, email, password, birthdate, sex, role, occupation, image);
 
             if (certifications) certifications.map(c => newHelper.addCertification(c));
 
             if (clients) clients.map(c => newHelper.addClient(c));
+
+            await newHelper.hashPassword(password);
 
             return await this.save(newHelper);
         } catch (error) {
@@ -25,9 +29,9 @@ const HelperService = Database.getRepository(Helper).extend({
 
     getHelperByEmail: async function (email: string): Promise<Helper> {
         try {
-            const user = await this.findOne({ where: { email }, relations: ['user'] });
-            if (!user || this.invalidHelper(user)) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
-            return user!;
+            const helper = await this.findOne({ where: { email }, relations: ['tokens'] });
+            if (!helper) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
+            return helper!;
         } catch (error) {
             throw error;
         }
@@ -35,9 +39,49 @@ const HelperService = Database.getRepository(Helper).extend({
 
     getHelperByID: async function (id: string): Promise<Helper> {
         try {
-            const user = await this.findOne({ where: { id }, relations: ['user'] });
-            if (!user || this.invalidHelper(user)) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
-            return user!;
+            const helper = await this.findOne({ where: { id }, relations: ['tokens'] });
+            if (!helper) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
+            return helper!;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    getHelpers: async function (pagination?: IPageable<Helper>): Promise<{ helpers: Helper[]; total: number; }> {
+        try {
+            const pageSchema = paginate(pagination)
+
+            const [helpers, total] = await this.findAndCount({
+                take: pageSchema.limit,
+                skip: ((pageSchema.page - 1) * pageSchema.limit),
+                order: {
+                    [pageSchema.sort.field]: pageSchema.sort.order
+                }
+            });
+
+            return { helpers, total };
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    updateHelper: async function (id: string, data: IUser): Promise<Helper> {
+        try {
+            const user: Helper = await this.getHelperByID(id);
+            user.updateUser(data);
+            return await this.save(user);
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    deleteHelper: async function (id: string): Promise<Helper> {
+        try {
+            const user = await this.getHelperByID(id);
+            if (this.invalidUser(user) || !user) throw new ApiError(httpStatus.NOT_FOUND, t("ERROR.USER.ALREADY_EXISTS"));
+
+            user.invalidate();
+            return await this.save(user);
         } catch (error) {
             throw error;
         }
@@ -69,7 +113,7 @@ const HelperService = Database.getRepository(Helper).extend({
             throw error;
         }
     },
-    
+
     removeCertification: async function (helper: Helper, certificationId: string): Promise<void> {
         try {
             helper.removeCertification(certificationId)

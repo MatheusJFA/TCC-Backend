@@ -1,16 +1,22 @@
 export const correctUser = {
     name: "testonildo",
-    email: "user-correct@gmail.com",
+    email: "client-correct@gmail.com",
     birthdate: "2000-01-01",
     role: "USER",
     sex: "OTHER",
+    height: 1.89,
+    weight: 105,
+    image: "../assets/image/default-avatar.png"
 };
 
 export const userWithMissingParameters = {
     name: "testonildo",
-    email: "user-missing@gmail.com",
+    email: "client-missing@gmail.com",
     role: "USER",
     sex: "OTHER",
+    height: 1.89,
+    weight: 105.00,
+    image: "../assets/image/default-avatar.png"
 };
 
 export const userWithInvalidParameters = {
@@ -19,4 +25,7 @@ export const userWithInvalidParameters = {
     birthdate: "2000-01-01",
     role: "USER",
     sex: "OTHER",
+    height: 1.89,
+    weight: 105.00,
+    image: "../assets/image/default-avatar.png"
 };

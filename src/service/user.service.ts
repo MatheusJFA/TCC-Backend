@@ -59,28 +59,6 @@ const UserService = Database.getRepository(User).extend({
         }
     },
 
-    createUser: async function (data: IUser): Promise<User> {
-        try {
-            const userExists = await this.userExists(data.email);
-
-            if (userExists) throw new ApiError(httpStatus.NOT_FOUND, t("ERROR.USER.ALREADY_EXISTS"));
-
-            const user = new User(
-                data.name,
-                data.email,
-                data.password,
-                data.birthdate,
-                data.sex,
-                data.role,
-                data.image);
-
-            await user.hashPassword(data.password);
-
-            return await this.save(user);
-        } catch (error) {
-            throw error;
-        }
-    },
 
     updateUser: async function (id: string, data: IUser): Promise<User> {
         try {

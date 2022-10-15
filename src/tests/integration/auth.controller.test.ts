@@ -4,7 +4,7 @@ import { clearAllDatabase } from "../fixtures/clearDatabase";
 import database from "@/configuration/database";
 import { Token } from "@/types/token.type";
 import UserService from "@/service/user.service";
-import { IUser } from "@/entity/user.entity";
+import ClientService from "@/service/client.service";
 
 const ONE_MINUTE = 60 * 1000;
 
@@ -19,8 +19,10 @@ let user = {
     sex: "OTHER",
     role: "USER",
     image: "../assets/image/default-avatar.png",
+    height: 1.89,
+    weight: 100,
     isEmailVerified: false,
-} as IUser;
+};
 
 beforeAll(async () => {
     if (!database.isInitialized)
@@ -28,7 +30,7 @@ beforeAll(async () => {
             .then(async () => {
                 console.log("🌎 Database initialized");
                 try {
-                    await UserService.createUser(user);
+                    await ClientService.createClient(user.name, user.email, user.password, user.birthdate, user.sex, user.role, user.height, user.weight, [], user.image );
                     console.log("👶 Clients created");
                 } catch (error) {
                     console.log("❌ Couldn't create users", error);

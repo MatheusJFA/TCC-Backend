@@ -1,29 +1,33 @@
-import Certification from "@/entity/certification.entity";
 import Client, { IClient } from "@/entity/client.entity";
-import User, { IUser } from "@/entity/user.entity";
-import ClientService from "@/service/client.service";
 import HelperService from "@/service/helper.service";
-import UserService from "@/service/user.service";
+import ClientService from "@/service/client.service";
+import { Role } from "@/types/role.type";
+import { getPassword } from "@/utils/autenticator";
 import { LogAsyncError } from "@/utils/logAsyncError";
 import { Request, Response } from "express";
 import httpStatus from "http-status";
+import { t } from "i18next";
+import { IUser } from "@/entity/user.entity";
 
 class ClientController {
     createClient = LogAsyncError(async (request: Request, response: Response) => {
-        const { email, height, weight, helpers } = request.body.user;
-        let user: User = await UserService.getUserByEmail(email);
-        let client = await ClientService.createClient(user, height, weight, helpers);
+        const { name, email, birthdate, sex, height, weight, helpers } = request.body.user;
+        const password = getPassword(request.headers!.authorization!);
+
+        const image = request.file?.filename || "../assets/image/default-avatar.png";
+        let client =
+            await ClientService.createClient(name, email, password, birthdate, sex, Role.USER, height, weight, helpers, image);
 
         return response
             .status(httpStatus.CREATED)
-            .json({ user: client.user.toJSON() });
+            .json({ user: client.toJSON() });
     });
 
     getClient = LogAsyncError(async (request: Request, response: Response) => {
         const id = request.params.id;
 
         const client = await ClientService.getClientByID(id);
-        
+
         return response
             .status(httpStatus.OK)
             .json({ user: client.toJSON() });
@@ -32,10 +36,55 @@ class ClientController {
     getClients = LogAsyncError(async (request: Request, response: Response) => {
         const paginate = request.body.pagination;
         const clients = await ClientService.getClients(paginate);
-        
+
         return response
             .status(httpStatus.OK)
             .json(clients);
+    });
+
+    updateClient = LogAsyncError(async (request: Request, response: Response) => {
+        const id: string = request.params.id;
+        const { name, email, birthdate, sex, height, weight } = request.body.user;
+
+        const image = request.file?.filename || "../assets/image/default-avatar.png";
+
+        let user: Client = await ClientService.getClientByID(id);
+
+        if (!user) response.status(httpStatus.NOT_FOUND).json({ message: t("ERROR.USER.NOT_FOUND") });
+
+        const updatedUser = await ClientService.updateClient(id, { name, email, birthdate, sex, image } as IUser, height, weight)
+
+        return response
+            .status(httpStatus.OK)
+            .json({ user: updatedUser.toJSON() })
+    });
+
+    deleteClient = LogAsyncError(async (request: Request, response: Response) => {
+        const id = request.params.id;
+
+        let user: Client = await ClientService.getClientByID(id);
+
+        if (!user) response.status(httpStatus.NOT_FOUND).json({ message: t("ERROR.USER.NOT_FOUND") });
+
+        user.invalidate()
+        await user.save();
+        return response
+            .status(httpStatus.OK)
+            .json({ message: t("SUCCESS.MESSAGE", { resource: t("RESOURCES.USER"), action: t("ACTION.DELETE") }) });
+    });
+
+    changeRole = LogAsyncError(async (request: Request, response: Response) => {
+        const id = request.params.id;
+        const role = request.body.role;
+
+        let user: Client = await ClientService.getClientByID(id);
+
+        if (!user) response.status(httpStatus.NOT_FOUND).json({ message: t("ERROR.USER.NOT_FOUND") });
+
+        user.updateUser({ role });
+        return response
+            .status(httpStatus.CREATED)
+            .json({ message: t("SUCCESS.OK") })
     });
 
     addHelper = LogAsyncError(async (request: Request, response: Response) => {
@@ -58,17 +107,6 @@ class ClientController {
 
         return response.send(httpStatus.OK)
     });
-
-    updateClient = LogAsyncError(async (request: Request, response: Response) => {
-        const { clientId, height, weight } = request.body;
-
-        let client = await ClientService.getClientByID(clientId);
-
-        await ClientService.updateClient(client, height, weight);
-
-        return response.send(httpStatus.OK)
-    });
-
 }
 
 export default new ClientController();

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { ChildEntity, Column, Entity, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import Client from "./client.entity";
 
 import { OccupationValues } from "@/types/occupation.type";
@@ -13,7 +13,7 @@ export interface IHelper {
     clients: Client[],
 }
 
-@Entity("helpers")
+@ChildEntity()
 export default class Helper extends User implements IHelper {
     @Column("enum", { enum: OccupationValues })
     occupation: string;

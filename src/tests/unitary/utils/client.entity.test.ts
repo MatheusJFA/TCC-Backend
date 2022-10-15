@@ -5,11 +5,6 @@ import ClientService from "@/service/client.service";
 import UserService from "@/service/user.service";
 import { clearAllDatabase } from "@/tests/fixtures/clearDatabase";
 
-const maleUser = new User("maleUser", "maleUser@gmail.com", "MaleUser12345@", new Date("1995-04-04"), "MALE", "USER");
-const femaleUser = new User("femaleUser", "femaleUser@gmail.com", "FemaleUser12345@", new Date("1998-12-18"), "FEMALE", "USER");
-const otherUser = new User("otherUser", "otherUser@gmail.com", "OtherUser12345@", new Date("2000-01-01"), "OTHER", "USER");
-
-
 let male: Client;
 let female: Client;
 let other: Client;
@@ -20,14 +15,9 @@ beforeAll(async () => {
             .then(async () => {
                 console.log("🌎 Database initialized");
                 try {
-                    await UserService.createUser(maleUser);
-                    male = await ClientService.createClient(maleUser, 1.89, 105, []);
-
-                    await UserService.createUser(femaleUser);
-                    female = await ClientService.createClient(femaleUser, 1.60, 50, []);
-
-                    await UserService.createUser(otherUser);
-                    other = await ClientService.createClient(otherUser, 1.82, 61, []);
+                    male = await ClientService.createClient("maleUser", "maleUser@gmail.com", "MaleUser12345@", new Date("1995-04-04"), "MALE", "USER", 1.89, 105, [], "../assets/image/default-avatar.png");
+                    female = await ClientService.createClient("femaleUser", "femaleUser@gmail.com", "FemaleUser12345@", new Date("1998-12-18"), "FEMALE", "USER", 1.60, 50, [], "../assets/image/default-avatar.png");
+                    other = await ClientService.createClient("otherUser", "otherUser@gmail.com", "OtherUser12345@", new Date("2000-01-01"), "OTHER", "USER", 1.82, 61, [], "../assets/image/default-avatar.png");
 
                     console.log("👶 Clients created");
                 } catch (error) {
