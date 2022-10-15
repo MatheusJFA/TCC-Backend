@@ -10,7 +10,7 @@ class EmailService {
   private imagePath = path.join(__dirname, '..', 'assets', 'images');
 
 
-    private transport = nodemailer.createTransport({
+  private transport = nodemailer.createTransport({
     service: enviroment.smtp.host,
     host: 'smtp.gmail.com',
     secure: false,
@@ -32,6 +32,7 @@ class EmailService {
   private sendEmail = (to: string, subject: string, text?: string, html?: string, attachments?: any,) => {
     const message = { from: enviroment.smtp.from, to, subject, text, html, attachments };
     this.transport.sendMail(message);
+    console.log(`✉️ Sent e-mail to ${to}`)
   };
 
   public sendForgotPasswordEmail = (name: string, to: string, token: string) => {
