@@ -16,12 +16,12 @@ const enviromentSchema = Yup.object().shape({
     DB_USER: Yup.string().required(),
     DB_PASSWORD: Yup.string().required(),
     DB_DATABASE: Yup.string().required(),
-    
+
     REDIS_HOST: Yup.string().required(),
     REDIS_PORT: Yup.string().required(),
     REDIS_USER: Yup.string().required(),
     REDIS_PASSWORD: Yup.string().required(),
-    
+
     JWT_SECRET: Yup.string().required(),
     JWT_ACCESS_EXPIRATION_TIME: Yup.number().required().default(30),
     JWT_REFRESH_EXPIRATION_TIME: Yup.number().required().default(30),
@@ -33,6 +33,14 @@ const enviromentSchema = Yup.object().shape({
     SMTP_PASSWORD: Yup.string(),
     SMTP_SECRET: Yup.string(),
     SMTP_FROM: Yup.string(),
+
+    FATSECRET_CLIENT_ID: Yup.string(),
+    FATSECRET_CLIENT_SECRET: Yup.string(),
+
+    FATSECRET_CONSUMER_KEY: Yup.string(),
+    FATSECRET_CONSUMER_SECRET: Yup.string(),
+
+    EXERCISEDB_API_KEY: Yup.string()
 }).unknown();
 
 const enviroment = enviromentSchema.validateSync(process.env);
@@ -76,5 +84,17 @@ export = {
         secret: enviroment.SMTP_SECRET,
         from: enviroment.SMTP_FROM,
     },
+
+    api: {
+        fatsecret: {
+            clientID: enviroment.FATSECRET_CLIENT_ID,
+            clientSecret: enviroment.FATSECRET_CLIENT_SECRET,
+            consumer_key: enviroment.FATSECRET_CONSUMER_KEY,
+            consumer_secret: enviroment.FATSECRET_CONSUMER_SECRET,
+        },
+        rapidapi: {
+            api_key_exerciseDB: enviroment.EXERCISEDB_API_KEY,
+        }
+    }
 };
 

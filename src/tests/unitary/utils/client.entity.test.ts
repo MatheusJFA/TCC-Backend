@@ -1,13 +1,16 @@
 import database from "@/configuration/database";
 import Client from "@/entity/client.entity";
-import User from "@/entity/user.entity";
 import ClientService from "@/service/client.service";
-import UserService from "@/service/user.service";
 import { clearAllDatabase } from "@/tests/fixtures/clearDatabase";
 
 let male: Client;
 let female: Client;
 let other: Client;
+
+const ONE_MINUTE = 60 * 1000;
+
+jest.setTimeout(ONE_MINUTE);
+jest.useFakeTimers()
 
 beforeAll(async () => {
     if (!database.isInitialized)
@@ -103,7 +106,7 @@ describe("Test all the functionalities on client entity", () => {
         expect(other.katchMcArdleFormula()).toStrictEqual([1397.8758302330639, 1540.1766302330636]);
     });
 
-    test("test fat percentage ", async () => {
+    test("test Fat Percentage ", async () => {
         expect(male.fatPercentage()).toStrictEqual(25.283368606701938);
         expect(female.fatPercentage()).toStrictEqual(23.557499999999997);
         expect(other.fatPercentage()).toStrictEqual([21.988780340538575, 11.188780340538578]);

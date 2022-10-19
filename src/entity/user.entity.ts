@@ -1,4 +1,3 @@
-import { Occupation, OccupationValues } from "@/types/occupation.type";
 import { RoleValues } from "@/types/role.type";
 import { SexValues } from "@/types/sex.type";
 
@@ -49,6 +48,12 @@ export default abstract class User extends Base implements IUser {
     @OneToMany(() => Token, token => token.user, { eager: true, cascade: true })
     tokens: Token[];
 
+    @Column()
+    level: number;
+
+    @Column()
+    exp: number;
+
     constructor(
         name: string,
         email: string,
@@ -67,6 +72,13 @@ export default abstract class User extends Base implements IUser {
         this.role = role;
         this.image = image;
         this.isEmailVerified = false;
+        this.level = 1;
+        this.exp = 0;
+    }
+
+    DEFAULT = {
+        max_level: 100,
+        next: 64
     }
 
     addToken = (token: Token): void => {
@@ -92,6 +104,32 @@ export default abstract class User extends Base implements IUser {
         this.isEmailVerified = true;
     }
 
+    currentLevel = () => {
+        return Math.floor((1 + Math.sqrt(1 + 8 * this.exp / this.DEFAULT.next)) / 2);
+    }
+
+    getExperienceToLevelUp = () => {
+        return Math.floor(((Math.pow(this.level, 2) - this.level) * this.DEFAULT.next) / 2);
+    }
+
+    parseByXP = function () {
+        let level = this.level === this.DEFAULT.max_level ? this.DEFAULT.max_level : Math.floor(this.level);
+        let forNextLevel = level === this.DEFAULT.max_level ? Infinity : this.getExperienceToLevelUp(level + 1)
+        let toNextlevel = forNextLevel - this.exp;
+        let currentLevelRequiredExperience = this.getExperienceToLevelUp(level);
+        return {
+            level: level,
+            xp: this.exp,
+            forNextLevel,
+            toNextlevel,
+            currentLevelRequiredExperience
+        };
+    };
+
+    addExperience = (value: number) => {
+        this.exp += value;
+        this.level = this.currentLevel();
+    }
 
     toJSON = (): {
         id: string;
@@ -103,7 +141,7 @@ export default abstract class User extends Base implements IUser {
         image?: string;
     } => {
 
-        const { id, name, email, birthdate, role, sex, image } = this;
+        const { id, name, email, birthdate, role, sex, image, exp, level } = this;
 
         const user = {
             id,
@@ -113,6 +151,10 @@ export default abstract class User extends Base implements IUser {
             role,
             sex,
             image,
+            experience: {
+                exp,
+                level
+            }
         }
 
         return user;

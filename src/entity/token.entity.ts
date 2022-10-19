@@ -1,9 +1,6 @@
 import { TokenValues } from "@/types/token.type";
 import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
-import { EmitHelperUniqueNameCallback } from "typescript";
 import Base from "./base.entity";
-import Client from "./client.entity";
-import Helper from "./helper.entity";
 import User from "./user.entity";
 
 export interface IToken {

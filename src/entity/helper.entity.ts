@@ -5,7 +5,6 @@ import { OccupationValues } from "@/types/occupation.type";
 import User from "./user.entity";
 import Certification from "./certification.entity";
 
-
 export interface IHelper {
     id: string,
     occupation: string,
@@ -33,7 +32,8 @@ export default class Helper extends User implements IHelper {
         sex: string,
         role: string,
         occupation: string,
-        image?: string) {
+        image?: string,
+    ) {
         super(name, email, password, birthdate, sex, role, image);
         this.occupation = occupation;
     }

@@ -6,7 +6,7 @@ export const clearAllDatabase = async () => {
     try {
         const tokenRepository = Database.getRepository(Token);
         const userRepository = Database.getRepository(User);
-
+        
         await tokenRepository.delete({});
         await userRepository.delete({});
 

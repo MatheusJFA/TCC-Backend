@@ -83,10 +83,7 @@ export default class Client extends User implements IClient {
     //Peso corporal ideal
     IBW_DRMillerFormula = (): number | number[] => {
         const cm = this.height * 100;
-
-        const feet = cm / this.FEET_RATIO;
-        const overFiveFeet = feet - this.FIVE_FEET;
-        const overFiveFeetToInches = overFiveFeet * this.INCH_RATIO;
+        const overFiveFeetToInches = this.inchesOverFiveFeet(cm);
 
         const male = 56.2 + 1.41 * overFiveFeetToInches;
         const female = 53.1 + 1.36 * overFiveFeetToInches;
@@ -98,10 +95,7 @@ export default class Client extends User implements IClient {
 
     IBW_JDRobinsonFormula = (): number | number[] => {
         const cm = this.height * 100;
-
-        const feet = cm / this.FEET_RATIO;
-        const overFiveFeet = feet - this.FIVE_FEET;
-        const overFiveFeetToInches = overFiveFeet * this.INCH_RATIO;
+        const overFiveFeetToInches = this.inchesOverFiveFeet(cm);
 
         const male = 52 + 1.9 * overFiveFeetToInches;
         const female = 49 + 1.7 * overFiveFeetToInches;
@@ -113,10 +107,7 @@ export default class Client extends User implements IClient {
 
     IBW_BJDevineFormula = (): number | number[] => {
         const cm = this.height * 100;
-
-        const feet = cm / this.FEET_RATIO;
-        const overFiveFeet = feet - this.FIVE_FEET;
-        const overFiveFeetToInches = overFiveFeet * this.INCH_RATIO;
+        const overFiveFeetToInches = this.inchesOverFiveFeet(cm);
 
         const male = 50 + 2.3 * overFiveFeetToInches;
         const female = 45.5 + 2.3 * overFiveFeetToInches;
@@ -128,10 +119,7 @@ export default class Client extends User implements IClient {
 
     IBW_HanwiFormula = (): number | Array<number> => {
         const cm = this.height * 100;
-
-        const feet = cm / this.FEET_RATIO;
-        const overFiveFeet = feet - this.FIVE_FEET;
-        const overFiveFeetToInches = overFiveFeet * this.INCH_RATIO;
+        const overFiveFeetToInches = this.inchesOverFiveFeet(cm);
 
         const male = 48 + 2.7 * overFiveFeetToInches;
         const female = 45.5 + 2.2 * overFiveFeetToInches;
@@ -139,6 +127,14 @@ export default class Client extends User implements IClient {
         if (this.sex === Sex.MALE) return male;
         else if (this.sex === Sex.FEMALE) return female;
         else return [female, male];
+    }
+
+    inchesOverFiveFeet = (cm: number) => {
+        const feet = cm / this.FEET_RATIO;
+        const overFiveFeet = feet - this.FIVE_FEET;
+        const overFiveFeetToInches = overFiveFeet * this.INCH_RATIO;
+
+        return overFiveFeetToInches;
     }
 
     IBW_Range = () => {

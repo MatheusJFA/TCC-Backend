@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToOne } from "typeorm";
+import { Column, Entity, ManyToOne } from "typeorm";
 import Base from "./base.entity";
 import Helper from "./helper.entity";
 
@@ -24,6 +24,12 @@ export default class Certification extends Base implements ICertification {
 
     constructor(title: string, image: string, date: Date) {
         super();
+        this.title = title;
+        this.image = image;
+        this.date = date;
+    }
+
+    updateCertification(title: string, image: string, date: Date) {
         this.title = title;
         this.image = image;
         this.date = date;

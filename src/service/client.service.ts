@@ -14,9 +14,8 @@ const ClientService = Database.getRepository(Client).extend({
             const newClient = new Client(name, email, password, birthdate, sex, role, height, weight, images);
 
             if (helpers) helpers.map(h => newClient.addHelper(h));
-            
-            await newClient.hashPassword(password);
 
+            await newClient.hashPassword(password);
             return await this.save(newClient);
         } catch (error) {
             throw error;
