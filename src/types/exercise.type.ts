@@ -76,3 +76,9 @@ export const validTargetMuscle = (target: string) => {
 export const validBodyPart = (bodyPart: string) => {
     return bodyParts.includes(bodyPart);
 }
+
+export const equipmentsValues = Object.values(equipments);
+
+export const targetMusclesValues = Object.values(targetMuscles);
+
+export const bodyPartsValues = Object.values(bodyParts);

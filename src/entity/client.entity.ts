@@ -1,7 +1,12 @@
 import { getBMRValues, getBMRWeeklyValues } from "@/types/activity.type";
 import { getBMIName } from "@/types/bmi.type";
+import { CarbsIntakeValues } from "@/types/carbsIntake.type";
+import { DietTypeValues } from "@/types/dietType.type";
+import { Intolerances, IntolerancesValues } from "@/types/intolerance.type";
+import { Diet, DietValues } from "@/types/diet.type";
 import { Sex } from "@/types/sex.type";
-import { ChildEntity, Column, Entity, ManyToMany } from "typeorm";
+import { ChildEntity, Column, ManyToMany, OneToMany } from "typeorm";
+import Calories from "./calories.entity";
 import Helper from "./helper.entity";
 import User from "./user.entity";
 
@@ -9,6 +14,8 @@ export interface IClient {
     id: string,
     height: number,
     weight: number,
+    calories: Calories,
+    carbsIntake: string
 }
 
 @ChildEntity()
@@ -21,6 +28,21 @@ export default class Client extends User implements IClient {
 
     @Column("decimal")
     weight: number;
+
+    @OneToMany(() => Calories, calories => calories.user, { eager: true, cascade: true })
+    calories: Calories;
+
+    @Column("enum", { enum: CarbsIntakeValues })
+    carbsIntake: string;
+
+    @Column("enum", { enum: DietTypeValues })
+    dietType: string;
+
+    @Column("enum", { enum: DietValues })
+    diet: string;
+
+    @Column("enum", { enum: IntolerancesValues })
+    intolerance: string;
 
     constructor(
         name: string,
@@ -36,6 +58,8 @@ export default class Client extends User implements IClient {
         super(name, email, password, birthdate, sex, role, image);
         this.height = height;
         this.weight = weight;
+        this.diet = Diet.NO_DIET;
+        this.intolerance = Intolerances.NONE;
     }
 
     //Constants
@@ -50,6 +74,7 @@ export default class Client extends User implements IClient {
     PROTEINS_CALORIES = 4;
     FATS_CALORIES = 9;
     CARBS_CALORIES = 4;
+
 
     addHelper = (helper: Helper): void => {
         if (!this.helpers) this.helpers = new Array<Helper>();
@@ -81,7 +106,7 @@ export default class Client extends User implements IClient {
 
     //Ideal Body Weight 
     //Peso corporal ideal
-    IBW_DRMillerFormula = (): number | number[] => {
+    IBW_DRMillerFormula = (): number => {
         const cm = this.height * 100;
         const overFiveFeetToInches = this.inchesOverFiveFeet(cm);
 
@@ -89,11 +114,10 @@ export default class Client extends User implements IClient {
         const female = 53.1 + 1.36 * overFiveFeetToInches;
 
         if (this.sex === Sex.MALE) return male;
-        else if (this.sex === Sex.FEMALE) return female;
-        else return [female, male];
+        else return female;
     }
 
-    IBW_JDRobinsonFormula = (): number | number[] => {
+    IBW_JDRobinsonFormula = (): number => {
         const cm = this.height * 100;
         const overFiveFeetToInches = this.inchesOverFiveFeet(cm);
 
@@ -101,8 +125,7 @@ export default class Client extends User implements IClient {
         const female = 49 + 1.7 * overFiveFeetToInches;
 
         if (this.sex === Sex.MALE) return male;
-        else if (this.sex === Sex.FEMALE) return female;
-        else return [female, male];
+        else return female;
     }
 
     IBW_BJDevineFormula = (): number | number[] => {
@@ -113,11 +136,10 @@ export default class Client extends User implements IClient {
         const female = 45.5 + 2.3 * overFiveFeetToInches;
 
         if (this.sex === Sex.MALE) return male;
-        else if (this.sex === Sex.FEMALE) return female;
-        else return [female, male];
+        else return female;
     }
 
-    IBW_HanwiFormula = (): number | Array<number> => {
+    IBW_HanwiFormula = (): number => {
         const cm = this.height * 100;
         const overFiveFeetToInches = this.inchesOverFiveFeet(cm);
 
@@ -125,8 +147,7 @@ export default class Client extends User implements IClient {
         const female = 45.5 + 2.2 * overFiveFeetToInches;
 
         if (this.sex === Sex.MALE) return male;
-        else if (this.sex === Sex.FEMALE) return female;
-        else return [female, male];
+        else return female;
     }
 
     inchesOverFiveFeet = (cm: number) => {
@@ -143,39 +164,23 @@ export default class Client extends User implements IClient {
         const devine = this.IBW_BJDevineFormula();
         const robinson = this.IBW_JDRobinsonFormula();
 
-        const { values, femaleValues, maleValues } = this.getMinimunAndMaximunValues([hanwi, miller, devine, robinson]);
+        const { values } = this.getMinimunAndMaximunValues([hanwi, miller, devine, robinson]);
 
-        if (values.length > 0)
-            return { minimun: Math.min(...values), maximun: Math.max(...values) }
-        else
-            return {
-                male: { minimun: Math.min(...maleValues), maximun: Math.max(...maleValues) },
-                female: { minimun: Math.min(...femaleValues), maximun: Math.max(...femaleValues) }
-            }
+        return { minimun: Math.min(...values), maximun: Math.max(...values) }
     }
 
     getMinimunAndMaximunValues = (calculus: Array<any>) => {
         const values = new Array<number>();
-        const femaleValues = new Array<number>();
-        const maleValues = new Array<number>();
 
+        calculus.map(value => values.push(value));
 
-        calculus.map(value => {
-            if (Array.isArray(value)) {
-                const [female, male] = value;
-                femaleValues.push(female);
-                maleValues.push(male);
-            } else values.push(value);
-        });
-
-
-        return { values, femaleValues, maleValues };
+        return { values };
     }
 
     // Basal Metabolic Rate 
     // Taxa metabólica basal
     // Most Accurate  
-    mifflinStJeorFormula = (): number | number[] => {
+    mifflinStJeorFormula = (): number => {
         const kg = this.weight;
         const cm = this.height * 100;
         const age = new Date().getFullYear() - this.birthdate.getFullYear();
@@ -184,11 +189,10 @@ export default class Client extends User implements IClient {
         const male = 10 * kg + 6.25 * cm - 5 * age + 5;
 
         if (this.sex === Sex.MALE) return male;
-        else if (this.sex === Sex.FEMALE) return female;
-        else return [female, male];
+        else return female;
     }
 
-    harrisBenedictFormula = (): number | number[] => {
+    harrisBenedictFormula = (): number => {
         const kg = this.weight;
         const cm = this.height * 100;
         const age = new Date().getFullYear() - this.birthdate.getFullYear();
@@ -197,26 +201,16 @@ export default class Client extends User implements IClient {
         const male = 13.397 * kg + 4.799 * cm - 5.677 * age + 88.362;
 
         if (this.sex === Sex.MALE) return male;
-        else if (this.sex === Sex.FEMALE) return female;
-        else return [female, male];
+        else return female;
     }
 
-    katchMcArdleFormula = (): number | number[] => {
+    katchMcArdleFormula = (): number => {
         const fatPercentage = this.fatPercentage();
-        if (Array.isArray(fatPercentage)) {
-            const [female, male] = fatPercentage;
-
-            const femaleFatPercentage = 370 + 21.6 * (1 - female / 100) * this.weight;
-            const maleFatPercentage = 370 + 21.6 * (1 - male / 100) * this.weight;
-
-            return [femaleFatPercentage, maleFatPercentage];
-        }
-
-        else return 370 + 21.6 * (1 - fatPercentage / 100) * this.weight;
+        return 370 + 21.6 * (1 - fatPercentage / 100) * this.weight;
     }
 
     //Fat percentage
-    fatPercentage = (): number | number[] => {
+    fatPercentage = (): number => {
         const age = new Date().getFullYear() - this.birthdate.getFullYear();
         const BMI = this.calculateBMI().value;
 
@@ -224,8 +218,8 @@ export default class Client extends User implements IClient {
         const male = 1.20 * BMI + 0.23 * age - 16.2;
 
         if (this.sex === Sex.MALE) return male;
-        else if (this.sex === Sex.FEMALE) return female;
-        else return [female, male];
+        else return female;
+
     }
 
     //Maximum Muscular Potential
@@ -244,7 +238,7 @@ export default class Client extends User implements IClient {
 
     //Basal metabolic rate
     //Taxa metabólica basal
-    BMRCalculation = (): number | number[] => {
+    BMRCalculation = (): number => {
         const kg = this.weight;
         const cm = this.height * 100;
         const age = new Date().getFullYear() - this.birthdate.getFullYear();
@@ -253,53 +247,22 @@ export default class Client extends User implements IClient {
         const male = 66 + (13.7 * kg) + (5 * cm) - (6.8 * age);
 
         if (this.sex === Sex.MALE) return male;
-        if (this.sex === Sex.FEMALE) return female;
-        else return [female, male]
+        else return female;
     }
 
     BMRCalculationBaseOnActivity = (): Object | Object[] => {
         const bmr = this.BMRCalculation();
-
-        if (Array.isArray(bmr)) {
-            const [femaleBMR, maleBMR] = bmr;
-
-            const female = getBMRValues(femaleBMR);
-            const male = getBMRValues(maleBMR);
-
-            return [female, male];
-        }
-
-        else return getBMRValues(bmr);
+        return getBMRValues(bmr);
     }
 
     BMRCalculationBaseOnMillerFormula = (): Object | Object[] => {
         const bmr = this.mifflinStJeorFormula();
-
-        if (Array.isArray(bmr)) {
-            const [femaleBMR, maleBMR] = bmr;
-
-            const female = getBMRValues(femaleBMR);
-            const male = getBMRValues(maleBMR);
-
-            return [female, male];
-        }
-
-        else return getBMRValues(bmr);
+        return getBMRValues(bmr);
     }
 
     BMRCalculationBaseOnMillerWeeklyFormula = (): Object | Object[] => {
         const bmr = this.mifflinStJeorFormula();
-
-        if (Array.isArray(bmr)) {
-            const [femaleBMR, maleBMR] = bmr;
-
-            const female = getBMRWeeklyValues(femaleBMR);
-            const male = getBMRWeeklyValues(maleBMR);
-
-            return [female, male];
-        }
-
-        else return getBMRWeeklyValues(bmr);
+        return getBMRWeeklyValues(bmr);
     }
 
     //Macronutrients Calculations
@@ -307,42 +270,20 @@ export default class Client extends User implements IClient {
         maintaince: number,
         cutting: number,
         bulking: number,
-    } | {
-        maintaince: number,
-        cutting: number,
-        bulking: number,
-    }[] => {
+    } => {
         const values = this.mifflinStJeorFormula();
 
         let diets: {
             maintaince: number,
             cutting: number,
             bulking: number,
-        }[] = [];
+        };
 
-
-
-        if (Array.isArray(values)) {
-            const [female, male] = values;
-
-            diets.push({
-                maintaince: female,
-                cutting: female - this.CUTTING,
-                bulking: female + this.BULKING,
-            });
-
-            diets.push({
-                maintaince: male,
-                cutting: male - this.CUTTING,
-                bulking: male + this.BULKING,
-            });
-        }
-        else
-            diets.push({
-                maintaince: values,
-                cutting: values - this.CUTTING,
-                bulking: values + this.BULKING,
-            });
+        diets = {
+            maintaince: values,
+            cutting: values - this.CUTTING,
+            bulking: values + this.BULKING,
+        };
 
         return diets;
     }
@@ -353,19 +294,11 @@ export default class Client extends User implements IClient {
         const FATS_PERCENTAGE = 0.35;
         const CARBS_PERCENTAGE = 0.35;
 
-        const diets = this.getBMRForMaintainceCuttingBulkingDiets();
+        const diet = this.getBMRForMaintainceCuttingBulkingDiets();
 
-        if (Array.isArray(diets) && diets.length > 1) {
-            const [femaleDiet, maleDiet] = diets;
-            const male = this.getMacronutrientsValues(maleDiet, PROTEINS_PERCENTAGE, FATS_PERCENTAGE, CARBS_PERCENTAGE);
-            const female = this.getMacronutrientsValues(femaleDiet, PROTEINS_PERCENTAGE, FATS_PERCENTAGE, CARBS_PERCENTAGE)
-            return { female, male };
-        }
-        else {
-            const diet = diets[0]
-            return {
-                diet: this.getMacronutrientsValues(diet, PROTEINS_PERCENTAGE, FATS_PERCENTAGE, CARBS_PERCENTAGE)
-            }
+
+        return {
+            diet: this.getMacronutrientsValues(diet, PROTEINS_PERCENTAGE, FATS_PERCENTAGE, CARBS_PERCENTAGE)
         }
     }
 
@@ -375,19 +308,10 @@ export default class Client extends User implements IClient {
         const FATS_PERCENTAGE = 0.40;
         const CARBS_PERCENTAGE = 0.20;
 
-        const diets = this.getBMRForMaintainceCuttingBulkingDiets();
+        const diet = this.getBMRForMaintainceCuttingBulkingDiets();
 
-        if (Array.isArray(diets) && diets.length > 1) {
-            const [femaleDiet, maleDiet] = diets;
-            const male = this.getMacronutrientsValues(maleDiet, PROTEINS_PERCENTAGE, FATS_PERCENTAGE, CARBS_PERCENTAGE);
-            const female = this.getMacronutrientsValues(femaleDiet, PROTEINS_PERCENTAGE, FATS_PERCENTAGE, CARBS_PERCENTAGE)
-            return { female, male };
-        }
-        else {
-            const diet = diets[0]
-            return {
-                diet: this.getMacronutrientsValues(diet, PROTEINS_PERCENTAGE, FATS_PERCENTAGE, CARBS_PERCENTAGE)
-            }
+        return {
+            diet: this.getMacronutrientsValues(diet, PROTEINS_PERCENTAGE, FATS_PERCENTAGE, CARBS_PERCENTAGE)
         }
     }
 
@@ -397,19 +321,10 @@ export default class Client extends User implements IClient {
         const FATS_PERCENTAGE = 0.20;
         const CARBS_PERCENTAGE = 0.50;
 
-        const diets = this.getBMRForMaintainceCuttingBulkingDiets();
+        const diet = this.getBMRForMaintainceCuttingBulkingDiets();
 
-        if (Array.isArray(diets) && diets.length > 1) {
-            const [femaleDiet, maleDiet] = diets;
-            const male = this.getMacronutrientsValues(maleDiet, PROTEINS_PERCENTAGE, FATS_PERCENTAGE, CARBS_PERCENTAGE);
-            const female = this.getMacronutrientsValues(femaleDiet, PROTEINS_PERCENTAGE, FATS_PERCENTAGE, CARBS_PERCENTAGE)
-            return { female, male };
-        }
-        else {
-            const diet = diets[0];
-            return {
-                diet: this.getMacronutrientsValues(diet, PROTEINS_PERCENTAGE, FATS_PERCENTAGE, CARBS_PERCENTAGE)
-            }
+        return {
+            diet: this.getMacronutrientsValues(diet, PROTEINS_PERCENTAGE, FATS_PERCENTAGE, CARBS_PERCENTAGE)
         }
 
     }
@@ -438,8 +353,7 @@ export default class Client extends User implements IClient {
         const female = (0.252 * kg) + (0.473 * cm) - 48.3;
 
         if (this.sex === Sex.MALE) return male;
-        if (this.sex === Sex.FEMALE) return female;
-        else return [female, male]
+        else return female;
     }
 
     LBM_JamesFormula = (): number | number[] => {
@@ -450,8 +364,7 @@ export default class Client extends User implements IClient {
         const female = (1.07 * kg) - (148 * ((kg * kg) / (cm * cm)));
 
         if (this.sex === Sex.MALE) return male;
-        if (this.sex === Sex.FEMALE) return female;
-        else return [female, male]
+        else return female;
 
     }
 
@@ -463,8 +376,7 @@ export default class Client extends User implements IClient {
         const female = (0.29569 * kg) + (0.41813 * cm) - 43.2933;
 
         if (this.sex === Sex.MALE) return male;
-        else if (this.sex === Sex.FEMALE) return female;
-        else return [female, male]
+        else return female;
     }
 
     getAllHealthData = () => {

@@ -59,7 +59,7 @@ export default abstract class User extends Base implements IUser {
         email: string,
         password: string,
         birthdate: Date,
-        sex: string = "OTHER",
+        sex: string = "MALE",
         role: string = "USER",
         image: string = "../assets/image/default-avatar.png",
     ) {

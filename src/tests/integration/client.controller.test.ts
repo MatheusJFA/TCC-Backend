@@ -98,7 +98,7 @@ describe("Test all resources of Client.controller", () => {
                         role: "USER",
                         image: "../assets/image/default-avatar.png",
                         name: "testonildo",
-                        sex: "OTHER",
+                        sex: "MALE",
                     });
 
                 })
@@ -159,7 +159,7 @@ describe("Test all resources of Client.controller", () => {
                         name: "testonildo",
                         email: "client-correct@gmail.com",
                         birthdate: "2001-01-01",
-                        sex: "OTHER",
+                        sex: "MALE",
                     }
                 })
                 .expect("Content-Type", /json/)
@@ -180,7 +180,7 @@ describe("Test all resources of Client.controller", () => {
                         name: "teste",
                         email: "client-correct@gmail.com",
                         birthdate: "2001-01-01",
-                        sex: "OTHER",
+                        sex: "MALE",
                     }
                 })
                 .expect("Content-Type", /json/)

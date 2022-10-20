@@ -18,7 +18,7 @@ let client = {
     email: "client@gmail.com",
     password: "User12345@",
     birthdate: new Date("2000-01-01"),
-    sex: "OTHER",
+    sex: "MALE",
     role: "USER",
     image: "../assets/image/default-avatar.png",
     height: 1.89,
@@ -32,7 +32,7 @@ let helper = {
     email: "helper@gmail.com",
     password: "User12345@",
     birthdate: new Date("2000-01-01"),
-    sex: "OTHER",
+    sex: "MALE",
     role: "USER",
     image: "../assets/image/default-avatar.png",
     isEmailVerified: false,
@@ -66,7 +66,7 @@ afterAll(async () => {
 
 describe("Test all resources of Auth.Controller", () => {
     describe("Test all resources of Auth.Controller using (CLIENT)", () => {
-        describe("Test POST /auth/login", () => {
+        describe("Test /POST auth/login", () => {
             test("Should return a 400 status code if a valid email and password is sent", async () => {
                 await Request(application)
                     .post("/auth/login")
@@ -102,7 +102,7 @@ describe("Test all resources of Auth.Controller", () => {
         });
 
 
-        describe("Test POST /auth/logout", () => {
+        describe("Test /POST auth/logout", () => {
             test("Should return a 400 status code if an invalid token is sent", async () => {
                 const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
@@ -133,7 +133,7 @@ describe("Test all resources of Auth.Controller", () => {
     });
 
     describe("Test all resources of Auth.Controller using (HELPER)", () => {
-        describe("Test POST /auth/login", () => {
+        describe("Test /POST auth/login", () => {
             test("Should return a 400 status code if a valid email and password is sent", async () => {
                 await Request(application)
                     .post("/auth/login")
@@ -169,7 +169,7 @@ describe("Test all resources of Auth.Controller", () => {
         });
 
 
-        describe("Test POST /auth/logout", () => {
+        describe("Test /POST auth/logout", () => {
             test("Should return a 400 status code if an invalid token is sent", async () => {
                 const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 

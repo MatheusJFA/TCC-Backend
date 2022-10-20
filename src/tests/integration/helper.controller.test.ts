@@ -28,7 +28,7 @@ afterAll(async () => {
 });
 
 describe("Test all resources of Helper.controller", () => {
-    describe("Test POST /helper", () => {
+    describe("Test /POST helper", () => {
         test("should return a 400 status code if helper is missing some parameters", async () => {
             await Request(application)
                 .post("/helper")
@@ -98,7 +98,7 @@ describe("Test all resources of Helper.controller", () => {
                         role: "HELPER",
                         image: "../assets/image/default-avatar.png",
                         name: "testonildo",
-                        sex: "OTHER",
+                        sex: "MALE",
                     });
 
                 })
@@ -157,7 +157,7 @@ describe("Test all resources of Helper.controller", () => {
                         name: "testonildo",
                         email: "helper-correct@gmail.com",
                         birthdate: "2001-01-01",
-                        sex: "OTHER",
+                        sex: "MALE",
                     }
                 })
                 .expect("Content-Type", /json/)
@@ -178,7 +178,7 @@ describe("Test all resources of Helper.controller", () => {
                         name: "teste",
                         email: "helper-correct@gmail.com",
                         birthdate: "2001-01-01",
-                        sex: "OTHER",
+                        sex: "MALE",
                     }
                 })
                 .expect("Content-Type", /json/)

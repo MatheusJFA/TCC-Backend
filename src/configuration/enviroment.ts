@@ -34,12 +34,6 @@ const enviromentSchema = Yup.object().shape({
     SMTP_SECRET: Yup.string(),
     SMTP_FROM: Yup.string(),
 
-    FATSECRET_CLIENT_ID: Yup.string(),
-    FATSECRET_CLIENT_SECRET: Yup.string(),
-
-    FATSECRET_CONSUMER_KEY: Yup.string(),
-    FATSECRET_CONSUMER_SECRET: Yup.string(),
-
     EXERCISEDB_API_KEY: Yup.string()
 }).unknown();
 
@@ -86,14 +80,8 @@ export = {
     },
 
     api: {
-        fatsecret: {
-            clientID: enviroment.FATSECRET_CLIENT_ID,
-            clientSecret: enviroment.FATSECRET_CLIENT_SECRET,
-            consumer_key: enviroment.FATSECRET_CONSUMER_KEY,
-            consumer_secret: enviroment.FATSECRET_CONSUMER_SECRET,
-        },
         rapidapi: {
-            api_key_exerciseDB: enviroment.EXERCISEDB_API_KEY,
+            key: enviroment.EXERCISEDB_API_KEY,
         }
     }
 };

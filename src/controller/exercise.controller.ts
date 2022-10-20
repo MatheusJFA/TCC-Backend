@@ -1,6 +1,6 @@
 
 import enviroment from "@/configuration/enviroment";
-import { bodyParts, equipments, targetMuscles, validBodyPart, validEquipment, validTargetMuscle } from "@/types/exercise.type";
+import { bodyPartsValues, targetMusclesValues, equipmentsValues, validBodyPart, validEquipment, validTargetMuscle } from "@/types/exercise.type";
 import { getOrSetLongCache } from "@/utils/cache";
 import { LogAsyncError } from "@/utils/logAsyncError";
 import axios from "axios";
@@ -15,7 +15,7 @@ class ExerciseController {
         const exerciseList = getOrSetLongCache(`exerciseList`, async () => {
             const { data } = await axios.get(`${exercisedbURL}/exercises`, {
                 headers: {
-                    'X-RapidAPI-Key': enviroment.api.rapidapi.api_key_exerciseDB,
+                    'X-RapidAPI-Key': enviroment.api.rapidapi.key,
                     'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
                 }
             });
@@ -24,7 +24,7 @@ class ExerciseController {
         });
 
         response.status(httpStatus.OK).send({ exerciseList });
-});
+    });
 
     getAllExercisesByEquipment = LogAsyncError(async (request: Request, response: Response) => {
 
@@ -33,7 +33,7 @@ class ExerciseController {
             const exerciseList = getOrSetLongCache(`exerciseList`, async () => {
                 const { data } = await axios.get(`${exercisedbURL}/exercises`, {
                     headers: {
-                        'X-RapidAPI-Key': enviroment.api.rapidapi.api_key_exerciseDB,
+                        'X-RapidAPI-Key': enviroment.api.rapidapi.key,
                         'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
                     }
                 });
@@ -52,7 +52,7 @@ class ExerciseController {
             const exerciseList = getOrSetLongCache(`exerciseList`, async () => {
                 const { data } = await axios.get(`${exercisedbURL}/exercises`, {
                     headers: {
-                        'X-RapidAPI-Key': enviroment.api.rapidapi.api_key_exerciseDB,
+                        'X-RapidAPI-Key': enviroment.api.rapidapi.key,
                         'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
                     }
                 });
@@ -71,12 +71,10 @@ class ExerciseController {
             const exerciseList = getOrSetLongCache(`exerciseList`, async () => {
                 const { data } = await axios.get(`${exercisedbURL}/exercises`, {
                     headers: {
-                        'X-RapidAPI-Key': enviroment.api.rapidapi.api_key_exerciseDB,
+                        'X-RapidAPI-Key': enviroment.api.rapidapi.key,
                         'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
                     }
                 });
-
-
 
                 return data.map((item: any) => item.target === targetMuscle);
             });
@@ -87,15 +85,15 @@ class ExerciseController {
     });
 
     getAllBodyParts = LogAsyncError(async (request: Request, response: Response) => {
-        return response.status(httpStatus.OK).send({bodyParts});
+        return response.status(httpStatus.OK).send({ bodyPartsValues });
     });
-    
+
     getAllEquipments = LogAsyncError(async (request: Request, response: Response) => {
-        return response.status(httpStatus.OK).send({equipments});
+        return response.status(httpStatus.OK).send({ equipmentsValues });
     });
-    
+
     getAllTargetMuscles = LogAsyncError(async (request: Request, response: Response) => {
-        return response.status(httpStatus.OK).send({targetMuscles});
+        return response.status(httpStatus.OK).send({ targetMusclesValues });
     });
 }
 
