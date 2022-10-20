@@ -1,29 +1,30 @@
 import nutritionController from "@/controller/nutrition.controller";
 import validateSchema from "@/middleware/validateFields";
 import { Router } from "express";
-import nutritionSchema from "../validation/nutrition"
+import NutritionSchema from "../validation/nutrition"
 
 const router = Router();
 
 router.get("/mealPlan/:id",
-    validateSchema(nutritionSchema.generateMealSchema),
+    validateSchema(NutritionSchema.generateMealSchema),
     nutritionController.generateMealPlan);
 
 router.get("/searchRecipe/:id",
-    validateSchema(nutritionSchema.searchRecipesSchema),
+    validateSchema(NutritionSchema.searchRecipesSchema),
     nutritionController.searchRecipes);
 
-router.get("/currentDiet/:id",
-    validateSchema(nutritionSchema.getCurrentDietSchema),
-    nutritionController.getCurrentDiet);
-
 router.post("/addIntake/:id",
-    validateSchema(nutritionSchema.addOrRemoveIntakeSchema),
+    validateSchema(NutritionSchema.addOrRemoveIntakeSchema),
     nutritionController.addIntake);
 
-router.post("/addIntake/:id",
-    validateSchema(nutritionSchema.addOrRemoveIntakeSchema),
+router.post("/removeIntake/:id",
+    validateSchema(NutritionSchema.addOrRemoveIntakeSchema),
     nutritionController.removeIntake);
+
+
+router.get("/currentDiet/:id",
+    validateSchema(NutritionSchema.getCurrentDietSchema),
+    nutritionController.getCurrentDiet);
 
 router.get("/cuisineList",
     nutritionController.CuisineValues);

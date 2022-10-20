@@ -6,33 +6,41 @@ import Certification from "@/entity/certification.entity";
 import Calories, { ICaloriesConsumption } from "@/entity/calories.entity";
 import ClientService from "./client.service";
 import httpStatus from "http-status";
+import { StringMap } from "ts-jest";
 
 const NutritionService = Database.getRepository(Calories).extend({
-    addIntake: async function (id: string, calories: number, proteins: number, fats: number, carbs: number) {
+    addIntake: async function (id: string, calories: number, proteins: number, fats: number, carbs: number, specificDate: Date = new Date()) {
         const client = await ClientService.getClientByID(id);
 
         if (!client) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
-        client.calories.addCalories({ calories, proteins, fats, carbs } as ICaloriesConsumption);
+        const date = specificDate;
+        const getTodayCalorie = client.calories.filter(calory => calory.createdAt === date)[0];
+        getTodayCalorie.addCalories({ calories, proteins, fats, carbs } as ICaloriesConsumption);
 
         return await ClientService.save(client);
     },
 
-    removeIntake: async function (id: string, calories: number, proteins: number, fats: number, carbs: number,) {
+
+    removeIntake: async function (id: string, calories: number, proteins: number, fats: number, carbs: number, specificDate: Date = new Date()) {
         const client = await ClientService.getClientByID(id);
         if (!client) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
-
-        client.calories.removeCalories({ calories, proteins, fats, carbs } as ICaloriesConsumption);
+        const date = specificDate;
+        const getTodayCalorie = client.calories.filter(calory => calory.createdAt === date)[0];
+        getTodayCalorie.removeCalories({ calories, proteins, fats, carbs } as ICaloriesConsumption);
 
         return await ClientService.save(client);
     },
 
-    
-    getClientRemainingNutrition: async function (id: string) {
-        const client = await ClientService.getClientByID(id);
-        if (!client) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
 
-        return client.calories.getRemainingNutrition();
-    }
+    getClientRemainingNutrition: async function (id: string, specificDate: Date = new Date()) {
+        const client = await ClientService.getClientByID(id);
+
+        const date = specificDate;
+        if (!client) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
+        const getTodayCalorie = client.calories.filter(calory => calory.createdAt === date)[0];
+        return getTodayCalorie.getRemainingNutrition();
+    },
+
 });
 
 export default NutritionService;

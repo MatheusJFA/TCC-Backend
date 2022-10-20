@@ -85,23 +85,28 @@ class NutritionController {
 
     addIntake = LogAsyncError(async (request: Request, response: Response) => {
         const id = request.params.id;
-        const { calories, proteins, fats, carbs } = request.body.information;
-        await NutritionService.addIntake(id, calories, proteins, fats, carbs);
+        const { calories, proteins, fats, carbs, date } = request.body.information;
+        let specificDate = date || new Date();
+        await NutritionService.addIntake(id, calories, proteins, fats, carbs, specificDate);
 
         return response.status(httpStatus.OK);
     });
 
     removeIntake = LogAsyncError(async (request: Request, response: Response) => {
         const id = request.params.id;
-        const { calories, proteins, fats, carbs } = request.body.information;
-        await NutritionService.removeIntake(id, calories, proteins, fats, carbs);
+        const { calories, proteins, fats, carbs, date } = request.body.information;
+        let specificDate = date || new Date();
+        await NutritionService.removeIntake(id, calories, proteins, fats, carbs, specificDate);
 
         return response.status(httpStatus.OK);
     });
 
     getCurrentDiet = LogAsyncError(async (request: Request, response: Response) => {
         const id = request.params.id;
-        const remainingNutrition = await NutritionService.getClientRemainingNutrition(id);
+        const date = request.body;
+        const specificDate = date || new Date();
+
+        const remainingNutrition = await NutritionService.getClientRemainingNutrition(id, specificDate);
 
         return response.status(httpStatus.OK).send({ nutrition: remainingNutrition })
     });

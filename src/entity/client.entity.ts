@@ -14,7 +14,7 @@ export interface IClient {
     id: string,
     height: number,
     weight: number,
-    calories: Calories,
+    calories: Calories[],
     carbsIntake: string
 }
 
@@ -30,7 +30,7 @@ export default class Client extends User implements IClient {
     weight: number;
 
     @OneToMany(() => Calories, calories => calories.user, { eager: true, cascade: true })
-    calories: Calories;
+    calories: Calories[];
 
     @Column("enum", { enum: CarbsIntakeValues })
     carbsIntake: string;

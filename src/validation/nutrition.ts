@@ -30,6 +30,9 @@ const getCurrentDietSchema = Yup.object().shape({
     params: Yup.object().shape({
         id: Yup.string().uuid().required()
     }).required(),
+    body: Yup.object().shape({
+        date: Yup.date().max(new Date()).optional()
+    }).required(),
 });
 
 
@@ -38,16 +41,15 @@ const addOrRemoveIntakeSchema = Yup.object().shape({
         id: Yup.string().uuid().required()
     }).required(),
     body: Yup.object().shape({
-        calories: Yup.number().positive().required(),
-        proteins: Yup.number().positive().required(),
-        fats: Yup.number().positive().required(),
-        carbs: Yup.number().positive().required()
+        information: Yup.object().shape({
+            date: Yup.date().max(new Date()).optional(),
+            calories: Yup.number().positive().required(),
+            proteins: Yup.number().positive().required(),
+            fats: Yup.number().positive().required(),
+            carbs: Yup.number().positive().required()
+        }),
     }).required()
 });
-
-
-
-
 
 export default {
     generateMealSchema,

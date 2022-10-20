@@ -11,8 +11,6 @@ export interface ICaloriesConsumption {
     carbs: number;
 }
 
-
-
 @Entity("calories")
 export default class Calories extends Base implements ICaloriesConsumption {
     @Column()
@@ -51,7 +49,6 @@ export default class Calories extends Base implements ICaloriesConsumption {
         this.fats -= value.fats;
         this.carbs -= value.carbs;
     }
-    
 
     resetCaloriesConsumption = () => {
         this.calories = 0;
