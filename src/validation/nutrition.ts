@@ -1,5 +1,4 @@
 import * as Yup from 'yup';
-import { bodyPartsValues, equipmentsValues, targetMusclesValues } from '@/types/exercise.type';
 import { CuisineValues } from '@/types/cuisine.type';
 
 const generateMealSchema = Yup.object().shape({

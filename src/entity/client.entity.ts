@@ -6,7 +6,7 @@ import { Intolerances, IntolerancesValues } from "@/types/intolerance.type";
 import { Diet, DietValues } from "@/types/diet.type";
 import { Sex } from "@/types/sex.type";
 import { ChildEntity, Column, ManyToMany, OneToMany } from "typeorm";
-import Calories from "./calories.entity";
+import Calories, { ICaloriesConsumption } from "./calories.entity";
 import Helper from "./helper.entity";
 import User from "./user.entity";
 
@@ -84,6 +84,18 @@ export default class Client extends User implements IClient {
     removeHelper = (helper: Helper): void => {
         if (!this.helpers) this.helpers = new Array<Helper>();
         this.helpers = this.helpers.filter(h => h.id !== helper.id);
+    }
+
+    addIntake = (value: ICaloriesConsumption, specificDate: Date = new Date()) => {
+        if (!this.calories) this.calories = new Array<Calories>();
+        const todaysCalories = this.calories.filter(calorie => calorie.createdAt.toDateString() === specificDate.toDateString())[0];
+        todaysCalories.addCalories(value);
+    }
+
+    removeIntake = (value: ICaloriesConsumption, specificDate: Date = new Date()) => {
+        if (!this.calories) this.calories = new Array<Calories>();
+        const todaysCalories = this.calories.filter(calorie => calorie.createdAt.toDateString() === specificDate.toDateString())[0];
+        todaysCalories.removeCalories(value);
     }
 
     updateClient = (client: Partial<Omit<IClient, "password">>) => {

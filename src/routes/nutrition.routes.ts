@@ -21,7 +21,6 @@ router.post("/removeIntake/:id",
     validateSchema(NutritionSchema.addOrRemoveIntakeSchema),
     nutritionController.removeIntake);
 
-
 router.get("/currentDiet/:id",
     validateSchema(NutritionSchema.getCurrentDietSchema),
     nutritionController.getCurrentDiet);

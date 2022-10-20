@@ -39,7 +39,7 @@ afterAll(async () => {
 
 describe("Test all the functionalities on client entity", () => {
     test("Test BMI Equation", async () => {
-    expect(male.calculateBMI()).toStrictEqual({ value: 29.394473838918284, text: "OVERWEIGHT" });
+        expect(male.calculateBMI()).toStrictEqual({ value: 29.394473838918284, text: "OVERWEIGHT" });
         expect(female.calculateBMI()).toStrictEqual({ value: 19.531249999999996, text: "NORMAL" });
     });
 
