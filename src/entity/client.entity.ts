@@ -9,6 +9,7 @@ import { ChildEntity, Column, ManyToMany, OneToMany } from "typeorm";
 import Calories, { ICaloriesConsumption } from "./calories.entity";
 import Helper from "./helper.entity";
 import User from "./user.entity";
+import WeightTracker from "./weightTracker.entity";
 
 export interface IClient {
     id: string,
@@ -31,6 +32,9 @@ export default class Client extends User implements IClient {
 
     @OneToMany(() => Calories, calories => calories.user, { eager: true, cascade: true })
     calories: Calories[];
+
+    @OneToMany(() => WeightTracker, weightTracker => weightTracker.client, { eager: true, cascade: true })
+    weightTracker: WeightTracker[];
 
     @Column("enum", { enum: CarbsIntakeValues })
     carbsIntake: string;
@@ -84,6 +88,16 @@ export default class Client extends User implements IClient {
     removeHelper = (helper: Helper): void => {
         if (!this.helpers) this.helpers = new Array<Helper>();
         this.helpers = this.helpers.filter(h => h.id !== helper.id);
+    }
+
+    addWeightToTracker = (value: WeightTracker) => {
+        if (!this.weightTracker) this.weightTracker = new Array<WeightTracker>();
+        this.weightTracker.push(value);
+    }
+
+    removeWeightFromTracker = (id: string) => {
+        if (!this.weightTracker) this.weightTracker = new Array<WeightTracker>();
+        this.weightTracker = this.weightTracker.filter(tracker => tracker.id == id);
     }
 
     addIntake = (value: ICaloriesConsumption, specificDate: Date = new Date()) => {

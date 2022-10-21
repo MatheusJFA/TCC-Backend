@@ -101,6 +101,23 @@ class NutritionController {
         return response.status(httpStatus.OK);
     });
 
+
+    addWeightTracker = LogAsyncError(async (request: Request, response: Response) => {
+        const id = request.params.id;
+        const { weight } = request.body.information;
+        await NutritionService.addWeightTracker(id, weight);
+
+        return response.status(httpStatus.OK);
+    });
+
+    removeWeightTracker = LogAsyncError(async (request: Request, response: Response) => {
+        const id = request.params.id;
+        const { weightTrackerId } = request.body.information;
+        await NutritionService.removeWeightTracker(id, weightTrackerId);
+
+        return response.status(httpStatus.OK);
+    });
+
     getCurrentDiet = LogAsyncError(async (request: Request, response: Response) => {
         const id = request.params.id;
         const date = request.body;

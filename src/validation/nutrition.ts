@@ -50,9 +50,36 @@ const addOrRemoveIntakeSchema = Yup.object().shape({
     }).required()
 });
 
+
+const addWeightTracker = Yup.object().shape({
+    params: Yup.object().shape({
+        id: Yup.string().uuid().required()
+    }).required(),
+    body: Yup.object().shape({
+        information: Yup.object().shape({
+            weightTrackerId: Yup.string().uuid().required()
+
+        }),
+    }).required()
+});
+
+const removeWeightTracker = Yup.object().shape({
+    params: Yup.object().shape({
+        id: Yup.string().uuid().required()
+    }).required(),
+    body: Yup.object().shape({
+        information: Yup.object().shape({
+            weight: Yup.number().positive().required()
+        }),
+    }).required()
+});
+
+
 export default {
     generateMealSchema,
     searchRecipesSchema,
     getCurrentDietSchema,
-    addOrRemoveIntakeSchema
+    addOrRemoveIntakeSchema,
+    addWeightTracker,
+    removeWeightTracker
 }

@@ -17,8 +17,16 @@ router.post("/addIntake/:id",
     validateSchema(NutritionSchema.addOrRemoveIntakeSchema),
     nutritionController.addIntake);
 
-router.post("/removeIntake/:id",
+router.delete("/removeIntake/:id",
     validateSchema(NutritionSchema.addOrRemoveIntakeSchema),
+    nutritionController.removeIntake);
+
+router.post("/addWeightTracker/:id",
+    validateSchema(NutritionSchema.addWeightTracker),
+    nutritionController.removeIntake);
+
+router.post("/removeWeightTracker/:id",
+    validateSchema(NutritionSchema.removeWeightTracker),
     nutritionController.removeIntake);
 
 router.get("/currentDiet/:id",
