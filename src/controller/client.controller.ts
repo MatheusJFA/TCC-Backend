@@ -42,6 +42,14 @@ class ClientController {
             .json(clients);
     });
 
+    getClientDiet = LogAsyncError(async (request: Request, response: Response) => {
+        const id: string = request.params.id;
+
+        const data = await ClientService.getClientDiet(id);
+
+        return response.status(httpStatus.OK).send({data});
+    });
+
     updateClient = LogAsyncError(async (request: Request, response: Response) => {
         const id: string = request.params.id;
         const { name, email, birthdate, sex, height, weight } = request.body.user;

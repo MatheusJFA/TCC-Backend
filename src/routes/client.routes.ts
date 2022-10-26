@@ -6,6 +6,7 @@ import clientSchema from "@validation/client";
 import { validID } from "@/middleware/validID";
 import { minimunRole } from "@/middleware/minimunRole";
 import { paginationSchema } from "@/validation/pagination";
+import clientController from "@/controller/client.controller";
 
 const router = Router();
 
@@ -13,6 +14,9 @@ router.post("/",
     validateSchema(clientSchema.createClientSchema),
     ClientController.createClient);
 
+router.get("/getDietValues/:id",
+    validID,
+    clientController.getClientDiet);
 
 router.get("/:id",
     validID,

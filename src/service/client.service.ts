@@ -60,7 +60,17 @@ const ClientService = Database.getRepository(Client).extend({
         }
     },
 
-    updateClient: async function (id: string, data: IUser, height: number, weight: number): Promise<Helper> {
+    getClientDiet: async function (id: string) {
+        try {
+            const user: Client = await this.getClientByID(id);
+            return user.getAllHealthData();
+        } catch (error) {
+            throw error;
+        }
+    },
+
+
+    updateClient: async function (id: string, data: IUser, height: number, weight: number): Promise<Client> {
         try {
             const user: Client = await this.getClientByID(id);
             user.updateUser(data);
@@ -71,7 +81,7 @@ const ClientService = Database.getRepository(Client).extend({
         }
     },
 
-    deleteClient: async function (id: string): Promise<Helper> {
+    deleteClient: async function (id: string): Promise<Client> {
         try {
             const user = await this.getClientByID(id);
             if (this.invalidUser(user) || !user) throw new ApiError(httpStatus.NOT_FOUND, t("ERROR.USER.ALREADY_EXISTS"));
