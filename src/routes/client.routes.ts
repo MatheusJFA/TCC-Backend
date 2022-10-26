@@ -15,13 +15,14 @@ router.post("/",
     ClientController.createClient);
 
 router.get("/getDietValues/:id",
-    validID,
     clientController.getClientDiet);
 
 router.get("/:id",
     validID,
     validateSchema(clientSchema.getClientSchema),
     ClientController.getClient);
+
+router.get("/getSexValues", ClientController.getSexValues);
 
 router.get("/",
     minimunRole("MODERATOR"),
@@ -54,5 +55,6 @@ router.post("/add/:id",
 router.put("/:id",
     validateSchema(clientSchema.updateClientSchema),
     ClientController.updateClient);
+
 
 export default router;

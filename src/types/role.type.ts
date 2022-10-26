@@ -12,7 +12,6 @@ export const ValidRole = (role: string) => Object.values(Role).find(value => val
 
 export const RoleValues = Object.values(Role);
 
-
 export const minimunRoleRequired = (role: Role, minimunRole: Role) => {
     return RoleValues.indexOf(role) >= RoleValues.indexOf(minimunRole);
 }

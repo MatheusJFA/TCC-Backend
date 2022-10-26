@@ -1,8 +1,3 @@
-import enviroment from "@/configuration/enviroment";
-import Token from "@/entity/token.entity";
-import TokenService from "@/service/token.service";
-import { Enviroment } from "@/types/enviroment.type";
-import { Role, minimunRoleRequired } from "@/types/role.type";
 import { Request, Response, NextFunction } from "express";
 import httpStatus from "http-status";
 import { t } from "i18next";

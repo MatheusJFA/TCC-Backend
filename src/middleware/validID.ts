@@ -7,7 +7,7 @@ export const validID = async (request: Request, response: Response, next: NextFu
     const id  = request.params.id;
 
     if (!validate(id))
-        return response.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: t("ERROR.HTTP.UNAUTHORIZED") });
+        return response.status(httpStatus.UNAUTHORIZED).json({ message: t("ERROR.HTTP.UNAUTHORIZED") });
     
     next();
 }

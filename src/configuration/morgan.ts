@@ -9,7 +9,10 @@ const skip = () => {
 };
 
 const stream: StreamOptions = {
-  write: (message) => Logger.http(message),
+  write: (message) => {
+    console.log(message);
+    Logger.http(message);
+  },
 };
 
 

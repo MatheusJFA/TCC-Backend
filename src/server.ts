@@ -80,12 +80,12 @@ const corsOptions = {
     credentials: true
 }; // Opções do cors do que é permitido acessar o backend
 
+
 application.use(cors(corsOptions)); // Bloquear outras URLs de acessar o site 
 application.use(hpp()); // Proteger contra o ataque de HTTP Parameter Polution   
 application.use(helmet()); // Proteção contra ataques enviados nos headers
-application.use(compression()); // Comprime o tamanho do response
 
-application.use(router); // Rotas da aplicação
+application.use('/api', router); // Rotas da aplicação
 
 application.use(passport.initialize());
 passport.use("jwt", jwtStrategy);

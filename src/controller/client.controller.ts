@@ -8,6 +8,7 @@ import { Request, Response } from "express";
 import httpStatus from "http-status";
 import { t } from "i18next";
 import { IUser } from "@/entity/user.entity";
+import { SexValues } from "@/types/sex.type";
 
 class ClientController {
     createClient = LogAsyncError(async (request: Request, response: Response) => {
@@ -47,7 +48,7 @@ class ClientController {
 
         const data = await ClientService.getClientDiet(id);
 
-        return response.status(httpStatus.OK).send({data});
+        return response.status(httpStatus.OK).send({ data });
     });
 
     updateClient = LogAsyncError(async (request: Request, response: Response) => {
@@ -103,7 +104,7 @@ class ClientController {
 
         await ClientService.addHelper(client, helper);
 
-        return response.send(httpStatus.OK)
+        return response.status(httpStatus.OK)
     });
 
     removeHelper = LogAsyncError(async (request: Request, response: Response) => {
@@ -113,7 +114,12 @@ class ClientController {
 
         await ClientService.removeHelper(client, helperId);
 
-        return response.send(httpStatus.OK)
+        return response.status(httpStatus.OK)
+    });
+
+    getSexValues = LogAsyncError(async (request: Request, response: Response) => {
+        const sexValues = SexValues.map(s => s.toLowerCase().replace(/\b(\w)/g, x => x.toUpperCase()));
+        return response.status(httpStatus.OK).send({ sexValues })
     });
 }
 
