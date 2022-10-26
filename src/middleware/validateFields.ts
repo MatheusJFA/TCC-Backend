@@ -6,7 +6,6 @@ import { AnySchema } from "yup";
 
 const validateSchema = (schema: AnySchema) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-
     await schema.validate({
       body: request.body,
       params: request.params,
@@ -21,6 +20,7 @@ const validateSchema = (schema: AnySchema) => async (request: Request, response:
           .json({ message: error.message || t("ERROR.PARAMETERS.INVALID_GENERIC") });
       });
   } catch (error: any) {
+    next();
     console.log({ errorValidateSchema: error });
 
     return response

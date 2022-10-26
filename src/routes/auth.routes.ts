@@ -7,35 +7,35 @@ import authSchema from "@validation/auth";
 const router = Router();
 
 router.post("/login",
-    [validateSchema(authSchema.loginSchema)],
+    validateSchema(authSchema.loginSchema),
     AuthController.login);
 
 router.post("/logout",
-    [validateSchema(authSchema.logoutSchema)],
+    validateSchema(authSchema.logoutSchema),
     AuthController.logout)
 
 router.post("/refresh-token",
-    [validateSchema(authSchema.refreshTokenSchema)],
+    validateSchema(authSchema.refreshTokenSchema),
     AuthController.refreshToken)
 
 router.post("/send-verification-email",
-    [validateSchema(authSchema.sendVerificationEmailSchema)],
+    validateSchema(authSchema.sendVerificationEmailSchema),
     AuthController.sendVerificationEmail)
 
 router.post("/verify-email",
-    [validateSchema(authSchema.verifyEmail)],
+    validateSchema(authSchema.verifyEmail),
     AuthController.verifyEmail)
 
 router.post("/send-Contact",
-    [validateSchema(authSchema.sendContactSchema)],
+    validateSchema(authSchema.sendContactSchema),
     AuthController.sendContact);
 
 router.post("/send-forgot-password-email",
-    [validateSchema(authSchema.sendForgotPasswordEmailSchema)],
+    validateSchema(authSchema.sendForgotPasswordEmailSchema),
     AuthController.sendforgotPasswordEmail)
 
 router.post("/reset-password",
-    [validateSchema(authSchema.resetPasswordSchema)],
+    validateSchema(authSchema.resetPasswordSchema),
     AuthController.resetPassword)
 
 export default router;

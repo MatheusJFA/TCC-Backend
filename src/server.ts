@@ -52,8 +52,29 @@ const application = express();
 application.use(express.json()); // Aceita requisições do tipo JSON.
 application.use(express.urlencoded({ extended: true }));
 
+const corsOptions = {
+    origin: enviroment.url.frontend,
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+    preflightContinue: true,
+    optionsSuccessStatus: 204,
+    credentials: true
+}; // Opções do cors do que é permitido acessar o backend
+
+
+application.use(cors(corsOptions)); // Bloquear outras URLs de acessar o site 
+
+application.use(router); // Rotas da aplicação
+
 application.use(changeLocale); // Troca o locale da aplicação caso seja necessário
 application.use(morganMiddleware); // Gera logs da aplicação
+
+application.use(hpp()); // Proteger contra o ataque de HTTP Parameter Polution   
+application.use(helmet()); // Proteção contra ataques enviados nos headers
+
+application.use(passport.initialize());
+passport.use("jwt", jwtStrategy);
+
+application.use("/files", express.static(path.join(__dirname, "..", "uploads"))); // usa a pasta files como um arquivo estático permitindo ser acessada através da URL.
 
 (async () => {
     await i18next
@@ -71,26 +92,6 @@ application.use(morganMiddleware); // Gera logs da aplicação
 })(); // Configurações do i18next
 
 application.use(i18next_middleware.handle(i18next)); // Permitir a internacionalização do projeto
-
-const corsOptions = {
-    origin: enviroment.url.frontend,
-    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
-    preflightContinue: true,
-    optionsSuccessStatus: 204,
-    credentials: true
-}; // Opções do cors do que é permitido acessar o backend
-
-
-application.use(cors(corsOptions)); // Bloquear outras URLs de acessar o site 
-application.use(hpp()); // Proteger contra o ataque de HTTP Parameter Polution   
-application.use(helmet()); // Proteção contra ataques enviados nos headers
-
-application.use('/api', router); // Rotas da aplicação
-
-application.use(passport.initialize());
-passport.use("jwt", jwtStrategy);
-
-application.use("/files", express.static(path.join(__dirname, "..", "uploads"))); // usa a pasta files como um arquivo estático permitindo ser acessada através da URL.
 
 export const redisClient = new Redis(enviroment.redis.port, {
     host: enviroment.redis.hostname,

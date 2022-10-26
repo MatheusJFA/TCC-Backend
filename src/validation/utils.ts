@@ -6,4 +6,4 @@ const validID = Yup.object().shape({
     }),
 });
 
-module.exports = validID;
+export default { validID };
