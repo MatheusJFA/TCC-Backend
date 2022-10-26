@@ -8,15 +8,15 @@ router.get("/all",
     exerciseController.getAllExercises);
 
 router.get("/bodyParts",
-    validateSchema(exerciseSchema.bodyPartSchema),
+    [validateSchema(exerciseSchema.bodyPartSchema)],
     exerciseController.getAllExercisesByBodyPart);
 
 router.get("/equipments",
-    validateSchema(exerciseSchema.equipmentsSchema),
+    [validateSchema(exerciseSchema.equipmentsSchema)],
     exerciseController.getAllExercisesByEquipment);
 
 router.get("/targetMuscle",
-    validateSchema(exerciseSchema.targetMuscleSchema),
+    [validateSchema(exerciseSchema.targetMuscleSchema)],
     exerciseController.getAllExercisesByTargetMuscle);
 
 router.get("/bodyPartsList",

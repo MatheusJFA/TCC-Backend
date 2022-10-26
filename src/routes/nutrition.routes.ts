@@ -1,56 +1,49 @@
-import nutritionController from "@/controller/nutrition.controller";
+import NutritionController from "@/controller/nutrition.controller";
 import validateSchema from "@/middleware/validateFields";
-import { validID } from "@/middleware/validID";
+
 import { Router } from "express";
 import NutritionSchema from "../validation/nutrition"
 
 const router = Router();
 
 router.get("/mealPlan/:id",
-    validID,
-    validateSchema(NutritionSchema.generateMealSchema),
-    nutritionController.generateMealPlan);
+    [ validateSchema(NutritionSchema.generateMealSchema)],
+    NutritionController.generateMealPlan);
 
 router.get("/searchRecipe/:id",
-    validID,
     validateSchema(NutritionSchema.searchRecipesSchema),
-    nutritionController.searchRecipes);
+    NutritionController.searchRecipes);
 
 router.post("/addIntake/:id",
-    validID,
-    validateSchema(NutritionSchema.addOrRemoveIntakeSchema),
-    nutritionController.addIntake);
+    [ validateSchema(NutritionSchema.addOrRemoveIntakeSchema)],
+    NutritionController.addIntake);
 
 router.delete("/removeIntake/:id",
-    validID,
-    validateSchema(NutritionSchema.addOrRemoveIntakeSchema),
-    nutritionController.removeIntake);
+    [ validateSchema(NutritionSchema.addOrRemoveIntakeSchema)],
+    NutritionController.removeIntake);
 
 router.post("/addWeightTracker/:id",
-    validID,
-    validateSchema(NutritionSchema.addWeightTracker),
-    nutritionController.removeIntake);
+    [ validateSchema(NutritionSchema.addWeightTracker)],
+    NutritionController.removeIntake);
 
 router.post("/removeWeightTracker/:id",
-    validID,
-    validateSchema(NutritionSchema.removeWeightTracker),
-    nutritionController.removeIntake);
+    [ validateSchema(NutritionSchema.removeWeightTracker)],
+    NutritionController.removeIntake);
 
 router.get("/currentDiet/:id",
-    validID,
-    validateSchema(NutritionSchema.getCurrentDietSchema),
-    nutritionController.getCurrentDiet);
+    [ validateSchema(NutritionSchema.getCurrentDietSchema)],
+    NutritionController.getCurrentDiet);
 
 router.get("/cuisineList",
-    nutritionController.CuisineValues);
+    NutritionController.CuisineValues);
 
 router.get("/intolerancesList",
-    nutritionController.IntolerancesValues);
+    NutritionController.IntolerancesValues);
 
 router.get("/dietsList",
-    nutritionController.DietsValues);
+    NutritionController.DietsValues);
 
 router.get("/carbsIntakeList",
-    nutritionController.CarbsIntakeValues);
+    NutritionController.CarbsIntakeValues);
 
 export default router;
