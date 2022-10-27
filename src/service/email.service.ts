@@ -7,7 +7,7 @@ import path from "path";
 import enviroment from "@/configuration/enviroment";
 
 class EmailService {
-  private imagePath = path.join(__dirname, '..', 'assets', 'images');
+  private imagePath = path.join(__dirname, '..', 'assets', 'image');
 
 
   private transport = nodemailer.createTransport({

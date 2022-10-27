@@ -32,11 +32,8 @@ const refreshTokenSchema = Yup.object().shape({
 });
 
 const sendForgotPasswordEmailSchema = Yup.object().shape({
-    headers: Yup.object().shape({
-        authorization: Yup.string()
-            .test('is-jwt', t("ERROR.TOKEN.INVALID"), (value: any) => {
-                return TokenService.verifyToken(value);
-            }).required(),
+    body: Yup.object().shape({
+        email: Yup.string().email(t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.EMAIL") })).required(),
     }).required(),
 });
 

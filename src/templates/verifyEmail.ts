@@ -36,7 +36,7 @@ export const verifyEmail = (name: string, token: string) => {
                     </tr>
                     <tr>
                       <td style="padding:0 35px;">
-                      <div class="green600" style="font-size:32px; font-family: 'Pacifico', cursive;"> ${t("APPLICATION")} </div>
+                      <div class="green600" style="font-size:32px; font-family: 'Pacifico', cursive;"> Healthier </div>
                         <img src="cid:imagem" alt="Account created representation picture"/>
                         <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">${t("EMAIL.INTRO", {name: name})} ${t("EMAIL.VERIFY_EMAIL.TITLE")}</h1>
                         <p style="color:#455056; font-size:15px;line-height:24px; margin-top:2rem;">

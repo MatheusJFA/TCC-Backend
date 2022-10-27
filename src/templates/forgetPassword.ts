@@ -38,7 +38,7 @@ export const forgetPassword = (name: string, verifyToken: string) => {
                                     </tr>
                                     <tr>
                                         <td style="padding:0 35px;">
-                                        <div class="green600" style="font-size:32px; font-family: 'Pacifico', cursive;"> ${t("APPLICATION")} </div>
+                                        <div class="green600" style="font-size:32px; font-family: 'Pacifico', cursive;"> Healthier </div>
                                             <img src="cid:imagem" alt="Password representation picture"/>
                                             <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">${t("EMAIL.INTRO", {name: name})} ${t("EMAIL.RESET_PASSWORD.TITLE")}</h1>
                                             <span style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #000; width:100px;"></span>
