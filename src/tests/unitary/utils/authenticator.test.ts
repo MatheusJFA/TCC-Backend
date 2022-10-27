@@ -1,5 +1,6 @@
 import { getEmailAndPassword, getPassword, validEmail, validPassword } from "../../../utils/autenticator";
 
+jest.setTimeout(60 * 1000);
 jest.useFakeTimers();
 
 describe("Test authenticator functions", () => {

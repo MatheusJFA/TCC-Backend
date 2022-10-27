@@ -3,16 +3,19 @@ import Token from "@/entity/token.entity";
 import { getEmailAndPassword } from "@/utils/autenticator";
 import { t } from "i18next";
 import TokenService from "./token.service";
-import User from "@/entity/user.entity";
-import UserService from "./user.service";
 import httpStatus from "http-status";
+import HelperService from "./helper.service";
+import ClientService from "./client.service";
+
+import Client from "@/entity/client.entity";
+import Helper from "@/entity/helper.entity";
 
 const AuthenticationService = {
-    login: async function (authorization: string): Promise<User> {
+    login: async function (authorization: string): Promise<Client | Helper> {
         try {
             const [email, password] = getEmailAndPassword(authorization);
 
-            let user: User = await UserService.getUserByEmail(email);
+            let user = await this.getClientOrHelperByEmail(email);
 
             if (!user) throw new Error(t("ERROR.USER.INVALID_CREDENTIALS"))
 
@@ -34,7 +37,23 @@ const AuthenticationService = {
             if (!token) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
             token.invalidate();
-            await TokenService.saveToken({ jwt: token.jwt, type: "REFRESH_TOKEN", user: token.user, expires: token.expires });
+            await TokenService.saveToken({ jwt: token.jwt, type: "REFRESH_TOKEN", client: token.client, helper: token.helper, expires: token.expires });
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    getClientOrHelperByEmail: async function (email: string): Promise<Client | Helper> {
+        try {
+            return await ClientService.returnClientByEmail(email) || HelperService.returnHelperByEmail(email);
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    getClientOrHelperByID: async function (id: string): Promise<Client | Helper> {
+        try {
+            return await ClientService.returnClientByID(id) || HelperService.returnHelperByID(id);
         } catch (error) {
             throw error;
         }
@@ -43,7 +62,9 @@ const AuthenticationService = {
     refreshToken: async function (token: string): Promise<{ accessToken: string; refreshToken: string; }> {
         try {
             const refreshToken = await TokenService.getTokenByJWT(token, "REFRESH_TOKEN");
-            const user = await UserService.getUserByID(refreshToken.user!.id);
+            let id = refreshToken.client?.id || refreshToken.helper?.id;
+
+            let user = this.getClientOrHelperByID(id)
 
             if (!user) throw new Error(t("ERROR.USER.NOT_FOUND"));
 
@@ -57,14 +78,14 @@ const AuthenticationService = {
     resetPassword: async function (token: string, password: string): Promise<void> {
         try {
             const jwt: Token | undefined = await TokenService.getTokenByJWT(token, "RESET_PASSWORD");
-            
+
             if (!jwt) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
-            const user = jwt.user;
+            const user = jwt.client || jwt.helper;
 
             user!.hashPassword(password);
 
-            await UserService.save(user);
+            await user!.save();
 
             jwt.invalidate();
             await TokenService.deleteToken(jwt);
@@ -76,14 +97,13 @@ const AuthenticationService = {
     verifyEmail: async function (token: string): Promise<void> {
         try {
             const jwt: Token | undefined = await TokenService.getTokenByJWT(token, "VERIFY_EMAIL");
-            
+
             if (!jwt) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
-            const user = jwt.user;
+            const user = jwt.client || jwt.helper;
 
             user!.verifyEmail();
 
-            UserService
             jwt.invalidate();
             await TokenService.deleteToken(jwt);
         } catch (error) {

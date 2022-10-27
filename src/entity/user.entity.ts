@@ -18,8 +18,6 @@ export interface IUser {
     isEmailVerified: boolean
 }
 
-@Entity("users")
-@TableInheritance({column: {type: 'varchar', name: 'type'}})
 export default abstract class User extends Base implements IUser {
     @Column()
     name: string;
@@ -44,9 +42,6 @@ export default abstract class User extends Base implements IUser {
 
     @Column()
     isEmailVerified: boolean;
-
-    @OneToMany(() => Token, token => token.user, { eager: true, cascade: true })
-    tokens: Token[];
 
     @Column()
     level: number;
@@ -81,12 +76,6 @@ export default abstract class User extends Base implements IUser {
         next: 64
     }
 
-    addToken = (token: Token): void => {
-        if (!this.tokens)
-            this.tokens = new Array<Token>();
-
-        this.tokens.push(token);
-    }
 
     comparePassword = async (password: string): Promise<boolean> => {
         return await bcrypt.compare(password, this.password)

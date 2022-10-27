@@ -2,7 +2,8 @@ import {Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import enviroment from './enviroment';
 import { JwtPayload } from 'jsonwebtoken';
 import { TokenType } from "@/types/token.type";
-import UserService from '@/service/user.service';
+import ClientService from '@/service/client.service';
+import HelperService from '@/service/helper.service';
 
 const jwtOptions = {
   secretOrKey: enviroment.jwt.secret,
@@ -16,7 +17,8 @@ const jwtVerify = async (payload: JwtPayload, done: Function) => {
     
     const userID = payload.sub!;
 
-    const user = await UserService.getUserByID(userID);
+    let user = await ClientService.getClientByID(userID) || await HelperService.getHelperByID(userID);
+
     if (!user) {
       return done(null, false);
     }

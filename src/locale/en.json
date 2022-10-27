@@ -9,6 +9,7 @@
         },
         
         "USER": {
+            "NOT_VERIFIED": "The user did not validate the email",
             "NOT_FOUND": "User was not found.",
             "ALREADY_EXISTS": "The user already exists.",
             "INVALID_CREDENTIALS": "Invalid credentials.",

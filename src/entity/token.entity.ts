@@ -1,13 +1,16 @@
 import { TokenValues } from "@/types/token.type";
 import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
 import Base from "./base.entity";
+import Client from "./client.entity";
+import Helper from "./helper.entity";
 import User from "./user.entity";
 
 export interface IToken {
     jwt: string,
     type: string,
     expires: Date,
-    user: User,
+    client?: Client,
+    helper?: Helper
 }
 
 @Entity("tokens")
@@ -15,8 +18,11 @@ export default class Token extends Base implements IToken {
     @Column()
     jwt: string;
 
-    @ManyToOne(() => User, user => user.tokens)
-    user: User;
+    @ManyToOne(() => Client, user => user.tokens)
+    client?: Client;
+
+    @ManyToOne(() => Helper, user => user.tokens)
+    helper?: Helper;
 
     @Column("enum", { enum: TokenValues })
     type: string;
@@ -28,13 +34,15 @@ export default class Token extends Base implements IToken {
         jwt: string,
         type: string,
         expires: Date,
-        user: User,
+        client?: Client,
+        helper?: Helper
     ) {
         super();
         this.jwt = jwt;
         this.type = type;
         this.expires = expires;
-        this.user = user;
+        this.client = client;
+        this.helper = helper;
     }
 
     static setExpirationTime = (addedTime: number): Date => {

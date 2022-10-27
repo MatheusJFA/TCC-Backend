@@ -1,15 +1,16 @@
 import { getBMRValues, getBMRWeeklyValues } from "@/types/activity.type";
 import { getBMIName } from "@/types/bmi.type";
-import { CarbsIntakeValues } from "@/types/carbsIntake.type";
-import { DietTypeValues } from "@/types/dietType.type";
+import { CarbsIntake, CarbsIntakeValues } from "@/types/carbsIntake.type";
+import { DietType, DietTypeValues } from "@/types/dietType.type";
 import { Intolerances, IntolerancesValues } from "@/types/intolerance.type";
 import { Diet, DietValues } from "@/types/diet.type";
 import { Sex } from "@/types/sex.type";
-import { ChildEntity, Column, ManyToMany, OneToMany } from "typeorm";
+import {  Column, Entity, ManyToMany, OneToMany } from "typeorm";
 import Calories, { ICaloriesConsumption } from "./calories.entity";
 import Helper from "./helper.entity";
 import User from "./user.entity";
 import WeightTracker from "./weightTracker.entity";
+import Token from "./token.entity";
 
 export interface IClient {
     id: string,
@@ -19,7 +20,7 @@ export interface IClient {
     carbsIntake: string
 }
 
-@ChildEntity()
+@Entity("clients")
 export default class Client extends User implements IClient {
     @ManyToMany(() => Helper, helper => helper.clients)
     helpers: Helper[];
@@ -48,6 +49,9 @@ export default class Client extends User implements IClient {
     @Column("enum", { enum: IntolerancesValues })
     intolerance: string;
 
+    @OneToMany(() => Token, token => token.client, { eager: true, cascade: true })
+    tokens: Token[];
+
     constructor(
         name: string,
         email: string,
@@ -63,7 +67,9 @@ export default class Client extends User implements IClient {
         this.height = height;
         this.weight = weight;
         this.diet = Diet.NO_DIET;
+        this.dietType = DietType.MAINTENANCE;
         this.intolerance = Intolerances.NONE;
+        this.carbsIntake = CarbsIntake.MODERATE_INTAKE;
     }
 
     //Constants
@@ -79,6 +85,12 @@ export default class Client extends User implements IClient {
     FATS_CALORIES = 9;
     CARBS_CALORIES = 4;
 
+    addToken = (token: Token): void => {
+        if (!this.tokens)
+            this.tokens = new Array<Token>();
+
+        this.tokens.push(token);
+    }
 
     addHelper = (helper: Helper): void => {
         if (!this.helpers) this.helpers = new Array<Helper>();

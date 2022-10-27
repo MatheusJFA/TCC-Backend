@@ -28,8 +28,9 @@ export default class Calories extends Base implements ICaloriesConsumption {
     @ManyToOne(() => Client, user => user.calories)
     user: Client;
 
-    constructor() {
+    constructor(client: Client) {
         super();
+        this.user = client; 
         this.calories = 0;
         this.proteins = 0;
         this.fats = 0;

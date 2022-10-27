@@ -6,9 +6,7 @@ import { clearAllDatabase } from "@/tests/fixtures/clearDatabase";
 let male: Client;
 let female: Client;
 
-const ONE_MINUTE = 60 * 1000;
-
-jest.setTimeout(ONE_MINUTE);
+jest.setTimeout(60 * 1000);
 jest.useFakeTimers()
 
 beforeAll(async () => {

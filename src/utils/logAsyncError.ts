@@ -6,7 +6,6 @@ export const LogAsyncError = (fn: Function) => (request: Request, response: Resp
   Promise.resolve(fn(request, response, next))
     .catch((error) => {
       Logger.error({ message: error.message, stack: error.message });
-      console.log(error)
       return response
         .status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR)
         .json({ message: error.message });

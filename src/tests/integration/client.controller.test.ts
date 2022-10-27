@@ -5,9 +5,7 @@ import { clearAllDatabase } from "../fixtures/clearDatabase";
 import database from "@/configuration/database";
 import ClientService from "@/service/client.service";
 
-const ONE_MINUTE = 60 * 1000;
-
-jest.setTimeout(ONE_MINUTE);
+jest.setTimeout(60 * 1000);
 jest.useFakeTimers()
 
 beforeAll(async () => {

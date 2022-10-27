@@ -16,8 +16,7 @@ class ClientController {
         const password = getPassword(request.headers!.authorization!);
 
         const image = request.file?.filename || "../assets/image/default-avatar.png";
-        let client =
-            await ClientService.createClient(name, email, password, birthdate, sex, Role.USER, height, weight, helpers, image);
+        let client = await ClientService.createClient(name, email, password, birthdate, sex, Role.USER, height, weight, helpers, image);
 
         return response
             .status(httpStatus.CREATED)

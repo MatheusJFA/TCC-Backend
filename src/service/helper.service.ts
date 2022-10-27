@@ -27,10 +27,28 @@ const HelperService = Database.getRepository(Helper).extend({
         }
     },
 
+    returnHelperByEmail: async function (email: string): Promise<Helper> {
+        try {
+            const helper = await this.findOne({ where: { email }, relations: ['tokens', 'certifications'] });
+            return helper!;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     getHelperByEmail: async function (email: string): Promise<Helper> {
         try {
-            const helper = await this.findOne({ where: { email }, relations: ['tokens'] });
+            const helper = await this.findOne({ where: { email }, relations: ['tokens', 'certifications'] });
             if (!helper) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
+            return helper!;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    returnHelperByID: async function (id: string): Promise<Helper> {
+        try {
+            const helper = await this.findOne({ where: { id }, relations: ['tokens', 'certifications'] });
             return helper!;
         } catch (error) {
             throw error;
@@ -39,7 +57,7 @@ const HelperService = Database.getRepository(Helper).extend({
 
     getHelperByID: async function (id: string): Promise<Helper> {
         try {
-            const helper = await this.findOne({ where: { id }, relations: ['tokens'] });
+            const helper = await this.findOne({ where: { id }, relations: ['tokens', 'certifications'] });
             if (!helper) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
             return helper!;
         } catch (error) {

@@ -3,14 +3,11 @@ import application from "@/server"
 import { clearAllDatabase } from "../fixtures/clearDatabase";
 import database from "@/configuration/database";
 import { Token } from "@/types/token.type";
-import UserService from "@/service/user.service";
 import ClientService from "@/service/client.service";
 import HelperService from "@/service/helper.service";
 import { Occupation } from "@/types/occupation.type";
 
-const ONE_MINUTE = 60 * 1000;
-
-jest.setTimeout(ONE_MINUTE);
+jest.setTimeout(60 * 1000);
 jest.useFakeTimers()
 
 let client = {
@@ -117,7 +114,7 @@ describe("Test all resources of Auth.Controller", () => {
             });
 
             test("Should return a 200 status code if a valid token is sent", async () => {
-                const user = await UserService.getUserByEmail(client.email);
+                const user = await ClientService.getClientByEmail(client.email);
                 let token = user.tokens.find(token => token.type === Token.REFRESH_TOKEN)?.jwt;
 
                 await Request(application)
@@ -184,7 +181,7 @@ describe("Test all resources of Auth.Controller", () => {
             });
 
             test("Should return a 200 status code if a valid token is sent", async () => {
-                const user = await UserService.getUserByEmail(helper.email);
+                const user = await HelperService.getHelperByEmail(helper.email);
                 let token = user.tokens.find(token => token.type === Token.REFRESH_TOKEN)?.jwt;
 
                 await Request(application)

@@ -1,12 +1,12 @@
 import { t } from "i18next";
 import Database from "@/configuration/database";
 import Client from "@/entity/client.entity";
-import User, { IUser } from "@/entity/user.entity";
 import ApiError from "@/utils/apiError";
 import Helper from "@/entity/helper.entity";
 import httpStatus from "http-status";
 import { paginate } from "@/helpers/paginate";
 import { IPageable } from "@/interfaces/IPageable";
+import { IUser } from "@/entity/user.entity";
 
 const ClientService = Database.getRepository(Client).extend({
     createClient: async function (name: string, email: string, password: string, birthdate: Date, sex: string, role: string, height: number, weight: number, helpers: Helper[], images: string) {
@@ -22,6 +22,15 @@ const ClientService = Database.getRepository(Client).extend({
         }
     },
 
+    returnClientByEmail: async function (email: string): Promise<Client> {
+        try {
+            const client = await this.findOne({ where: { email }, relations: ['tokens', 'calories', 'weightTracker'] });
+            return client!;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     getClientByEmail: async function (email: string): Promise<Client> {
         try {
             const client = await this.findOne({ where: { email }, relations: ['tokens', 'calories', 'weightTracker'] });
@@ -32,6 +41,15 @@ const ClientService = Database.getRepository(Client).extend({
         }
     },
 
+    returnClientByID: async function (id: string): Promise<Client> {
+        try {
+            const client = await this.findOne({ where: { id }, relations: ['tokens', 'calories', 'weightTracker'] });
+            return client!;
+        } catch (error) {
+            throw error;
+        }
+    },
+    
     getClientByID: async function (id: string): Promise<Client> {
         try {
             const client = await this.findOne({ where: { id }, relations: ['tokens', 'calories', 'weightTracker'] });

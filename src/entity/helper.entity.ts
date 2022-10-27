@@ -4,6 +4,7 @@ import Client from "./client.entity";
 import { OccupationValues } from "@/types/occupation.type";
 import User from "./user.entity";
 import Certification from "./certification.entity";
+import Token from "./token.entity";
 
 export interface IHelper {
     id: string,
@@ -12,7 +13,8 @@ export interface IHelper {
     clients: Client[],
 }
 
-@ChildEntity()
+
+@Entity("helpers")
 export default class Helper extends User implements IHelper {
     @Column("enum", { enum: OccupationValues })
     occupation: string;
@@ -23,6 +25,9 @@ export default class Helper extends User implements IHelper {
     @ManyToMany(() => Client, client => client.helpers, { eager: true, cascade: true })
     @JoinTable()
     clients: Client[];
+
+    @OneToMany(() => Token, token => token.helper, { eager: true, cascade: true })
+    tokens: Token[];
 
     constructor(
         name: string,
@@ -38,6 +43,13 @@ export default class Helper extends User implements IHelper {
         this.occupation = occupation;
     }
 
+    addToken = (token: Token): void => {
+        if (!this.tokens)
+            this.tokens = new Array<Token>();
+
+        this.tokens.push(token);
+    }
+    
     updateHelper = (helper: Partial<Omit<IHelper, "password">>) => {
         Object.assign(this, helper);
     }
