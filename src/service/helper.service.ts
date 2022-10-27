@@ -96,7 +96,7 @@ const HelperService = Database.getRepository(Helper).extend({
     deleteHelper: async function (id: string): Promise<Helper> {
         try {
             const user = await this.getHelperByID(id);
-            if (this.invalidUser(user) || !user) throw new ApiError(httpStatus.NOT_FOUND, t("ERROR.USER.ALREADY_EXISTS"));
+            if (this.invalidUser(user) || !user) throw new ApiError(httpStatus.NOT_FOUND, t("ERROR.USER.NOT_FOUND"));
 
             user.invalidate();
             return await this.save(user);

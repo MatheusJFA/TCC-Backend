@@ -15,6 +15,10 @@ class ClientController {
         const { name, email, birthdate, sex, height, weight, helpers } = request.body.user;
         const password = getPassword(request.headers!.authorization!);
 
+        let clientAlreadyExists = await ClientService.getClientByEmail(email);
+        
+        if (clientAlreadyExists) return response.status(httpStatus.BAD_REQUEST).send({message: t("ERROR.USER.ALREADY_EXISTS")})
+        
         const image = request.file?.filename || "../assets/image/default-avatar.png";
         let client = await ClientService.createClient(name, email, password, birthdate, sex, Role.USER, height, weight, helpers, image);
 

@@ -102,7 +102,7 @@ const ClientService = Database.getRepository(Client).extend({
     deleteClient: async function (id: string): Promise<Client> {
         try {
             const user = await this.getClientByID(id);
-            if (this.invalidUser(user) || !user) throw new ApiError(httpStatus.NOT_FOUND, t("ERROR.USER.ALREADY_EXISTS"));
+            if (this.invalidUser(user) || !user) throw new ApiError(httpStatus.NOT_FOUND, t("ERROR.USER.NOT_FOUND"));
 
             user.invalidate();
             return await this.save(user);
