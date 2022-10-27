@@ -16,7 +16,9 @@ class AuthenticationController {
 
         let user = await AuthenticationService.login(authorization);
 
-        // if(!user.isEmailVerified) return response.status(httpStatus.BAD_REQUEST).json({message: t("ERROR.USER.NOT_VERIFIED")})
+        if(!user) return response.status(httpStatus.BAD_REQUEST).json({message: t("ERROR.USER.NOT_FOUND")})
+
+        if(!user.isEmailVerified) return response.status(httpStatus.BAD_REQUEST).json({message: t("ERROR.USER.NOT_VERIFIED")})
         
         const tokens = await TokenService.generateAuthenticationTokens(user);
         return response.status(httpStatus.CREATED).json({ user: user.toJSON(), tokens, message: t("SUCCESS.LOGIN") });
