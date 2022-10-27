@@ -17,7 +17,7 @@ class HelperController {
 
         const image = request.file?.filename || "../assets/image/default-avatar.png";
 
-        let helperAlreadyExists = await HelperService.getHelperByEmail(email);
+        let helperAlreadyExists = await HelperService.returnHelperByEmail(email);
         
         if (helperAlreadyExists) return response.status(httpStatus.BAD_REQUEST).send({message: t("ERROR.USER.ALREADY_EXISTS")})
 

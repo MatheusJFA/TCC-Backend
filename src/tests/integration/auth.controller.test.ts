@@ -6,6 +6,8 @@ import { Token } from "@/types/token.type";
 import ClientService from "@/service/client.service";
 import HelperService from "@/service/helper.service";
 import { Occupation } from "@/types/occupation.type";
+import Client from "@/entity/client.entity";
+import Helper from "@/entity/helper.entity";
 
 jest.setTimeout(60 * 1000);
 jest.useFakeTimers()
@@ -41,8 +43,15 @@ beforeAll(async () => {
             .then(async () => {
                 console.log("🌎 Database initialized");
                 try {
-                    await ClientService.createClient(client.name, client.email, client.password, client.birthdate, client.sex, client.role, client.height, client.weight, [], client.image);
-                    await HelperService.createHelper(helper.name, helper.email, helper.password, helper.birthdate, helper.sex, helper.role, [], Occupation.OTHER, [], client.image);
+                    let auxClient: Client = await ClientService.createClient(client.name, client.email, client.password, client.birthdate, client.sex, client.role, client.height, client.weight, [], client.image);
+                    let auxHelper: Helper = await HelperService.createHelper(helper.name, helper.email, helper.password, helper.birthdate, helper.sex, helper.role, [], Occupation.OTHER, [], client.image);
+
+                    auxClient.verifyEmail();
+                    auxHelper.verifyEmail();
+
+                    auxClient.save();
+                    auxHelper.save();
+
                     console.log("👶 Users created");
                 } catch (error) {
                     console.log("❌ Couldn't create users", error);
