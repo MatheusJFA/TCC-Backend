@@ -4,6 +4,7 @@ import { JwtPayload } from 'jsonwebtoken';
 import { TokenType } from "@/types/token.type";
 import ClientService from '@/service/client.service';
 import HelperService from '@/service/helper.service';
+import AuthenticationService from '@/service/auth.service';
 
 const jwtOptions = {
   secretOrKey: enviroment.jwt.secret,
@@ -17,8 +18,8 @@ const jwtVerify = async (payload: JwtPayload, done: Function) => {
     
     const userID = payload.sub!;
 
-    let user = await ClientService.getClientByID(userID) || await HelperService.getHelperByID(userID);
-
+    let user = await AuthenticationService.getClientOrHelperByID(userID);
+    
     if (!user) {
       return done(null, false);
     }

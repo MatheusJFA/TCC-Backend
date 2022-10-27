@@ -36,9 +36,9 @@ class AuthenticationController {
     });
 
     sendforgotPasswordEmail = LogAsyncError(async (request: Request, response: Response) => {
-        const email: string = request.body.email;
+        const email: string = request.body;
 
-        const user = await ClientService.getClientByEmail(email) || await HelperService.getHelperByEmail(email);
+        const user = await AuthenticationService.getClientOrHelperByEmail(email);
 
         const jwt: Token = await TokenService.generateResetPasswordToken(user);
 
@@ -59,10 +59,9 @@ class AuthenticationController {
     });
 
     sendVerificationEmail = LogAsyncError(async (request: Request, response: Response) => {
-        const email: string = request.body.email;
+        const email: string = request.body;
 
-
-        const user = await ClientService.getClientByEmail(email) || await HelperService.getHelperByEmail(email);
+        const user = await AuthenticationService.getClientOrHelperByEmail(email);
         const jwt: Token = await TokenService.generateVerifyEmailToken(user);
 
         EmailService.sendVerificationEmail(user.name, user.email, jwt.jwt);
