@@ -7,8 +7,9 @@ import { t } from "i18next";
 import AuthenticationService from "@/service/auth.service";
 import TokenService from "@/service/token.service";
 import EmailService from "@/service/email.service";
-import ClientService from "@/service/client.service";
-import HelperService from "@/service/helper.service";
+import Client from "@/entity/client.entity";
+import Helper from "@/entity/helper.entity";
+import { Token as TokenType } from "@/types/token.type";
 
 class AuthenticationController {
     login = LogAsyncError(async (request: Request, response: Response) => {
@@ -63,9 +64,11 @@ class AuthenticationController {
 
         const user = await AuthenticationService.getClientOrHelperByEmail(email);
 
-        const jwt: Token = await TokenService.generateVerifyEmailToken(user);
+        const userInfo: Client | Helper = await TokenService.generateVerifyEmailToken(user);
 
-        EmailService.sendVerificationEmail(user.name, user.email, jwt.jwt);
+        const token = userInfo.tokens.filter(t => t.type === TokenType.VERIFY_EMAIL)[0];
+
+        EmailService.sendVerificationEmail(user.name, user.email, token.jwt);
         return response.status(httpStatus.NO_CONTENT).json({ message: t("SUCCESS.OK") });
     });
 
