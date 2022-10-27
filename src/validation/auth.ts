@@ -68,7 +68,6 @@ const verifyEmail = Yup.object().shape({
     body: Yup.object().shape({
         token: Yup.string().test('is-jwt', t("ERROR.TOKEN.INVALID"), (value: any) => {
             return TokenService.verifyToken(value);
-
         }).required(),
     }).required(),
 });

@@ -96,8 +96,7 @@ const AuthenticationService = {
 
     verifyEmail: async function (token: string): Promise<void> {
         try {
-            const jwt: Token | undefined = await TokenService.getTokenByJWT(token, "VERIFY_EMAIL");
-
+            const jwt: Token = await TokenService.getTokenByJWT(token, "VERIFY_EMAIL");
             if (!jwt) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
             const user = jwt.client || jwt.helper;
@@ -106,6 +105,7 @@ const AuthenticationService = {
 
             jwt.invalidate();
             await TokenService.deleteToken(jwt);
+            await user?.save();
         } catch (error) {
             throw error;
         }

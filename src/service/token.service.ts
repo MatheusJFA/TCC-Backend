@@ -62,13 +62,13 @@ const TokenService = Database.getRepository(Token).extend({
 
     saveToken: async function (data: IToken): Promise<Client | Helper> {
         try {
-            const token: Token = new Token(data.jwt, data.type, data.expires, data.client, data.helper);            
+            const token: Token = new Token(data.jwt, data.type, data.expires, data.client, data.helper);
             const user = data.client || data.helper;
 
             user?.addToken(token);
 
             const isClient = user instanceof Client;
-            if(isClient) return await ClientService.save(user!);
+            if (isClient) return await ClientService.save(user!);
             else return await HelperService.save(user!);
 
         } catch (error: any) {
@@ -79,10 +79,8 @@ const TokenService = Database.getRepository(Token).extend({
 
     getTokenByJWT: async function (jwt: string, tokenType: TokenType): Promise<Token> {
         try {
-            let token = await this.findOne({ where: { jwt, type: tokenType, deletedAt: IsNull() }, relations: ["helper", "client"] });
-
+            let token = await this.findOne({ where: { jwt, type: tokenType, deletedAt: IsNull() }, relations: ["helper", "client"] })
             if (this.invalidToken(token)) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
-
             return token!;
         } catch (error: any) {
             throw error;
@@ -149,7 +147,7 @@ const TokenService = Database.getRepository(Token).extend({
         try {
             const expires = new Date(new Date().getTime() + (enviroment.jwt.reset_password * this.MINUTE));
             const resetPasswordToken = this.generateTokens(user.id, expires, "RESET_PASSWORD");
-            
+
             const isClient = user instanceof Client;
             return this.saveToken({ jwt: resetPasswordToken, expires, client: isClient ? user : undefined, helper: isClient ? undefined : user, type: "RESET_PASSWORD" });
         } catch (error: any) {
