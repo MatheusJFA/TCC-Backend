@@ -16,10 +16,10 @@ class AuthenticationController {
 
         let user = await AuthenticationService.login(authorization);
 
-        if(!user) return response.status(httpStatus.BAD_REQUEST).json({message: t("ERROR.USER.NOT_FOUND")})
+        if (!user) return response.status(httpStatus.BAD_REQUEST).json({ message: t("ERROR.USER.NOT_FOUND") })
 
-        if(!user.isEmailVerified) return response.status(httpStatus.BAD_REQUEST).json({message: t("ERROR.USER.NOT_VERIFIED")})
-        
+        if (!user.isEmailVerified) return response.status(httpStatus.BAD_REQUEST).json({ message: t("ERROR.USER.NOT_VERIFIED") })
+
         const tokens = await TokenService.generateAuthenticationTokens(user);
         return response.status(httpStatus.CREATED).json({ user: user.toJSON(), tokens, message: t("SUCCESS.LOGIN") });
     });
@@ -36,7 +36,7 @@ class AuthenticationController {
     });
 
     sendforgotPasswordEmail = LogAsyncError(async (request: Request, response: Response) => {
-        const email: string = request.body;
+        const { email } = request.body;
 
         const user = await AuthenticationService.getClientOrHelperByEmail(email);
 
@@ -59,9 +59,10 @@ class AuthenticationController {
     });
 
     sendVerificationEmail = LogAsyncError(async (request: Request, response: Response) => {
-        const email: string = request.body;
+        const { email } = request.body;
 
         const user = await AuthenticationService.getClientOrHelperByEmail(email);
+
         const jwt: Token = await TokenService.generateVerifyEmailToken(user);
 
         EmailService.sendVerificationEmail(user.name, user.email, jwt.jwt);

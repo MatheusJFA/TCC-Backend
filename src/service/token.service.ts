@@ -136,7 +136,7 @@ const TokenService = Database.getRepository(Token).extend({
         try {
             const expires = new Date(new Date().getTime() + (enviroment.jwt.verify_email * this.MINUTE));
             const verifyEmailToken = this.generateTokens(user.id, expires, "VERIFY_EMAIL");
-            
+
             const isClient = user instanceof Client;
             return this.saveToken({ jwt: verifyEmailToken, expires, client: isClient ? user : undefined, helper: isClient ? undefined : user, type: "VERIFY_EMAIL" });
         } catch (error: any) {
