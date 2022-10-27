@@ -10,6 +10,7 @@
   "scripts": {
     "start": "ts-node -r tsconfig-paths/register --transpile-only src/server.ts",
     "dev": "ts-node-dev -r tsconfig-paths/register --inspect --transpile-only --ignore-watch node_modules src/server.ts",
+    "dev:debugger": "set DEBUG=express:* & ts-node-dev -r tsconfig-paths/register --inspect --transpile-only --ignore-watch node_modules src/server.ts",
     "test": "cross-env NODE_ENVIROMENT=TEST jest --noStackTrace --forceExit --runInBand src/tests ",
     "test:clearCache": "jest --clearCache",
     "test:staged": "npm test --findRelatedTests",

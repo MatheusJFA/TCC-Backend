@@ -14,7 +14,7 @@ const createHelperSchema = Yup.object().shape({
             }).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.EMAIL") })),
             birthdate: Yup.date().max(new Date()).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.BIRTHDATE") })),
             sex: Yup.string().oneOf(SexValues).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.SEX") })),
-            role: Yup.string().default(Role.USER).oneOf(RoleValues).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.ROLE") })),
+            role: Yup.string().default(Role.HELPER).oneOf(RoleValues).optional(),
             image: Yup.string().optional(),
             certifications: Yup.array().optional(),
             clients: Yup.array().optional(),

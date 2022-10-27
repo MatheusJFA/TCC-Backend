@@ -24,7 +24,7 @@ const ClientService = Database.getRepository(Client).extend({
 
     getClientByEmail: async function (email: string): Promise<Client> {
         try {
-            const client = await this.findOne({ where: { email }, relations: ['tokens', 'calories'] });
+            const client = await this.findOne({ where: { email }, relations: ['tokens', 'calories', 'weightTracker'] });
             if (!client) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
             return client!;
         } catch (error) {
@@ -34,7 +34,7 @@ const ClientService = Database.getRepository(Client).extend({
 
     getClientByID: async function (id: string): Promise<Client> {
         try {
-            const client = await this.findOne({ where: { id }, relations: ['tokens', 'calories'] });
+            const client = await this.findOne({ where: { id }, relations: ['tokens', 'calories', 'weightTracker'] });
             if (!client) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.USER.NOT_FOUND")));
             return client!;
         } catch (error) {

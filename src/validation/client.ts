@@ -56,8 +56,8 @@ const updateClientSchema = Yup.object().shape({
             birthdate: Yup.date().max(new Date()).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.BIRTHDATE") })),
             role: Yup.string().default(Role.USER).oneOf(RoleValues).optional(),
             image: Yup.string().optional(),
-            height: Yup.number().positive().max(3.00).min(0.50).optional(),
-            weight: Yup.number().positive().max(300.00).min(7.00).optional(),
+            height: Yup.number().positive().optional(),
+            weight: Yup.number().positive().optional(),
         }),
     }),
 });

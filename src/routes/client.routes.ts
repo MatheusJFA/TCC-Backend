@@ -23,7 +23,6 @@ router.get("/:id",
     validateSchema(clientSchema.getClientSchema),
     ClientController.getClient);
 
-router.get("/getSexValues", ClientController.getSexValues);
 
 router.get("/",
     minimunRole("MODERATOR"), validateSchema(paginationSchema),

@@ -119,7 +119,7 @@ class ClientController {
 
     getSexValues = LogAsyncError(async (request: Request, response: Response) => {
         const sexValues = SexValues.map(s => s.toLowerCase().replace(/\b(\w)/g, x => x.toUpperCase()));
-        return response.status(httpStatus.OK).send({ sexValues })
+        return response.status(httpStatus.OK).send(sexValues);
     });
 }
 

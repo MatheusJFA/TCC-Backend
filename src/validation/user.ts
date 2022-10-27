@@ -13,10 +13,10 @@ const createUserSchema = Yup.object().shape({
             }).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.EMAIL") })),
             birthdate: Yup.date().max(new Date()).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.BIRTHDATE") })),
             sex: Yup.string().oneOf(SexValues).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.SEX") })),
-            role: Yup.string().default(Role.USER).oneOf(RoleValues).required(() => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.ROLE") })),
-            image: Yup.string().optional()
-        }).required()
-    }),
+            role: Yup.string().default(Role.USER).oneOf(RoleValues).optional(   ),
+        image: Yup.string().optional()
+    }).required()
+}),
     headers: Yup.object().shape({
         authorization: Yup.string()
             .test('valid-password', () => t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.PASSWORD") }), (value: any) => {

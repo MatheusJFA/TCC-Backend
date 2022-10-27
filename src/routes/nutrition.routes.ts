@@ -34,16 +34,4 @@ router.get("/currentDiet/:id",
      validateSchema(NutritionSchema.getCurrentDietSchema),
     NutritionController.getCurrentDiet);
 
-router.get("/cuisineList",
-    NutritionController.CuisineValues);
-
-router.get("/intolerancesList",
-    NutritionController.IntolerancesValues);
-
-router.get("/dietsList",
-    NutritionController.DietsValues);
-
-router.get("/carbsIntakeList",
-    NutritionController.CarbsIntakeValues);
-
 export default router;

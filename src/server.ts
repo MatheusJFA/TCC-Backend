@@ -70,7 +70,7 @@ application.use(morganMiddleware); // Gera logs da aplicação
 
 application.use(hpp()); // Proteger contra o ataque de HTTP Parameter Polution   
 application.use(helmet()); // Proteção contra ataques enviados nos headers
-
+application.use(compression())
 application.use(passport.initialize());
 passport.use("jwt", jwtStrategy);
 

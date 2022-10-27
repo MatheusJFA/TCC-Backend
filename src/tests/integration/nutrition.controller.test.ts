@@ -4,7 +4,7 @@ import application from "@/server"
 describe("Test /GET ", () => {
     test("Should 200 and return all cuisine values", async () => {
         await Request(application)
-            .get("/nutrition/cuisineList")
+            .get("/drop/cuisineList")
             .expect(200)
             .expect("Content-Type", /json/)
             .then(response => {
@@ -16,7 +16,7 @@ describe("Test /GET ", () => {
     test("Should 200 and return all intolerances values", async () => {
 
         await Request(application)
-            .get("/nutrition/intolerancesList")
+            .get("/drop/intolerancesList")
             .expect(200)
             .expect("Content-Type", /json/)
             .then(response => {
@@ -27,7 +27,7 @@ describe("Test /GET ", () => {
 
     test("Should 200 and return all diet values", async () => {
         await Request(application)
-            .get("/nutrition/dietsList")
+            .get("/drop/dietsList")
             .expect(200)
             .expect("Content-Type", /json/)
             .then(response => {
@@ -37,7 +37,7 @@ describe("Test /GET ", () => {
 
     test("Should 200 and return all carb intake values", async () => {
         await Request(application)
-            .get("/nutrition/carbsIntakeList")
+            .get("/drop/carbsIntakeList")
             .expect(200)
             .expect("Content-Type", /json/)
             .then(response => {
