@@ -33,10 +33,10 @@ const AuthenticationService = {
         try {
             if (jwt.startsWith("Bearer ")) jwt = jwt.split(" ")[1];
             const token = await TokenService.getTokenByJWT(jwt, "REFRESH_TOKEN");
+          
             if (!token) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
-            token.invalidate();
-            await TokenService.saveToken({ jwt: token.jwt, type: "REFRESH_TOKEN", client: token.client, helper: token.helper, expires: token.expires });
+            await TokenService.deleteToken(token);
         } catch (error) {
             throw error;
         }
@@ -76,18 +76,17 @@ const AuthenticationService = {
 
     resetPassword: async function (token: string, password: string): Promise<void> {
         try {
-            const jwt: Token = await TokenService.getTokenByJWT(token, "RESET_PASSWORD");
+            const token: Token = await TokenService.getTokenByJWT(token, "RESET_PASSWORD");
 
-            if (!jwt) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
+            if (!token) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
-            const user = jwt.client || jwt.helper;
+            const user = token.client || token.helper;
 
             user!.hashPassword(password);
 
             await user!.save();
 
-            jwt.invalidate();
-            await TokenService.deleteToken(jwt);
+            await TokenService.deleteToken(token);
         } catch (error) {
             throw error;
         }
@@ -95,15 +94,14 @@ const AuthenticationService = {
 
     verifyEmail: async function (token: string): Promise<void> {
         try {
-            const jwt: Token = await TokenService.getTokenByJWT(token, "VERIFY_EMAIL");
-            if (!jwt) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
+            const token: Token = await TokenService.getTokenByJWT(token, "VERIFY_EMAIL");
+            if (!token) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
-            const user = jwt.client || jwt.helper;
+            const user = token.client || token.helper;
 
             user!.verifyEmail();
 
-            jwt.invalidate();
-            await TokenService.deleteToken(jwt);
+            await TokenService.deleteToken(token);
             await user?.save();
         } catch (error) {
             throw error;
