@@ -50,13 +50,11 @@ class AuthenticationController {
     });
 
     resetPassword = LogAsyncError(async (request: Request, response: Response) => {
-        const jwt: string = request.body;
-
-        const authorization: string = request.headers!.authorization!;
+        const jwt: string = request.body.token;
+        const authorization: string = request.headers!.authorization! as string;
         const password: string = getPassword(authorization);
         
-        if (!validPassword(password)) 
-            return response.status(httpStatus.BAD_REQUEST).json({ message: t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.PASSWORD") }) })
+        if (!validPassword(password)) return response.status(httpStatus.BAD_REQUEST).json({ message: t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.PASSWORD") }) })
 
         await AuthenticationService.resetPassword(jwt, password);
         return response.status(httpStatus.CREATED).json({ message: t("SUCCESS.OK") });
@@ -75,17 +73,17 @@ class AuthenticationController {
         return response.status(httpStatus.NO_CONTENT).json({ message: t("SUCCESS.OK") });
     });
 
+    verifyEmail = LogAsyncError(async (request: Request, response: Response) => {
+        const token: string = request.body.token;
+        await AuthenticationService.verifyEmail(token);
+        response.status(httpStatus.NO_CONTENT).json({ message: t("SUCCESS.OK") });
+    });
+
     sendContact = LogAsyncError(async (request: Request, response: Response) => {
         const { name, email, message } = request.body;
 
         EmailService.sendContactEmail(name, email, message);
         return response.status(httpStatus.NO_CONTENT).json({ message: t("SUCCESS.OK") })
-    });
-
-    verifyEmail = LogAsyncError(async (request: Request, response: Response) => {
-        const token: string = request.body.token;
-        await AuthenticationService.verifyEmail(token);
-        response.status(httpStatus.NO_CONTENT).json({ message: t("SUCCESS.OK") });
     });
 }
 

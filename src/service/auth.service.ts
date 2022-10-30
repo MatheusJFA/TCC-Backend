@@ -78,7 +78,6 @@ const AuthenticationService = {
     resetPassword: async function (jwt: string, password: string): Promise<void> {
         try {
             const token: Token = await TokenService.getTokenByJWT(jwt, "RESET_PASSWORD");
-
             if (!token) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
             const user = token.client || token.helper;

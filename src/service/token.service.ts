@@ -78,7 +78,6 @@ const TokenService = Database.getRepository(Token).extend({
 
     getTokenByJWT: async function (jwt: string, tokenType: TokenType): Promise<Token> {
         try {
-
             let token = await this.findOne({
                 where: { jwt, type: tokenType, deletedAt: IsNull() },
                 relations: ["helper", "client"]
