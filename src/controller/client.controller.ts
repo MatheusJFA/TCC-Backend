@@ -52,7 +52,7 @@ class ClientController {
 
         const data = await ClientService.getClientDiet(id);
 
-        return response.status(httpStatus.OK).send({ data });
+        return response.status(httpStatus.OK).json(data);
     });
 
     updateClient = LogAsyncError(async (request: Request, response: Response) => {

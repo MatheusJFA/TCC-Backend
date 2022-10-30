@@ -5,7 +5,7 @@ import { DietType, DietTypeValues } from "@/types/dietType.type";
 import { Intolerances, IntolerancesValues } from "@/types/intolerance.type";
 import { Diet, DietValues } from "@/types/diet.type";
 import { Sex } from "@/types/sex.type";
-import {  Column, Entity, ManyToMany, OneToMany } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany } from "typeorm";
 import Calories, { ICaloriesConsumption } from "./calories.entity";
 import Helper from "./helper.entity";
 import User from "./user.entity";
@@ -418,7 +418,7 @@ export default class Client extends User implements IClient {
     }
 
     getAllHealthData = () => {
-        let data: any;
+        let data: any = {};
 
         data.BMI = this.calculateBMI(); // Body Mass Index
 

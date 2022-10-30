@@ -35,7 +35,7 @@ const getClientSchema = Yup.object().shape({
 });
 
 
-const addHelperSchema = Yup.object().shape({
+const addOrRemoveHelperSchema = Yup.object().shape({
     params: Yup.object().shape({
         id: Yup.string().uuid().required(),
     }),
@@ -43,6 +43,8 @@ const addHelperSchema = Yup.object().shape({
         helper: Yup.string().uuid().required(),
     }),
 });
+
+
 const updateClientSchema = Yup.object().shape({
     params: Yup.object().shape({
         id: Yup.string().uuid().required(),
@@ -84,5 +86,5 @@ export default {
     updateClientSchema,
     deleteClientSchema,
     changeRoleSchema,
-    addHelperSchema,
+    addOrRemoveHelperSchema,
 }

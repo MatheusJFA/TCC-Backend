@@ -23,7 +23,6 @@ router.get("/:id",
     validateSchema(clientSchema.getClientSchema),
     ClientController.getClient);
 
-
 router.get("/",
     minimunRole("MODERATOR"), validateSchema(paginationSchema),
     ClientController.getClients);
@@ -37,20 +36,16 @@ router.put("/:id",
     ClientController.updateClient);
 
 router.patch("/:id",
-    validateSchema(clientSchema.changeRoleSchema), minimunRole("MODERATOR"),
+    validateSchema(clientSchema.changeRoleSchema),
+    minimunRole("MODERATOR"),
     ClientController.changeRole);
 
-router.post("/:id",
-    validateSchema(clientSchema.getClientSchema),
-    ClientController.getClient);
-
 router.post("/add/:id",
-    validateSchema(clientSchema.addHelperSchema),
+    validateSchema(clientSchema.addOrRemoveHelperSchema),
     ClientController.addHelper);
 
-router.put("/:id",
-    validateSchema(clientSchema.updateClientSchema),
-    ClientController.updateClient);
-
+router.post("/remove/:id",
+    validateSchema(clientSchema.addOrRemoveHelperSchema),
+    ClientController.removeHelper);
 
 export default router;
