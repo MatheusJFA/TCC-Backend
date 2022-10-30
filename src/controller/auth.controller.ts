@@ -41,22 +41,25 @@ class AuthenticationController {
 
         const user = await AuthenticationService.getClientOrHelperByEmail(email);
 
-        const jwt: Token = await TokenService.generateResetPasswordToken(user);
+        const userInfo: Client | Helper = await TokenService.generateResetPasswordToken(user);
 
-        EmailService.sendForgotPasswordEmail(user.name, user.email, jwt.jwt);
+        const token = userInfo.tokens.filter(t => t.type === TokenType.RESET_PASSWORD)[0];
+
+        EmailService.sendForgotPasswordEmail(user.name, user.email, token.jwt);
         return response.status(httpStatus.NO_CONTENT).json({ message: t("SUCCESS.OK") });
     });
 
     resetPassword = LogAsyncError(async (request: Request, response: Response) => {
-        const jwt: string = request.body.jwt;
+        const jwt: string = request.body;
 
         const authorization: string = request.headers!.authorization!;
         const password: string = getPassword(authorization);
-
-        if (!validPassword(password)) return response.status(httpStatus.BAD_REQUEST).json({ message: t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.PASSWORD") }) })
+        
+        if (!validPassword(password)) 
+            return response.status(httpStatus.BAD_REQUEST).json({ message: t("ERROR.PARAMETERS.INVALID", { parameter: t("FIELD.USER.PASSWORD") }) })
 
         await AuthenticationService.resetPassword(jwt, password);
-        response.status(httpStatus.CREATED).json({ message: t("SUCCESS.OK") });
+        return response.status(httpStatus.CREATED).json({ message: t("SUCCESS.OK") });
     });
 
     sendVerificationEmail = LogAsyncError(async (request: Request, response: Response) => {

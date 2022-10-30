@@ -1,5 +1,5 @@
-import enviroment from "@/configuration/enviroment";
-import { TokenType } from "@/types/token.type";
+import enviroment from "../configuration/enviroment";
+import { TokenType, Token as Tokens } from "@/types/token.type";
 import Token, { IToken } from "@/entity/token.entity";
 import ApiError from "@/utils/apiError";
 import { t } from "i18next";
@@ -39,7 +39,7 @@ const TokenService = Database.getRepository(Token).extend({
     },
 
     invalidToken: function (token?: Token) {
-        return (!token) ||
+        return !token ||
             token.deletedAt !== null ||
             token.isExpired() ||
             !this.verifyToken(token.jwt)
@@ -72,14 +72,18 @@ const TokenService = Database.getRepository(Token).extend({
             else return await HelperService.save(user!);
 
         } catch (error: any) {
-            console.log({ error });
             throw error;
         }
     },
 
     getTokenByJWT: async function (jwt: string, tokenType: TokenType): Promise<Token> {
         try {
-            let token = await this.findOne({ where: { jwt, type: tokenType, deletedAt: IsNull() }, relations: ["helper", "client"] })
+
+            let token = await this.findOne({
+                where: { jwt, type: tokenType, deletedAt: IsNull() },
+                relations: ["helper", "client"]
+            });
+
             if (this.invalidToken(token)) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
             return token!;
         } catch (error: any) {
@@ -91,6 +95,7 @@ const TokenService = Database.getRepository(Token).extend({
         try {
             const token = await this.find({
                 where: { id, type: tokenType, deletedAt: IsNull() },
+                relations: ["helper", "client"]
             });
 
             if (this.invalidToken(token)) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
@@ -112,18 +117,23 @@ const TokenService = Database.getRepository(Token).extend({
 
     generateAuthenticationTokens: async function (user: Helper | Client): Promise<{ accessToken: string, refreshToken: string }> {
         try {
-            const userAccessToken = user.tokens.find((token: Token) => token.type === "ACCESS_TOKEN");
-            const userRefreshToken = user.tokens.find((token: Token) => token.type === "REFRESH_TOKEN");
+            const userAccessToken = user.tokens.find((token: Token) => token.type === Tokens.ACCESS_TOKEN && token.isExpired() === false && token.deletedAt === null);
+            const userRefreshToken = user.tokens.find((token: Token) => token.type === Tokens.REFRESH_TOKEN && token.isExpired() === false && token.deletedAt === null);
 
             const refreshTokenExpires = Token.setExpirationTime(enviroment.jwt.refresh * this.DAY);
-            const refreshToken = !this.invalidToken(userRefreshToken) ? userRefreshToken : this.generateTokens(user.id, refreshTokenExpires, "REFRESH_TOKEN");
+            const refreshToken = !this.invalidToken(userRefreshToken) ? userRefreshToken?.jwt : this.generateTokens(user.id, refreshTokenExpires, "REFRESH_TOKEN");
 
             const accessTokenExpires = Token.setExpirationTime(enviroment.jwt.access * this.MINUTE);
-            const accessToken = !this.invalidToken(userAccessToken) ? userAccessToken : this.generateTokens(user.id, accessTokenExpires, "ACCESS_TOKEN");
+            const accessToken = !this.invalidToken(userAccessToken) ? userAccessToken?.jwt : this.generateTokens(user.id, accessTokenExpires, "ACCESS_TOKEN");
 
             const isClient = user instanceof Client;
-            await this.saveToken({ jwt: refreshToken, expires: refreshTokenExpires, client: isClient ? user : undefined, helper: isClient ? undefined : user, type: "REFRESH_TOKEN" } as IToken);
 
+            if (!this.invalidToken(userRefreshToken) || !userRefreshToken) await this.saveToken({
+                jwt: refreshToken,
+                expires: refreshTokenExpires,
+                client: isClient ? user : undefined, helper: isClient ? undefined : user,
+                type: "REFRESH_TOKEN"
+            } as IToken);
             return { accessToken, refreshToken }
         } catch (error: any) {
             throw error;
@@ -133,23 +143,44 @@ const TokenService = Database.getRepository(Token).extend({
     generateVerifyEmailToken: async function (user: Client | Helper) {
         try {
             const expires = new Date(new Date().getTime() + (enviroment.jwt.verify_email * this.MINUTE));
-            const verifyEmailToken = this.generateTokens(user.id, expires, "VERIFY_EMAIL");
+
+            const userValidToken = user.tokens.find(token => token.deletedAt === null && token.type === Tokens.VERIFY_EMAIL);
+
+            let verifyEmailToken;
+
+            if (!userValidToken) verifyEmailToken = this.generateTokens(user.id, expires, Tokens.VERIFY_EMAIL);
+            else verifyEmailToken = userValidToken.jwt;
 
             const isClient = user instanceof Client;
-            return await this.saveToken({ jwt: verifyEmailToken, expires, client: isClient ? user : undefined, helper: isClient ? undefined : user, type: "VERIFY_EMAIL" });
+            return await this.saveToken({
+                jwt: verifyEmailToken,
+                expires, client: isClient ? user : undefined, helper: isClient ? undefined : user,
+                type: "VERIFY_EMAIL"
+            });
         } catch (error: any) {
             throw error;
         }
     },
 
 
-    generateResetPasswordToken: async function (user: Client | Helper): Promise<Token> {
+    generateResetPasswordToken: async function (user: Client | Helper) {
         try {
             const expires = new Date(new Date().getTime() + (enviroment.jwt.reset_password * this.MINUTE));
-            const resetPasswordToken = this.generateTokens(user.id, expires, "RESET_PASSWORD");
+
+            const userValidToken = user.tokens.find(token => token.deletedAt === null && token.type === Tokens.RESET_PASSWORD);
+
+            let resetPasswordToken;
+
+            if (!userValidToken) resetPasswordToken = this.generateTokens(user.id, expires, Tokens.RESET_PASSWORD);
+            else resetPasswordToken = userValidToken.jwt;
 
             const isClient = user instanceof Client;
-            return this.saveToken({ jwt: resetPasswordToken, expires, client: isClient ? user : undefined, helper: isClient ? undefined : user, type: "RESET_PASSWORD" });
+            return this.saveToken({
+                jwt: resetPasswordToken,
+                expires,
+                client: isClient ? user : undefined, helper: isClient ? undefined : user,
+                type: "RESET_PASSWORD"
+            });
         } catch (error: any) {
             throw error;
         }

@@ -39,7 +39,7 @@ const enviromentSchema = Yup.object().shape({
 
 const enviroment = enviromentSchema.validateSync(process.env);
 
-export = {
+export default {
     node_enviroment: enviroment.NODE_ENVIROMENT,
     port: enviroment.PORT,
 

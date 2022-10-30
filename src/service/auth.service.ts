@@ -33,7 +33,6 @@ const AuthenticationService = {
         try {
             if (jwt.startsWith("Bearer ")) jwt = jwt.split(" ")[1];
             const token = await TokenService.getTokenByJWT(jwt, "REFRESH_TOKEN");
-
             if (!token) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
             token.invalidate();
@@ -77,7 +76,7 @@ const AuthenticationService = {
 
     resetPassword: async function (token: string, password: string): Promise<void> {
         try {
-            const jwt: Token | undefined = await TokenService.getTokenByJWT(token, "RESET_PASSWORD");
+            const jwt: Token = await TokenService.getTokenByJWT(token, "RESET_PASSWORD");
 
             if (!jwt) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
