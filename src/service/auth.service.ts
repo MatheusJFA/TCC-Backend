@@ -36,6 +36,7 @@ const AuthenticationService = {
           
             if (!token) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
+            token.invalidate();
             await TokenService.deleteToken(token);
         } catch (error) {
             throw error;
@@ -74,9 +75,9 @@ const AuthenticationService = {
         }
     },
 
-    resetPassword: async function (token: string, password: string): Promise<void> {
+    resetPassword: async function (jwt: string, password: string): Promise<void> {
         try {
-            const token: Token = await TokenService.getTokenByJWT(token, "RESET_PASSWORD");
+            const token: Token = await TokenService.getTokenByJWT(jwt, "RESET_PASSWORD");
 
             if (!token) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
@@ -86,21 +87,23 @@ const AuthenticationService = {
 
             await user!.save();
 
+            token.invalidate();
             await TokenService.deleteToken(token);
         } catch (error) {
             throw error;
         }
     },
 
-    verifyEmail: async function (token: string): Promise<void> {
+    verifyEmail: async function (jwt: string): Promise<void> {
         try {
-            const token: Token = await TokenService.getTokenByJWT(token, "VERIFY_EMAIL");
+            const token: Token = await TokenService.getTokenByJWT(jwt, "VERIFY_EMAIL");
             if (!token) throw new ApiError(httpStatus.NOT_FOUND, (t("ERROR.TOKEN.NOT_FOUND")));
 
             const user = token.client || token.helper;
 
             user!.verifyEmail();
 
+            token.invalidate();
             await TokenService.deleteToken(token);
             await user?.save();
         } catch (error) {
