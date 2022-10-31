@@ -368,17 +368,37 @@ export default class Client extends User implements IClient {
     }
 
     getMacronutrientsValues = (value: { maintaince: number, cutting: number, bulking: number }, PROTEINS_PERCENTAGE: number, FATS_PERCENTAGE: number, CARBS_PERCENTAGE: number) => {
-        return {
-            proteins_maintaince: Math.ceil((value.maintaince * PROTEINS_PERCENTAGE) / this.PROTEINS_CALORIES),
-            proteins_cutting: Math.ceil((value.cutting * PROTEINS_PERCENTAGE) / this.PROTEINS_CALORIES),
-            proteins_bulking: Math.ceil((value.bulking * PROTEINS_PERCENTAGE) / this.PROTEINS_CALORIES),
-            fats_maintaince: Math.ceil((value.maintaince * FATS_PERCENTAGE) / this.FATS_CALORIES),
-            fats_cutting: Math.ceil((value.cutting * FATS_PERCENTAGE) / this.FATS_CALORIES),
-            fats_bulking: Math.ceil((value.bulking * FATS_PERCENTAGE) / this.FATS_CALORIES),
-            carbs_maintaince: Math.ceil((value.maintaince * CARBS_PERCENTAGE) / this.CARBS_CALORIES),
-            carbs_cutting: Math.ceil((value.cutting * CARBS_PERCENTAGE) / this.CARBS_CALORIES),
-            carbs_bulking: Math.ceil((value.bulking * CARBS_PERCENTAGE) / this.CARBS_CALORIES),
-        }
+
+        const proteins_maintaince = Math.ceil((value.maintaince * PROTEINS_PERCENTAGE) / this.PROTEINS_CALORIES);
+        const fats_maintaince = Math.ceil((value.maintaince * FATS_PERCENTAGE) / this.FATS_CALORIES);
+        const carbs_maintaince = Math.ceil((value.maintaince * CARBS_PERCENTAGE) / this.CARBS_CALORIES);
+        
+        const proteins_bulking = Math.ceil((value.bulking * PROTEINS_PERCENTAGE) / this.PROTEINS_CALORIES);
+        const fats_bulking = Math.ceil((value.bulking * FATS_PERCENTAGE) / this.FATS_CALORIES);
+        const carbs_bulking = Math.ceil((value.bulking * CARBS_PERCENTAGE) / this.CARBS_CALORIES);
+     
+        const proteins_cutting = Math.ceil((value.cutting * PROTEINS_PERCENTAGE) / this.PROTEINS_CALORIES);
+        const fats_cutting = Math.ceil((value.cutting * FATS_PERCENTAGE) / this.FATS_CALORIES);
+        const carbs_cutting = Math.ceil((value.cutting * CARBS_PERCENTAGE) / this.CARBS_CALORIES);
+
+        if (this.dietType === DietType.BULKING)
+            return {
+                proteins: proteins_bulking,
+                fats: fats_bulking,
+                carbs: carbs_bulking
+            }
+        else if (this.dietType === DietType.CUTTING)
+            return {
+                proteins: proteins_cutting,
+                fats: fats_cutting,
+                carbs: carbs_cutting
+            }
+        else
+            return {
+                proteins: proteins_maintaince,
+                fats: fats_maintaince,
+                carbs: carbs_maintaince
+            }
     }
 
     //Lean Body Mass

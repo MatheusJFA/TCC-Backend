@@ -62,15 +62,9 @@ export default class Calories extends Base implements ICaloriesConsumption {
         const totalCalories = this.user.mifflinStJeorFormula();
         let macronutrients: {
             diet: {
-                proteins_maintaince: number;
-                proteins_cutting: number;
-                proteins_bulking: number;
-                fats_maintaince: number;
-                fats_cutting: number;
-                fats_bulking: number;
-                carbs_maintaince: number;
-                carbs_cutting: number;
-                carbs_bulking: number;
+                proteins: number;
+                fats: number;
+                carbs: number;
             }
         };
 
@@ -84,27 +78,12 @@ export default class Calories extends Base implements ICaloriesConsumption {
         else if (this.user.carbsIntake === CarbsIntake.HIGH_INTAKE) macronutrients = this.user.MNC_HighCarb();
         else macronutrients = this.user.MNC_LowCarb();
 
-        if (this.user.diet === DietType.MAINTENANCE) 
         diet = {
-            proteins: macronutrients.diet.proteins_maintaince,
-            fats: macronutrients.diet.fats_maintaince,
-            carbs: macronutrients.diet.carbs_maintaince
+            proteins: macronutrients.diet.proteins,
+            fats: macronutrients.diet.fats,
+            carbs: macronutrients.diet.carbs
         }
         
-        else if (this.user.diet === DietType.CUTTING) 
-            diet = {
-                proteins: macronutrients.diet.proteins_cutting,
-                fats: macronutrients.diet.fats_cutting,
-                carbs: macronutrients.diet.carbs_cutting,
-            }
-
-        else
-            diet = {
-                proteins: macronutrients.diet.proteins_bulking,
-                fats: macronutrients.diet.fats_bulking,
-                carbs: macronutrients.diet.carbs_bulking,
-            }
-
         const remainaingCalores = totalCalories - this.calories;
         const remainaingProteins = diet.proteins - this.proteins;
         const remainaingFats = diet.fats - this.fats;

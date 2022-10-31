@@ -135,28 +135,16 @@ describe("Test all the functionalities on client entity", () => {
     test("test Macronutrients normal carb calculation ", async () => {
         expect(male.MNC_NormalCarb()).toStrictEqual({
             diet: {
-                "carbs_bulking": 228,
-                "carbs_cutting": 141,
-                "carbs_maintaince": 184,
-                "fats_bulking": 102,
-                "fats_cutting": 63,
-                "fats_maintaince": 82,
-                "proteins_bulking": 196,
-                "proteins_cutting": 121,
-                "proteins_maintaince": 158,
+                "carbs": 184,
+                "fats": 82,
+                "proteins": 158,
             }
         });
         expect(female.MNC_NormalCarb()).toStrictEqual({
             diet: {
-                "carbs_bulking": 151,
-                "carbs_cutting": 63,
-                "carbs_maintaince": 107,
-                "fats_bulking": 67,
-                "fats_cutting": 28,
-                "fats_maintaince": 48,
-                "proteins_bulking": 129,
-                "proteins_cutting": 54,
-                "proteins_maintaince": 92,
+                "carbs": 107,
+                "fats": 48,
+                "proteins": 92,
             }
         });
     });
@@ -165,32 +153,39 @@ describe("Test all the functionalities on client entity", () => {
     test("test Macronutrients high carb calculation ", async () => {
         expect(male.MNC_HighCarb()).toStrictEqual({
             diet: {
-                "carbs_bulking": 326,
-                "carbs_cutting": 201,
-                "carbs_maintaince": 263,
-                "fats_bulking": 58,
-                "fats_cutting": 36,
-                "fats_maintaince": 47,
-                "proteins_bulking": 196,
-                "proteins_cutting": 121,
-                "proteins_maintaince": 158,
+                "carbs": 263,
+                "fats": 47,
+                "proteins": 158,
             }
         });
         expect(female.MNC_HighCarb()).toStrictEqual({
             diet: {
-                "carbs_bulking": 215,
-                "carbs_cutting": 90,
-                "carbs_maintaince": 153,
-                "fats_bulking": 39,
-                "fats_cutting": 16,
-                "fats_maintaince": 28,
-                "proteins_bulking": 129,
-                "proteins_cutting": 54,
-                "proteins_maintaince": 92,
+                "carbs": 153,
+                "fats": 28,
+                "proteins": 92,
             }
         });
     });
 
+    test("test Macronutrients low carb calculation ", async () => {
+        expect(male.MNC_LowCarb()).toStrictEqual({
+            diet: {
+                "carbs": 106,
+                "fats": 94,
+                "proteins": 211,
+            }
+        });
+
+
+        expect(male.MNC_LowCarb()).toStrictEqual({
+            diet: {
+                "carbs": 106,
+                "fats": 94,
+                "proteins": 211,
+            }
+        });
+    });
+    
     test("test Maximun muscular potential", async () => {
         expect(male.MMPCalculation()).toStrictEqual({
             "maximun": 91,
@@ -200,37 +195,6 @@ describe("Test all the functionalities on client entity", () => {
             "maximun": 62,
             "minimun": 58,
         })
-    });
-
-    test("test Macronutrients low carb calculation ", async () => {
-        expect(male.MNC_LowCarb()).toStrictEqual({
-            diet: {
-                "carbs_bulking": 131,
-                "carbs_cutting": 81,
-                "carbs_maintaince": 106,
-                "fats_bulking": 116,
-                "fats_cutting": 72,
-                "fats_maintaince": 94,
-                "proteins_bulking": 261,
-                "proteins_cutting": 161,
-                "proteins_maintaince": 211,
-            }
-        });
-
-
-        expect(male.MNC_LowCarb()).toStrictEqual({
-            diet: {
-                "carbs_bulking": 131,
-                "carbs_cutting": 81,
-                "carbs_maintaince": 106,
-                "fats_bulking": 116,
-                "fats_cutting": 72,
-                "fats_maintaince": 94,
-                "proteins_bulking": 261,
-                "proteins_cutting": 161,
-                "proteins_maintaince": 211,
-            }
-        });
     });
 
     test("test Boer Lean Body mass calculation", () => {
