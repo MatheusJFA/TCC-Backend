@@ -372,11 +372,11 @@ export default class Client extends User implements IClient {
         const proteins_maintaince = Math.ceil((value.maintaince * PROTEINS_PERCENTAGE) / this.PROTEINS_CALORIES);
         const fats_maintaince = Math.ceil((value.maintaince * FATS_PERCENTAGE) / this.FATS_CALORIES);
         const carbs_maintaince = Math.ceil((value.maintaince * CARBS_PERCENTAGE) / this.CARBS_CALORIES);
-        
+
         const proteins_bulking = Math.ceil((value.bulking * PROTEINS_PERCENTAGE) / this.PROTEINS_CALORIES);
         const fats_bulking = Math.ceil((value.bulking * FATS_PERCENTAGE) / this.FATS_CALORIES);
         const carbs_bulking = Math.ceil((value.bulking * CARBS_PERCENTAGE) / this.CARBS_CALORIES);
-     
+
         const proteins_cutting = Math.ceil((value.cutting * PROTEINS_PERCENTAGE) / this.PROTEINS_CALORIES);
         const fats_cutting = Math.ceil((value.cutting * FATS_PERCENTAGE) / this.FATS_CALORIES);
         const carbs_cutting = Math.ceil((value.cutting * CARBS_PERCENTAGE) / this.CARBS_CALORIES);
@@ -423,7 +423,6 @@ export default class Client extends User implements IClient {
 
         if (this.sex === Sex.MALE) return male;
         else return female;
-
     }
 
     LBM_HumeFormula = (): number | number[] => {
@@ -440,9 +439,9 @@ export default class Client extends User implements IClient {
     getAllHealthData = () => {
         let data: any = {};
 
-        data.BMI = this.calculateBMI(); // Body Mass Index
+        const BMI = this.calculateBMI(); // Body Mass Index
 
-        data.BMR = { //Basal metabolic rate
+        const BMR = { //Basal metabolic rate
             base: this.BMRCalculation(),
             weekly: this.BMRCalculationBaseOnMillerWeeklyFormula(),
             mifflinStJeor: this.mifflinStJeorFormula(),
@@ -450,12 +449,12 @@ export default class Client extends User implements IClient {
             katchMcArdle: this.katchMcArdleFormula(),
         };
 
-        data.BMR_ACTIVITY = { //Basal metabolic rate during activities
+        const BMR_ACTIVITY = { //Basal metabolic rate during activities
             base: this.BMRCalculationBaseOnActivity(),
             mifflin: this.BMRCalculationBaseOnMillerFormula()
         };
 
-        data.IBW = { //Ideal body weight
+        const IBW = { //Ideal body weight
             hanwi: this.IBW_HanwiFormula(),
             miller: this.IBW_DRMillerFormula(),
             devine: this.IBW_BJDevineFormula(),
@@ -463,21 +462,38 @@ export default class Client extends User implements IClient {
             range: this.IBW_Range()
         };
 
-        data.MMP = this.MMPCalculation();  //Maximum Muscular Potential
+        const MMP = this.MMPCalculation();  //Maximum Muscular Potential
 
-        data.fatPercentage = this.fatPercentage(); //Fat percentage
+        const fatPercentage = this.fatPercentage(); //Fat percentage
 
-        data.MNC = { //Macronutrients Calculations
+        const MNC = { //Macronutrients Calculations
             normal: this.MNC_NormalCarb(),
             high: this.MNC_HighCarb(),
             low: this.MNC_LowCarb()
         };
 
-        data.LBM = { // Lean Body Mass
+        const LBM = { // Lean Body Mass
             boer: this.LBM_BoerFormula(),
             hume: this.LBM_HumeFormula(),
             james: this.LBM_JamesFormula()
         };
+
+        let macronutrients;
+
+        if (this.carbsIntake === CarbsIntake.LOW_INTAKE)
+            macronutrients = MNC.low;
+        else if (this.carbsIntake === CarbsIntake.HIGH_INTAKE)
+            macronutrients = MNC.high;
+        else macronutrients = MNC.normal;
+
+        data.BMI = BMI; 
+        data.BMR = BMR;
+        data.BMR_ACTIVITY = BMR_ACTIVITY;
+        data.IBW = IBW;
+        data.MMP = MMP;
+        data.fatPercentage = fatPercentage;
+        data.MNC = macronutrients;
+        data.LBM = LBM;
 
         return data;
     }
