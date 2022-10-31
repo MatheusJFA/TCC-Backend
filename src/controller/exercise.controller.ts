@@ -11,19 +11,17 @@ const exercisedbURL = "https://exercisedb.p.rapidapi.com";
 
 class ExerciseController {
     getAllExercises = LogAsyncError(async (request: Request, response: Response) => {
-
-        const exerciseList = getOrSetLongCache(`exerciseList`, async () => {
+        const exerciseList = await getOrSetLongCache(`exerciseList`, async () => {
             const { data } = await axios.get(`${exercisedbURL}/exercises`, {
                 headers: {
                     'X-RapidAPI-Key': enviroment.api.rapidapi.key,
                     'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
                 }
             });
-
             return data;
         });
 
-        response.status(httpStatus.OK).send({ exerciseList });
+        return response.status(httpStatus.OK).json(exerciseList);
     });
 
     getAllExercisesByEquipment = LogAsyncError(async (request: Request, response: Response) => {
