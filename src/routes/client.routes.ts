@@ -15,6 +15,14 @@ router.post("/",
     validateSchema(clientSchema.createClientSchema),
     ClientController.createClient);
 
+router.get("/exp/:id",
+    validateSchema(utilsSchema.validID),
+    ClientController.getExperience);
+
+router.post("/exp/:id",
+    validateSchema(utilsSchema.validAddExperienceSchema),
+    ClientController.addExperience);
+
 router.get("/getDietValues/:id",
     validateSchema(utilsSchema.validID),
     clientController.getClientDiet);

@@ -1,5 +1,3 @@
-import { t } from "i18next";
-
 export const Activity = {
     SEDENTARY: "SEDENTARY",
     SLIGHTLY_ACTIVE: "SLIGHTLY_ACTIVE",
@@ -29,8 +27,8 @@ export const getBMRValues = (bmr: number): {
     extremely_active: number,
 } => {
     const sedentary = Math.round(bmr * 1.2);
-    const slightly_active = Math.round(bmr * 1.55);
-    const moderately_active = Math.round(bmr * 1.375);
+    const slightly_active = Math.round(bmr * 1.375);
+    const moderately_active = Math.round(bmr * 1.55);
     const very_active = Math.round(bmr * 1.725);
     const extremely_active = Math.round(bmr * 1.9);
 

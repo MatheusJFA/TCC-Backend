@@ -8,7 +8,7 @@ const router = Router();
 router.get("/all",
     ExerciseController.getAllExercises);
 
-router.get("/bodyParts",
+router.get("/bodyParts/:bodyPart",
     validateSchema(exerciseSchema.bodyPartSchema),
     ExerciseController.getAllExercisesByBodyPart);
 

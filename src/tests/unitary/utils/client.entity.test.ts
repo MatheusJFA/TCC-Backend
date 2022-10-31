@@ -98,17 +98,17 @@ describe("Test all the functionalities on client entity", () => {
         expect(male.BMRCalculationBaseOnActivity()).toStrictEqual({
             "base": 2265.9,
             "extremely_active": 4305,
-            "moderately_active": 3116,
+            "moderately_active": 3512,
             "sedentary": 2719,
-            "slightly_active": 3512,
+            "slightly_active": 3116,
             "very_active": 3909,
         });
         expect(female.BMRCalculationBaseOnActivity()).toStrictEqual({
             "base": 1310.2,
             "extremely_active": 2489,
-            "moderately_active": 1802,
+            "moderately_active": 2031,
             "sedentary": 1572,
-            "slightly_active": 2031,
+            "slightly_active": 1802,
             "very_active": 2260,
         });
     });
@@ -117,17 +117,17 @@ describe("Test all the functionalities on client entity", () => {
         expect(male.BMRCalculationBaseOnMillerFormula()).toStrictEqual({
             "base": 2101.25,
             "extremely_active": 3992,
-            "moderately_active": 2889,
+            "moderately_active": 3257,
             "sedentary": 2522,
-            "slightly_active": 3257,
+            "slightly_active": 2889,
             "very_active": 3625
         });
         expect(female.BMRCalculationBaseOnMillerFormula()).toStrictEqual({
             "base": 1219,
             "extremely_active": 2316,
-            "moderately_active": 1676,
+            "moderately_active": 1889,
             "sedentary": 1463,
-            "slightly_active": 1889,
+            "slightly_active": 1676,
             "very_active": 2103
         });
     });
@@ -185,7 +185,7 @@ describe("Test all the functionalities on client entity", () => {
             }
         });
     });
-    
+
     test("test Maximun muscular potential", async () => {
         expect(male.MMPCalculation()).toStrictEqual({
             "maximun": 91,

@@ -6,4 +6,14 @@ const validID = Yup.object().shape({
     }),
 });
 
-export default { validID };
+const validAddExperienceSchema = Yup.object().shape({
+    params: Yup.object().shape({
+        id: Yup.string().uuid().required(),
+    }),
+    body: Yup.object().shape({
+        experience: Yup.number().required(),
+    }),
+});
+
+
+export default { validID,validAddExperienceSchema};

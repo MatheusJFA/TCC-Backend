@@ -68,7 +68,7 @@ export default abstract class User extends Base implements IUser {
         this.image = image;
         this.isEmailVerified = false;
         this.level = 1;
-        this.exp = 0;
+        this.exp = 25;
     }
 
     DEFAULT = {
@@ -96,12 +96,12 @@ export default abstract class User extends Base implements IUser {
     currentLevel = () => {
         return Math.floor((1 + Math.sqrt(1 + 8 * this.exp / this.DEFAULT.next)) / 2);
     }
-
-    getExperienceToLevelUp = () => {
-        return Math.floor(((Math.pow(this.level, 2) - this.level) * this.DEFAULT.next) / 2);
+    
+    getExperienceToLevelUp = (level: number): number => {
+        return Math.floor(((Math.pow(level, 2) - level) * this.DEFAULT.next) / 2);
     }
 
-    parseByXP = function () {
+    parseByXP = () => {
         let level = this.level === this.DEFAULT.max_level ? this.DEFAULT.max_level : Math.floor(this.level);
         let forNextLevel = level === this.DEFAULT.max_level ? Infinity : this.getExperienceToLevelUp(level + 1)
         let toNextlevel = forNextLevel - this.exp;

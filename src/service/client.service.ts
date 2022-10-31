@@ -49,7 +49,7 @@ const ClientService = Database.getRepository(Client).extend({
             throw error;
         }
     },
-    
+
     getClientByID: async function (id: string): Promise<Client> {
         try {
             const client = await this.findOne({ where: { id }, relations: ['tokens', 'calories', 'weightTracker'] });
@@ -128,6 +128,28 @@ const ClientService = Database.getRepository(Client).extend({
             throw error;
         }
     },
+
+    addExperience: async function (id: string, experience: number) {
+        try {
+            let user: Client = await ClientService.getClientByID(id);
+            user.addExperience(experience);
+            await this.save(user);
+
+            return user.parseByXP();
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    getExperience: async function (id: string) {
+        try {
+            let user: Client = await ClientService.getClientByID(id);
+            await user.save()
+            return user.parseByXP();
+        } catch (error) {
+            throw error;
+        }
+    }
 });
 
 export default ClientService;

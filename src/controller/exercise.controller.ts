@@ -27,8 +27,7 @@ class ExerciseController {
     });
 
     getAllExercisesByEquipment = LogAsyncError(async (request: Request, response: Response) => {
-
-        const equipment = request.body.equipment;
+        const equipment = request.params.equipment;
         if (validEquipment(equipment)) {
             const exerciseList = getOrSetLongCache(`exerciseList`, async () => {
                 const { data } = await axios.get(`${exercisedbURL}/exercises`, {
@@ -47,7 +46,7 @@ class ExerciseController {
 
     getAllExercisesByBodyPart = LogAsyncError(async (request: Request, response: Response) => {
 
-        const bodyPart = request.body.bodyPart;
+        const bodyPart = request.params.bodyPart;
         if (validBodyPart(bodyPart)) {
             const exerciseList = getOrSetLongCache(`exerciseList`, async () => {
                 const { data } = await axios.get(`${exercisedbURL}/exercises`, {
@@ -65,7 +64,7 @@ class ExerciseController {
     });
 
     getAllExercisesByTargetMuscle = LogAsyncError(async (request: Request, response: Response) => {
-        const targetMuscle = request.body.targetMuscle;
+        const targetMuscle = request.params.targetMuscle;
 
         if (validTargetMuscle(targetMuscle)) {
             const exerciseList = getOrSetLongCache(`exerciseList`, async () => {

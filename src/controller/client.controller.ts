@@ -18,9 +18,9 @@ class ClientController {
         const image = request.file?.filename || "../assets/image/default-avatar.png";
 
         let clientAlreadyExists = await ClientService.returnClientByEmail(email);
-        
-        if (clientAlreadyExists) return response.status(httpStatus.BAD_REQUEST).send({message: t("ERROR.USER.ALREADY_EXISTS")})
-        
+
+        if (clientAlreadyExists) return response.status(httpStatus.BAD_REQUEST).send({ message: t("ERROR.USER.ALREADY_EXISTS") })
+
         let client = await ClientService.createClient(name, email, password, birthdate, sex, Role.USER, height, weight, helpers, image);
 
         return response
@@ -61,10 +61,6 @@ class ClientController {
 
         const image = request.file?.filename || "../assets/image/default-avatar.png";
 
-        let user: Client = await ClientService.getClientByID(id);
-
-        if (!user) response.status(httpStatus.NOT_FOUND).json({ message: t("ERROR.USER.NOT_FOUND") });
-
         const updatedUser = await ClientService.updateClient(id, { name, email, birthdate, sex, image } as IUser, height, weight)
 
         return response
@@ -77,8 +73,6 @@ class ClientController {
 
         let user: Client = await ClientService.getClientByID(id);
 
-        if (!user) response.status(httpStatus.NOT_FOUND).json({ message: t("ERROR.USER.NOT_FOUND") });
-
         user.invalidate()
         await user.save();
         return response
@@ -86,13 +80,32 @@ class ClientController {
             .json({ message: t("SUCCESS.MESSAGE", { resource: t("RESOURCES.USER"), action: t("ACTION.DELETE") }) });
     });
 
+    getExperience = LogAsyncError(async (request: Request, response: Response) => {
+        const id = request.params.id;
+
+        const exp = await ClientService.getExperience(id);
+
+        return response
+            .status(httpStatus.OK)
+            .json(exp);
+    });
+
+    addExperience = LogAsyncError(async (request: Request, response: Response) => {
+        const id = request.params.id;
+        const { experience } = request.body;
+
+        const exp = await ClientService.addExperience(id, experience);
+
+        return response
+            .status(httpStatus.OK)
+            .json(exp);
+    });
+
     changeRole = LogAsyncError(async (request: Request, response: Response) => {
         const id = request.params.id;
         const role = request.body.role;
 
         let user: Client = await ClientService.getClientByID(id);
-
-        if (!user) response.status(httpStatus.NOT_FOUND).json({ message: t("ERROR.USER.NOT_FOUND") });
 
         user.updateUser({ role });
         return response
