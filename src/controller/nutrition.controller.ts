@@ -10,6 +10,7 @@ import { DietValues } from "../types/diet.type";
 import { CuisineValues } from "../types/cuisine.type";
 import { CarbsIntakeValues } from "@/types/carbsIntake.type";
 import NutritionService from "@/service/nutrition.service";
+import { getOrSetCache } from "@/utils/cache";
 
 const nutritiondbURL = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
 
@@ -19,25 +20,28 @@ class NutritionController {
         const excludes = request.body.excludes;
 
         const client = await ClientService.getClientByID(id);
-        const timeFrame = 'week';
+        const timeFrame = 'day';
         const targetCalories = client.mifflinStJeorFormula();
         const diet = client.diet;
         const exclude = excludes || "";
 
-        const { data } = await axios.get(`${nutritiondbURL}/recipes/mealplans/generate`, {
-            params: {
-                timeFrame,
-                targetCalories,
-                diet,
-                exclude,
-            },
-            headers: {
-                'X-RapidAPI-Key': enviroment.api.rapidapi.key,
-                'X-RapidAPI-Host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'
-            }
+        const mealPlan = await getOrSetCache(`mealPlan=${id}`, async () => {
+            const { data } = await axios.get(`${nutritiondbURL}/recipes/mealplans/generate`, {
+                params: {
+                    timeFrame,
+                    targetCalories,
+                    diet,
+                    exclude,
+                },
+                headers: {
+                    'X-RapidAPI-Key': enviroment.api.rapidapi.key,
+                    'X-RapidAPI-Host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'
+                }
+            });
+            return data;
         });
 
-        return response.status(httpStatus.OK).send({ data });
+        return response.status(httpStatus.OK).send({ data:mealPlan });
     });
 
     searchRecipes = LogAsyncError(async (request: Request, response: Response) => {
