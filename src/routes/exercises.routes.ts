@@ -12,14 +12,12 @@ router.get("/bodyParts/:bodyPart",
     validateSchema(exerciseSchema.bodyPartSchema),
     ExerciseController.getAllExercisesByBodyPart);
 
-router.get("/equipments",
+router.get("/equipments/:equipment",
     validateSchema(exerciseSchema.equipmentsSchema),
     ExerciseController.getAllExercisesByEquipment);
 
-router.get("/targetMuscle",
+router.get("/targetMuscles/:targetMuscle",
     validateSchema(exerciseSchema.targetMuscleSchema),
     ExerciseController.getAllExercisesByTargetMuscle);
-
-
 
 export default router;

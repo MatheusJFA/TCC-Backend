@@ -27,7 +27,7 @@ class ExerciseController {
     getAllExercisesByEquipment = LogAsyncError(async (request: Request, response: Response) => {
         const equipment = request.params.equipment;
         if (validEquipment(equipment)) {
-            const exerciseList = getOrSetLongCache(`exerciseList`, async () => {
+            const exerciseList = await getOrSetLongCache(`exerciseList`, async () => {
                 const { data } = await axios.get(`${exercisedbURL}/exercises`, {
                     headers: {
                         'X-RapidAPI-Key': enviroment.api.rapidapi.key,
@@ -35,10 +35,11 @@ class ExerciseController {
                     }
                 });
 
-                return data.map((item: any) => item.equipment === equipment);
+                return data;
             });
 
-            response.status(httpStatus.OK).send({ exerciseList });
+            const filteredExercise = (exerciseList as any).filter((item: any) => item.equipment === equipment)
+            return response.status(httpStatus.OK).send(filteredExercise);
         } else return response.status(httpStatus.BAD_REQUEST).send({ message: `Invalid option` })
     });
 
@@ -46,7 +47,7 @@ class ExerciseController {
 
         const bodyPart = request.params.bodyPart;
         if (validBodyPart(bodyPart)) {
-            const exerciseList = getOrSetLongCache(`exerciseList`, async () => {
+            const exerciseList = await getOrSetLongCache(`exerciseList`, async () => {
                 const { data } = await axios.get(`${exercisedbURL}/exercises`, {
                     headers: {
                         'X-RapidAPI-Key': enviroment.api.rapidapi.key,
@@ -54,10 +55,11 @@ class ExerciseController {
                     }
                 });
 
-                return data.map((item: any) => item.bodyPart === bodyPart);
+                return data;
             });
 
-            response.status(httpStatus.OK).send({ exerciseList });
+            const filteredExercise = (exerciseList as any).filter((item: any) => item.bodyPart === bodyPart)
+            return response.status(httpStatus.OK).send(filteredExercise);
         } else return response.status(httpStatus.BAD_REQUEST).send({ message: `Invalid option` })
     });
 
@@ -65,7 +67,7 @@ class ExerciseController {
         const targetMuscle = request.params.targetMuscle;
 
         if (validTargetMuscle(targetMuscle)) {
-            const exerciseList = getOrSetLongCache(`exerciseList`, async () => {
+            const exerciseList = await getOrSetLongCache(`exerciseList`, async () => {
                 const { data } = await axios.get(`${exercisedbURL}/exercises`, {
                     headers: {
                         'X-RapidAPI-Key': enviroment.api.rapidapi.key,
@@ -73,11 +75,12 @@ class ExerciseController {
                     }
                 });
 
-                return data.map((item: any) => item.target === targetMuscle);
+                return data;
             });
 
-            return response.status(httpStatus.OK)
-                .send({ exerciseList });
+
+            const filteredExercise = (exerciseList as any).filter((item: any) => item.target === targetMuscle)
+            return response.status(httpStatus.OK).send(filteredExercise);
         } else return response.status(httpStatus.BAD_REQUEST).send({ message: `Invalid option` })
     });
 
