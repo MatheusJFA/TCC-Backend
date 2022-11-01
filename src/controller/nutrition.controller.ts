@@ -22,7 +22,7 @@ class NutritionController {
         const timeFrame = 'week';
         const targetCalories = client.mifflinStJeorFormula();
         const diet = client.diet;
-        const exclude = excludes;
+        const exclude = excludes || "";
 
         const { data } = await axios.get(`${nutritiondbURL}/recipes/mealplans/generate`, {
             params: {

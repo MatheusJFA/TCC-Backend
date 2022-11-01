@@ -6,7 +6,7 @@ const generateMealSchema = Yup.object().shape({
         id: Yup.string().uuid().required()
     }).required(),
     body: Yup.object().shape({
-        excludes: Yup.string().required()
+        excludes: Yup.string().optional()
     }).required(),
 });
 
