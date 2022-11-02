@@ -10,7 +10,7 @@ import { DietValues } from "../types/diet.type";
 import { CuisineValues } from "../types/cuisine.type";
 import { CarbsIntakeValues } from "@/types/carbsIntake.type";
 import NutritionService from "@/service/nutrition.service";
-import { getOrSetCache } from "@/utils/cache";
+import { getOrSetWeeklyCache } from "@/utils/cache";
 import { getBMRValue, Activity } from "@/types/activity.type";
 
 const nutritiondbURL = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
@@ -20,7 +20,6 @@ class NutritionController {
         const id = request.params.id;
         const { excludes, activity } = request.body;
 
-
         const client = await ClientService.getClientByID(id);
         const timeFrame = 'week';
         let activityType = activity || Activity.SEDENTARY;
@@ -29,7 +28,7 @@ class NutritionController {
         const diet = client.diet;
         const exclude = excludes || "";
 
-        let mealPlan: any = await getOrSetCache(`mealPlan=${id}`, async () => {
+        let mealPlan: any = await getOrSetWeeklyCache(`mealPlan=${id}`, async () => {
             let { data } = await axios.get(`${nutritiondbURL}/recipes/mealplans/generate`, {
                 params: {
                     timeFrame,
@@ -47,79 +46,26 @@ class NutritionController {
         });
 
 
-        const recipe = await this.getRecipes(mealPlan);
-
-
-        mealPlan.items.forEach((element: any, index: number) => {
-            element.recipe = recipe[index];
-        })
-
         return response.status(httpStatus.OK).send({ data: mealPlan });
     });
 
-    getRecipes = (async (mealPlan: any) => {
-        const recipes: any[] = [];
+    getRecipes = LogAsyncError(async (request: Request, response: Response) => {
+        const recipeID = request.params.id;
 
-        recipes.push(mealPlan.items.map(async (element: any) => {
-            await getOrSetCache(`recipe=${JSON.parse(element.value).id}`, async () => {
-                const { data } = await axios.get(`${nutritiondbURL}/recipes/${JSON.parse(element.value).id}/information`, {
-                    headers: {
-                        'X-RapidAPI-Key': enviroment.api.rapidapi.key,
-                        'X-RapidAPI-Host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'
-                    }
-                });
+        const recipe = await getOrSetWeeklyCache(`recipe=${recipeID}`, async () => {
+            const { data } = await axios.get(`${nutritiondbURL}/recipes/${recipeID}/information`, {
+                headers: {
+                    'X-RapidAPI-Key': enviroment.api.rapidapi.key,
+                    'X-RapidAPI-Host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'
+                }
+            });
 
-                return { data };
-            })
-        }));
+            return data;
+        })
 
-        console.log({ recipes })
-        return recipes;
+        return response.status(httpStatus.OK).send({ data: recipe });
     });
 
-
-    searchRecipes = LogAsyncError(async (request: Request, response: Response) => {
-        const id = request.params.id;
-
-        const client = await ClientService.getClientByID(id);
-
-        const { query, cuisine, excludeCuisine, includeIngredients, excludeIngredients } = request.body.consult;
-
-        const diet = client.diet;
-        const intolerances = client.intolerance;
-        const equipment = "";
-        const sort = 'calories';
-        const sortDirection = 'asc';
-        const offset = '0';
-        const number = '10';
-        const limitLicense = 'false';
-        const ranking = '2';
-
-        const { data } = await axios.get(`${nutritiondbURL}/recipes/complexSearch`, {
-            params: {
-                query,
-                cuisine,
-                excludeCuisine,
-                diet,
-                intolerances,
-                equipment,
-                includeIngredients,
-                excludeIngredients,
-                sort,
-                sortDirection,
-                offset,
-                number,
-                limitLicense,
-                ranking,
-            },
-            headers: {
-                'X-RapidAPI-Key': enviroment.api.rapidapi.key,
-                'X-RapidAPI-Host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'
-            }
-        });
-
-        return response.status(httpStatus.OK).send({ data });
-    });
 
     addIntake = LogAsyncError(async (request: Request, response: Response) => {
         const id = request.params.id;

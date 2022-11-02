@@ -34,7 +34,6 @@ const enviromentSchema = Yup.object()
     SMTP_PASSWORD: Yup.string(),
     SMTP_SECRET: Yup.string(),
     SMTP_FROM: Yup.string(),
-
     RAPID_API_KEY: Yup.string(),
   })
   .unknown();
@@ -85,5 +84,45 @@ export default {
     rapidapi: {
       key: enviroment.RAPID_API_KEY,
     },
+<<<<<<< HEAD
   },
+=======
+
+    database: {
+        hostname: enviroment.DB_HOST,
+        port: enviroment.DB_PORT,
+        username: enviroment.DB_USER,
+        password: enviroment.DB_PASSWORD,
+        name: enviroment.DB_DATABASE,
+    },
+
+    redis: {
+        hostname: enviroment.REDIS_HOST,
+        port: enviroment.REDIS_PORT,
+        username: enviroment.REDIS_USER,
+        password: enviroment.REDIS_PASSWORD
+    },
+
+    jwt: {
+        secret: enviroment.JWT_SECRET,
+        access: enviroment.JWT_ACCESS_EXPIRATION_TIME,
+        refresh: enviroment.JWT_REFRESH_EXPIRATION_TIME,
+        reset_password: enviroment.JWT_RESET_PASSWORD_EXPIRATION_TIME,
+        verify_email: enviroment.JWT_VERIFY_EMAIL_EXPIRATION_TIME
+    },
+
+    smtp: {
+        host: enviroment.SMTP_HOST,
+        email: enviroment.SMTP_EMAIL,
+        password: enviroment.SMTP_PASSWORD,
+        secret: enviroment.SMTP_SECRET,
+        from: enviroment.SMTP_FROM,
+    },
+
+    api: {
+        rapidapi: {
+            key: enviroment.RAPID_API_KEY,
+        }
+    }
+>>>>>>> fc7e1c89a97bc6d28e9e0aa2ff030f4a7a34e624
 };
