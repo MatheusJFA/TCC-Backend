@@ -11,22 +11,26 @@ import { CuisineValues } from "../types/cuisine.type";
 import { CarbsIntakeValues } from "@/types/carbsIntake.type";
 import NutritionService from "@/service/nutrition.service";
 import { getOrSetCache } from "@/utils/cache";
+import { getBMRValue, Activity } from "@/types/activity.type";
 
 const nutritiondbURL = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
 
 class NutritionController {
     generateMealPlan = LogAsyncError(async (request: Request, response: Response) => {
         const id = request.params.id;
-        const excludes = request.body.excludes;
+        const { excludes, activity } = request.body;
+
 
         const client = await ClientService.getClientByID(id);
-        const timeFrame = 'day';
-        const targetCalories = client.mifflinStJeorFormula();
+        const timeFrame = 'week';
+        let activityType = activity || Activity.SEDENTARY;
+        const bmr = client.mifflinStJeorFormula()
+        const targetCalories = getBMRValue(bmr, activityType);
         const diet = client.diet;
         const exclude = excludes || "";
 
-        const mealPlan = await getOrSetCache(`mealPlan=${id}`, async () => {
-            const { data } = await axios.get(`${nutritiondbURL}/recipes/mealplans/generate`, {
+        let mealPlan: any = await getOrSetCache(`mealPlan=${id}`, async () => {
+            let { data } = await axios.get(`${nutritiondbURL}/recipes/mealplans/generate`, {
                 params: {
                     timeFrame,
                     targetCalories,
@@ -38,11 +42,41 @@ class NutritionController {
                     'X-RapidAPI-Host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'
                 }
             });
+
             return data;
         });
 
-        return response.status(httpStatus.OK).send({ data:mealPlan });
+
+        const recipe = await this.getRecipes(mealPlan);
+
+
+        mealPlan.items.forEach((element: any, index: number) => {
+            element.recipe = recipe[index];
+        })
+
+        return response.status(httpStatus.OK).send({ data: mealPlan });
     });
+
+    getRecipes = (async (mealPlan: any) => {
+        const recipes: any[] = [];
+
+        recipes.push(mealPlan.items.map(async (element: any) => {
+            await getOrSetCache(`recipe=${JSON.parse(element.value).id}`, async () => {
+                const { data } = await axios.get(`${nutritiondbURL}/recipes/${JSON.parse(element.value).id}/information`, {
+                    headers: {
+                        'X-RapidAPI-Key': enviroment.api.rapidapi.key,
+                        'X-RapidAPI-Host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'
+                    }
+                });
+
+                return { data };
+            })
+        }));
+
+        console.log({ recipes })
+        return recipes;
+    });
+
 
     searchRecipes = LogAsyncError(async (request: Request, response: Response) => {
         const id = request.params.id;

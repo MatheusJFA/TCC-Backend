@@ -1,12 +1,14 @@
 import * as Yup from 'yup';
 import { CuisineValues } from '@/types/cuisine.type';
+import { Activity, ActivityValue } from '@/types/activity.type';
 
 const generateMealSchema = Yup.object().shape({
     params: Yup.object().shape({
         id: Yup.string().uuid().required()
     }).required(),
     body: Yup.object().shape({
-        excludes: Yup.string().optional()
+        excludes: Yup.string().optional(),
+        activity: Yup.string().default(Activity.SEDENTARY).oneOf(ActivityValue).optional(),
     }).required(),
 });
 

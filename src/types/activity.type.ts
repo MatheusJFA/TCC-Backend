@@ -10,6 +10,8 @@ type Activity = keyof typeof Activity;
 
 const WEEK = 7;
 
+export const ActivityValue = Object.values(Activity);
+
 export const getActivityValue = (activity: Activity): number => {
     if (activity === Activity.SEDENTARY) return 1.2;
     else if (activity === Activity.SLIGHTLY_ACTIVE) return 1.375;
@@ -42,6 +44,13 @@ export const getBMRValues = (bmr: number): {
     }
 }
 
+export function getBMRValue(bmr: number, activity: string) {
+    if (activity === Activity.SEDENTARY) return Math.round(bmr * 1.2);
+    else if (activity === Activity.SLIGHTLY_ACTIVE) return Math.round(bmr * 1.375);
+    else if (activity === Activity.MODERATELY_ACTIVE) return Math.round(bmr * 1.55);
+    else if (activity === Activity.VERY_ACTIVE) return Math.round(bmr * 1.725);
+    else return Math.round(bmr * 1.9);
+}
 
 export const getBMRWeeklyValues = (bmr: number): {
     base: number,

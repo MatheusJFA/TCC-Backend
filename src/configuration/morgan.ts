@@ -1,7 +1,7 @@
 import { Enviroment } from "@/types/enviroment.type";
 import morgan, { StreamOptions } from "morgan";
 import enviroment from "./enviroment";
-import Logger from "./logger";
+// import Logger from "./logger";
 
 
 const skip = () => {
@@ -11,7 +11,7 @@ const skip = () => {
 const stream: StreamOptions = {
   write: (message) => {
     console.log(message);
-    Logger.http(message);
+    // Logger.http(message);
   },
 };
 

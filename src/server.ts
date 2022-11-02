@@ -53,7 +53,7 @@ application.use(express.json()); // Aceita requisições do tipo JSON.
 application.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
-    origin: enviroment.url.frontend,
+    origin: "*",
     methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
     preflightContinue: true,
     optionsSuccessStatus: 204,
@@ -108,13 +108,10 @@ if (enviroment.node_enviroment !== Enviroment.TEST) {
             console.log((await redisClient.ping()).toString() === "PONG" ? "🌎 Redis Server is Connected" : "❌ Redis Server is Not connected")
         })();
 
-        httpServer.listen(enviroment.port, () => {
-            console.log("🌏 Server is listening on port: " + enviroment.port)
-        });
 
         const messageServer = new Server(httpServer, {
             cors: {
-                origin: enviroment.url.frontend
+                origin: '*'
             },
 
             adapter: createAdapter({
@@ -123,33 +120,16 @@ if (enviroment.node_enviroment !== Enviroment.TEST) {
             })
         });
 
+
+        httpServer.listen(enviroment.port, () => {
+            console.log("🌏 Server is listening on port: " + enviroment.port)
+        });
+
         const sessionStore = new SessionStore(redisClient);
         const messageStore = new MessageStore(redisClient)
 
-        messageServer.use(async (socket: any, next) => {
-            const sessionId = socket.handshake.auth.sessionId;
 
-            if (sessionId) {
-                const session = await sessionStore.findSession(sessionId);
-
-                if (session) {
-                    socket.id = session.userId;
-                    socket.sessionId = sessionId;
-                    socket.email = session.email;
-                    return next();
-                }
-
-                const email = socket.handshake.auth.email;
-
-                if (!email) return next(new Error(t("ERROR.PARAMETERS.INVALID_GENERIC")));
-
-                socket.sessionId = crypto.randomBytes(8).toString("hex");
-                socket.userId = crypto.randomBytes(8).toString("hex");
-                next();
-            }
-        });
-
-        messageServer.on("connect", async (socket: any) => {
+        messageServer.on("connection", async (socket: any) => {
             if (enviroment.node_enviroment !== Enviroment.PRODUCTION) {
                 socket.onAny((event: string, ...args: any) => { console.log({ event, args }) });
             }
@@ -161,22 +141,23 @@ if (enviroment.node_enviroment !== Enviroment.TEST) {
                 connected: "true"
             });
 
-            //emit session details
+            // //emit session details
             socket.emit("session", {
                 sessionId: socket.sessionId,
                 userId: socket.userId
             });
 
-            // Join the "userId" room
+            // // Join the "userId" room
             socket.join(socket.userId);
 
-            //Fetch all existing users
+            // //Fetch all existing users
             const users: any = [];
 
             const [messages, sessions] = await Promise.all([
                 messageStore.findMessagesForUser(socket.userId),
                 sessionStore.findAllSessions()
             ]);
+
 
             const messagesPerUser = new Map();
             messages.forEach((message) => {
@@ -199,14 +180,14 @@ if (enviroment.node_enviroment !== Enviroment.TEST) {
 
             socket.emit("users", users);
 
-            socket.broadcast.emit("userConnected", {
+            socket.broadcast.emit("user connected", {
                 userId: socket.userId,
                 email: socket.email,
                 connected: true,
                 messages: [],
-            })
+            });
 
-            socket.on("joinGroup", async ({ room, socketId }, callback: Function) => {
+            socket.on("join group", async ({ room, socketId }, callback: Function) => {
                 const allSockets = await messageServer.in(room).fetchSockets();
 
                 if (allSockets.includes(socket.id)) socket.id = socketId;
@@ -216,8 +197,7 @@ if (enviroment.node_enviroment !== Enviroment.TEST) {
                 callback(messages);
             });
 
-
-            socket.on("groupMessage", ({ text, room }) => {
+            socket.on("group message", ({ text, room }) => {
                 const message = {
                     text,
                     from: socket.userId,
@@ -225,11 +205,11 @@ if (enviroment.node_enviroment !== Enviroment.TEST) {
                     createdAt: new Date()
                 };
 
-                socket.to(room).to(socket.userId).emit("groupMessage", message);
+                socket.to(room).to(socket.userId).emit("group message", message);
                 messageStore.saveGroupMessage(message);
             });
 
-            socket.on("privateMessage", ({ text, to }) => {
+            socket.on("private message", ({ text, to }) => {
                 const message = {
                     text,
                     from: socket.userId,
@@ -237,25 +217,44 @@ if (enviroment.node_enviroment !== Enviroment.TEST) {
                     createdAt: new Date()
                 };
 
-                socket.to(to).to(socket.userId).emit("privateMessage", message);
+                socket.to(to).to(socket.userId).emit("private message", message);
                 messageStore.savePrivateMessage(message);
             });
 
-            socket.on("userDisconnected", async () => {
+            socket.on("user disconnected", async () => {
                 const matchingSockets = await messageServer.in(socket.userId).allSockets();
 
                 const isDisconnected = matchingSockets.size === 0;
 
                 if (isDisconnected) {
-                    socket.broadcast.emit("userDisconnected", socket.userId);
+                    socket.broadcast.emit("user disconnected", socket.userId);
 
                     sessionStore.saveSession(socket.sessionId, {
                         userId: socket.userId,
                         email: socket.email,
                         connected: "false"
-                    })
+                    });
                 }
             });
+
+        });
+
+        messageServer.use(async (socket: any, next) => {
+            const sessionId = socket.handshake.auth.sessionId;
+
+            if (sessionId) {
+                const session = await sessionStore.findSession(sessionId);
+                if (session) {
+                    socket.id = session.userId;
+                    socket.sessionId = sessionId;
+                    socket.email = session.email;
+                    return next();
+                }
+
+                socket.sessionId = crypto.randomBytes(8).toString("hex");
+                socket.userId = crypto.randomBytes(8).toString("hex");
+                next();
+            }
         });
 
     } catch (error) {

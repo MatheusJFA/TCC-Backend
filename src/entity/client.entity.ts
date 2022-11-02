@@ -76,8 +76,7 @@ export default class Client extends User implements IClient {
     FEET_RATIO = 30.48;
     INCH_RATIO = 12;
     FIVE_FEET = 5.00;
-
-
+    
     BULKING = 500;
     CUTTING = 500;
 
@@ -288,17 +287,17 @@ export default class Client extends User implements IClient {
         else return female;
     }
 
-    BMRCalculationBaseOnActivity = (): Object | Object[] => {
+    BMRCalculationBaseOnActivity = (): Object => {
         const bmr = this.BMRCalculation();
         return getBMRValues(bmr);
     }
 
-    BMRCalculationBaseOnMillerFormula = (): Object | Object[] => {
+    BMRCalculationBaseOnMillerFormula = (): Object => {
         const bmr = this.mifflinStJeorFormula();
         return getBMRValues(bmr);
     }
 
-    BMRCalculationBaseOnMillerWeeklyFormula = (): Object | Object[] => {
+    BMRCalculationBaseOnMillerWeeklyFormula = (): Object => {
         const bmr = this.mifflinStJeorFormula();
         return getBMRWeeklyValues(bmr);
     }
