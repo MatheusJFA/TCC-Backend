@@ -7,31 +7,31 @@ import NutritionSchema from "../validation/nutrition"
 const router = Router();
 
 router.get("/mealPlan/:id",
-     validateSchema(NutritionSchema.generateMealSchema),
+    validateSchema(NutritionSchema.generateMealSchema),
     NutritionController.generateMealPlan);
 
-router.get("/searchRecipe/:id",
-    validateSchema(NutritionSchema.searchRecipesSchema),
-    NutritionController.searchRecipes);
+router.get("/getRecipe/:id",
+    validateSchema(NutritionSchema.getRecipeSchema),
+    NutritionController.getRecipes);
 
 router.post("/addIntake/:id",
-     validateSchema(NutritionSchema.addOrRemoveIntakeSchema),
+    validateSchema(NutritionSchema.addOrRemoveIntakeSchema),
     NutritionController.addIntake);
 
 router.delete("/removeIntake/:id",
-     validateSchema(NutritionSchema.addOrRemoveIntakeSchema),
+    validateSchema(NutritionSchema.addOrRemoveIntakeSchema),
     NutritionController.removeIntake);
 
 router.post("/addWeightTracker/:id",
-     validateSchema(NutritionSchema.addWeightTracker),
+    validateSchema(NutritionSchema.addWeightTracker),
     NutritionController.removeIntake);
 
 router.post("/removeWeightTracker/:id",
-     validateSchema(NutritionSchema.removeWeightTracker),
+    validateSchema(NutritionSchema.removeWeightTracker),
     NutritionController.removeIntake);
 
 router.get("/currentDiet/:id",
-     validateSchema(NutritionSchema.getCurrentDietSchema),
+    validateSchema(NutritionSchema.getCurrentDietSchema),
     NutritionController.getCurrentDiet);
 
 export default router;

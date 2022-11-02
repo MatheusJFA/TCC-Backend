@@ -1,5 +1,4 @@
 import * as Yup from 'yup';
-import { CuisineValues } from '@/types/cuisine.type';
 import { Activity, ActivityValue } from '@/types/activity.type';
 
 const generateMealSchema = Yup.object().shape({
@@ -13,17 +12,9 @@ const generateMealSchema = Yup.object().shape({
 });
 
 
-const searchRecipesSchema = Yup.object().shape({
+const getRecipeSchema = Yup.object().shape({
     params: Yup.object().shape({
-        id: Yup.string().uuid().required()
-    }).required(),
-    body: Yup.object().shape({
-        query: Yup.string().required(),
-        cuisine: Yup.string().oneOf(CuisineValues).required(),
-        excludeCuisine: Yup.string().optional(),
-        equipment: Yup.string().optional(),
-        includeIngredients: Yup.string().optional(),
-        excludeIngredients: Yup.string().optional(),
+        id: Yup.number().required()
     }).required(),
 });
 
@@ -79,7 +70,7 @@ const removeWeightTracker = Yup.object().shape({
 
 export default {
     generateMealSchema,
-    searchRecipesSchema,
+    getRecipeSchema,
     getCurrentDietSchema,
     addOrRemoveIntakeSchema,
     addWeightTracker,

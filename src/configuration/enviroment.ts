@@ -34,7 +34,7 @@ const enviromentSchema = Yup.object().shape({
     SMTP_SECRET: Yup.string(),
     SMTP_FROM: Yup.string(),
 
-    EXERCISEDB_API_KEY: Yup.string()
+    RAPID_API_KEY: Yup.string()
 }).unknown();
 
 const enviroment = enviromentSchema.validateSync(process.env);
@@ -81,7 +81,7 @@ export default {
 
     api: {
         rapidapi: {
-            key: enviroment.EXERCISEDB_API_KEY,
+            key: enviroment.RAPID_API_KEY,
         }
     }
 };
