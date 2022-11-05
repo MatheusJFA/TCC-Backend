@@ -14,6 +14,15 @@ router.get("/getRecipe/:id",
     validateSchema(NutritionSchema.getRecipeSchema),
     NutritionController.getRecipes);
 
+
+router.get("/getNutrition/:id",
+    validateSchema(NutritionSchema.getRecipeSchema),
+    NutritionController.getNutritionByID);
+
+router.get("/getSimilarRecipes/:id",
+    validateSchema(NutritionSchema.getRecipeSchema),
+    NutritionController.getSimilarRecipesByID);
+
 router.post("/addIntake/:id",
     validateSchema(NutritionSchema.addOrRemoveIntakeSchema),
     NutritionController.addIntake);

@@ -66,6 +66,40 @@ class NutritionController {
         return response.status(httpStatus.OK).send({ data: recipe });
     });
 
+    getNutritionByID = LogAsyncError(async (request: Request, response: Response) => {
+        const recipeID = request.params.id;
+
+        const recipe = await getOrSetWeeklyCache(`recipe=${recipeID}`, async () => {
+            const { data } = await axios.get(`${nutritiondbURL}/recipes/${recipeID}/nutritionWidget.png`, {
+                headers: {
+                    'X-RapidAPI-Key': enviroment.api.rapidapi.key,
+                    'X-RapidAPI-Host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'
+                }
+            });
+
+            return data;
+        })
+
+        return response.status(httpStatus.OK).send({ data: recipe });
+    });
+
+    
+    getSimilarRecipesByID = LogAsyncError(async (request: Request, response: Response) => {
+        const recipeID = request.params.id;
+
+        const recipe = await getOrSetWeeklyCache(`recipe=${recipeID}`, async () => {
+            const { data } = await axios.get(`${nutritiondbURL}/recipes/${recipeID}/similar`, {
+                headers: {
+                    'X-RapidAPI-Key': enviroment.api.rapidapi.key,
+                    'X-RapidAPI-Host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'
+                }
+            });
+
+            return data;
+        });
+
+        return response.status(httpStatus.OK).send({ data: recipe });
+    });
 
     addIntake = LogAsyncError(async (request: Request, response: Response) => {
         const id = request.params.id;
