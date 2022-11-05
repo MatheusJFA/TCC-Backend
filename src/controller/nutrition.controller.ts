@@ -69,7 +69,7 @@ class NutritionController {
     getNutritionByID = LogAsyncError(async (request: Request, response: Response) => {
         const recipeID = request.params.id;
 
-        const recipe = await getOrSetWeeklyCache(`recipe=${recipeID}`, async () => {
+        const recipe = await getOrSetWeeklyCache(`getNutrition=${recipeID}`, async () => {
             const { data } = await axios.get(`${nutritiondbURL}/recipes/${recipeID}/nutritionWidget.png`, {
                 headers: {
                     'X-RapidAPI-Key': enviroment.api.rapidapi.key,
@@ -87,7 +87,7 @@ class NutritionController {
     getSimilarRecipesByID = LogAsyncError(async (request: Request, response: Response) => {
         const recipeID = request.params.id;
 
-        const recipe = await getOrSetWeeklyCache(`recipe=${recipeID}`, async () => {
+        const recipe = await getOrSetWeeklyCache(`similarRecipe=${recipeID}`, async () => {
             const { data } = await axios.get(`${nutritiondbURL}/recipes/${recipeID}/similar`, {
                 headers: {
                     'X-RapidAPI-Key': enviroment.api.rapidapi.key,
