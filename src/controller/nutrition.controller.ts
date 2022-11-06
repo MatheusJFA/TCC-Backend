@@ -70,7 +70,7 @@ class NutritionController {
         const recipeID = request.params.id;
 
         const recipe = await getOrSetWeeklyCache(`getNutrition=${recipeID}`, async () => {
-            const { data } = await axios.get(`${nutritiondbURL}/recipes/${recipeID}/nutritionWidget.png`, {
+            const { data } = await axios.get(`${nutritiondbURL}/recipes/${recipeID}/nutritionWidget`, {
                 headers: {
                     'X-RapidAPI-Key': enviroment.api.rapidapi.key,
                     'X-RapidAPI-Host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'
